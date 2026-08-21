@@ -303,6 +303,35 @@ body {
     margin-bottom: 32px;
 }
 
+/* Analysis Tabs */
+.analysis-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.analysis-tab {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.analysis-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+.analysis-tab:not(.active) {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+.analysis-tab:not(.active):hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 .stat-card {
     background: var(--bg-card);
     border-radius: var(--radius);

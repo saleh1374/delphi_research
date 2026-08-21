@@ -2,13 +2,17 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
 from models import ResponseFactor, Response, Expert, UniqueFactor, AHPComparison
+from typing import Optional
 
 router2 = APIRouter(prefix="/analysis", tags=["analysis2"])
 
 
 @router2.get("/factor-frequency")
-def get_factor_frequency(db: Session = Depends(get_db)):
-    all_factors = db.query(ResponseFactor).all()
+def get_factor_frequency(round_no: Optional[int] = None, db: Session = Depends(get_db)):
+    query = db.query(ResponseFactor)
+    if round_no:
+        query = query.join(Response).filter(Response.round_no == round_no)
+    all_factors = query.all()
     factor_counts = {}
     for f in all_factors:
         text = f.factor_text.strip()

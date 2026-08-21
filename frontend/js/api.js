@@ -68,18 +68,29 @@ function closeModal(e) {
     document.getElementById('modal-container').innerHTML = '';
 }
 
+let pendingConfirmCallback = null;
+
 function showConfirm(message, onConfirm) {
+    pendingConfirmCallback = onConfirm;
     showModal('تأیید حذف', `
         <div class="confirm-dialog">
             <div class="confirm-icon">⚠</div>
             <h4>آیا مطمئن هستید؟</h4>
             <p>${message}</p>
             <div class="confirm-actions">
-                <button class="btn btn-danger" onclick="(${onConfirm})(); closeModal();">بله، حذف شود</button>
+                <button class="btn btn-danger" onclick="executeConfirm()">بله، حذف شود</button>
                 <button class="btn btn-outline" onclick="closeModal()">انصراف</button>
             </div>
         </div>
     `);
+}
+
+function executeConfirm() {
+    if (pendingConfirmCallback) {
+        pendingConfirmCallback();
+        pendingConfirmCallback = null;
+    }
+    closeModal();
 }
 
 function formatDate(dt) {
