@@ -60,14 +60,18 @@ def seed_ahp_factors(db):
 
 @app.on_event("startup")
 def startup():
+    # Create tables, but ignore errors if they already exist
     try:
         Base.metadata.create_all(bind=engine)
     except Exception as e:
-        print(f"Table creation warning: {e}")
+        print(f"Warning during table creation (may be expected): {e}")
+    
     db = SessionLocal()
     try:
         seed_factor_bank(db)
         seed_ahp_factors(db)
+    except Exception as e:
+        print(f"Warning during seeding: {e}")
     finally:
         db.close()
 
@@ -145,3 +149,4 @@ def expert_profile(expert_id: int):
         }
     finally:
         db.close()
+

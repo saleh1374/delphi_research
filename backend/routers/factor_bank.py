@@ -9,15 +9,21 @@ router = APIRouter(prefix="/factor-bank", tags=["factor-bank"])
 
 
 @router.post("/", response_model=FactorBankResponse)
+@router.post("", response_model=FactorBankResponse)
 def create_factor(factor: FactorBankCreate, db: Session = Depends(get_db)):
-    db_factor = FactorBank(**factor.model_dump())
-    db.add(db_factor)
-    db.commit()
-    db.refresh(db_factor)
-    return db_factor
+    try:
+        db_factor = FactorBank(**factor.model_dump())
+        db.add(db_factor)
+        db.commit()
+        db.refresh(db_factor)
+        return db_factor
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"خطا در ذخیره عامل: {str(e)}")
 
 
 @router.get("/", response_model=List[FactorBankResponse])
+@router.get("", response_model=List[FactorBankResponse])
 def list_factors(
     category: Optional[str] = None,
     search: Optional[str] = None,
@@ -83,3 +89,4 @@ def delete_factor(factor_id: int, db: Session = Depends(get_db)):
     db.delete(factor)
     db.commit()
     return {"message": "عامل با موفقیت حذف شد"}
+
