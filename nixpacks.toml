@@ -4,4 +4,4 @@ startCommand = "cd backend && gunicorn main:app --workers 4 --worker-class uvico
 nixPkgs = ["python311", "python311Packages.pip", "gcc"]
 
 [phases.install]
-cmds = ["pip install -r backend/requirements.txt"]
+cmds = ["pip install --break-system-packages -r backend/requirements.txt"]
