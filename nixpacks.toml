@@ -1,7 +1,7 @@
 startCommand = "cd backend && gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT"
 
 [phases.setup]
-nixPkgs = ["python311", "gcc", "libpq-dev"]
+nixPkgs = ["python311", "gcc"]
 
 [phases.install]
 cmds = ["pip install -r backend/requirements.txt"]
