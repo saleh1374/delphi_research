@@ -1,0 +1,144 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from database import engine, SessionLocal, Base
+from models import Expert, Response, ResponseFactor, Activity, FactorBank, AHPFactor
+from routers import experts, responses, activities, factor_bank, exports
+from routers.analysis import router as analysis_router
+from routers.analysis2 import router2 as analysis2_router
+from seed import seed_factor_bank
+import os
+
+app = FastAPI(
+    title="سامانه مدیریت پژوهش دلفی",
+    description="مدیریت نخبگان و اجرای راند اول دلفی",
+    version="2.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(experts.router, prefix="/api")
+app.include_router(responses.router, prefix="/api")
+app.include_router(activities.router, prefix="/api")
+app.include_router(factor_bank.router, prefix="/api")
+app.include_router(exports.router, prefix="/api")
+app.include_router(analysis_router, prefix="/api")
+app.include_router(analysis2_router, prefix="/api")
+
+frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+
+AHP_SEED = [
+    {"title": "زیرساخت انتقال و خطوط تبادل مرزی", "category": "زیرساخت و شبکه", "description": "ظرفیت کافی انتقال و اتصال بین‌مرزی"},
+    {"title": "ظرفیت و کیفیت اتصال بین‌المللی شبکه", "category": "زیرساخت و شبکه", "description": "کیفیت interconnection"},
+    {"title": "طراحی بازار منطقه‌ای برق", "category": "بازار و تنظیم‌گری", "description": "سازوکار بازار و تسویه"},
+    {"title": "اصلاحات تنظیم‌گری و حکمرانی", "category": "بازار و تنظیم‌گری", "description": "قوانین شفاف و ساختار حکمرانی"},
+    {"title": "کاهش هزینه تولید برق خورشیدی", "category": "اقتصادی و مالی", "description": "هزینه تولید و مزیت رقابتی"},
+    {"title": "دسترسی به سرمایه‌گذاری", "category": "اقتصادی و مالی", "description": "تأمین مالی پروژه‌ها"},
+    {"title": "ادغام تجدیدپذیر در شبکه", "category": "فنی و فناوری", "description": "توانایی فنی جذب خورشیدی"},
+    {"title": "ترکیب خورشیدی با ذخیره‌ساز", "category": "فنی و فناوری", "description": "storage و firm power"},
+    {"title": "مزیت رقابتی ملی", "category": "راهبردی و رقابتی", "description": "توان نوآوری و ارتقا"},
+    {"title": "تقاضای واقعی در بازار همسایگان", "category": "منطقه‌ای و ژئوپلیتیکی", "description": "نیاز و کشش بازار مقصد"},
+]
+
+
+def seed_ahp_factors(db):
+    existing = db.query(AHPFactor).count()
+    if existing > 0:
+        return
+    for item in AHP_SEED:
+        db.add(AHPFactor(**item))
+    db.commit()
+
+
+@app.on_event("startup")
+def startup():
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        seed_factor_bank(db)
+        seed_ahp_factors(db)
+    finally:
+        db.close()
+
+
+@app.get("/")
+def serve_index():
+    return FileResponse(os.path.join(frontend_dir, "index.html"))
+
+
+@app.get("/survey")
+def serve_survey():
+    return FileResponse(os.path.join(frontend_dir, "survey.html"))
+
+
+@app.get("/survey2")
+def serve_survey2():
+    return FileResponse(os.path.join(frontend_dir, "survey2.html"))
+
+
+@app.get("/api/dashboard")
+def dashboard_stats():
+    db = SessionLocal()
+    try:
+        total_experts = db.query(Expert).count()
+        total_responses = db.query(Response).count()
+        total_activities = db.query(Activity).count()
+        total_factors = db.query(ResponseFactor).count()
+        completed = db.query(Response).filter(Response.response_status == "تکمیل‌شده").count()
+        pending = db.query(Activity).filter(Activity.activity_status == "در انتظار").count()
+        return {
+            "total_experts": total_experts,
+            "total_responses": total_responses,
+            "total_activities": total_activities,
+            "total_factors": total_factors,
+            "completed_responses": completed,
+            "pending_activities": pending
+        }
+    finally:
+        db.close()
+
+
+@app.get("/api/expert/{expert_id}/profile")
+def expert_profile(expert_id: int):
+    db = SessionLocal()
+    try:
+        expert = db.query(Expert).filter(Expert.expert_id == expert_id).first()
+        if not expert:
+            return {"error": "نخبه یافت نشد"}
+        latest_response = db.query(Response).filter(
+            Response.expert_id == expert_id
+        ).order_by(Response.response_id.desc()).first()
+        latest_activity = db.query(Activity).filter(
+            Activity.expert_id == expert_id
+        ).order_by(Activity.activity_id.desc()).first()
+        return {
+            "expert": {
+                "id": expert.expert_id,
+                "name": expert.full_name,
+                "org": expert.organization,
+                "position": expert.position,
+                "field": expert.field_study,
+                "degree": expert.degree,
+                "years": expert.years_energy,
+                "phone": expert.phone,
+                "email": expert.email,
+                "qualification": expert.qualification_method,
+                "qualification_note": expert.qualification_note
+            },
+            "latest_response_id": latest_response.response_id if latest_response else None,
+            "latest_response_status": latest_response.response_status if latest_response else None,
+            "latest_activity": {
+                "type": latest_activity.activity_type,
+                "status": latest_activity.activity_status
+            } if latest_activity else None
+        }
+    finally:
+        db.close()

@@ -1,0 +1,99 @@
+function loadExports() {
+    const container = document.getElementById('section-exports');
+    container.innerHTML = `
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+                <h3>&#8681; خروجی‌های مرحله اول (شناسایی عوامل)</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('experts.csv', 'experts.csv')">
+                        <div class="info-icon">&#128196;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل CSV</div>
+                            <div class="info-value">فهرست نخبگان</div>
+                        </div>
+                    </div>
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('responses.csv', 'responses.csv')">
+                        <div class="info-icon">&#128196;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل CSV</div>
+                            <div class="info-value">پاسخ‌های راند اول</div>
+                        </div>
+                    </div>
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('unique-factors.csv', 'unique_factors.csv')">
+                        <div class="info-icon">&#128196;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل CSV</div>
+                            <div class="info-value">عوامل یکتا شناسایی‌شده</div>
+                        </div>
+                    </div>
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('combined.csv', 'combined.csv')">
+                        <div class="info-icon">&#128196;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل CSV</div>
+                            <div class="info-value">گزارش یکپارچه راند ۱</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+                <h3>&#8681; خروجی‌های مرحله دوم (اولویت‌بندی)</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('ahp-priorities.csv', 'ahp_priorities.csv')">
+                        <div class="info-icon" style="background: var(--warning-bg); color: var(--warning);">&#128200;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل CSV</div>
+                            <div class="info-value">اولویت‌بندی AHP</div>
+                        </div>
+                    </div>
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('factor-frequency.csv', 'factor_frequency.csv')">
+                        <div class="info-icon" style="background: var(--info-bg); color: var(--info);">&#128202;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل CSV</div>
+                            <div class="info-value">فراوانی عوامل</div>
+                        </div>
+                    </div>
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('activities.csv', 'activities.csv')">
+                        <div class="info-icon">&#128196;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل CSV</div>
+                            <div class="info-value">فعالیت‌ها و پیگیری‌ها</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>&#128190; پشتیبان‌گیری کامل</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="expert-info-item" style="cursor: pointer;" onclick="downloadCSV('backup.json', 'backup.json')">
+                        <div class="info-icon" style="background: var(--success-bg); color: var(--success);">&#128190;</div>
+                        <div class="info-text">
+                            <div class="info-label">فایل JSON</div>
+                            <div class="info-value">پشتیبان کامل داده‌ها</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 16px; background: var(--info-bg); border-radius: var(--radius-sm); font-size: 13px; color: var(--info);">
+                    <strong>&#9432; نکته:</strong> فایل‌های CSV با رمزگذاری UTF-8 با BOM ذخیره می‌شوند و در Excel سازگار هستند.
+                </div>
+            </div>
+        </div>`;
+}
+
+async function downloadCSV(endpoint, filename) {
+    try {
+        await api.downloadFile(`/export/${endpoint}`, filename);
+        showToast(`فایل ${filename} با موفقیت دانلود شد`);
+    } catch (err) {
+        showToast('خطا در دانلود فایل', 'error');
+    }
+}

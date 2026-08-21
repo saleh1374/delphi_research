@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>پرسشنامه راند دوم - اولویت‌بندی عوامل</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); min-height: 100vh; font-family: 'Vazirmatn', sans-serif; }
+        .survey-container { max-width: 100%; margin: 0 auto; padding: 12px; }
+        .survey-hero { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; text-align: center; color: white; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.15); }
+        .survey-hero h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; line-height: 1.4; }
+        .survey-hero p { font-size: 14px; opacity: 0.85; line-height: 1.8; }
+        .survey-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+        .survey-card h2 { font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+        .factor-compare { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 10px; transition: all 0.2s; }
+        .factor-compare:hover { border-color: #2563eb; }
+        .factor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .factor-title { font-size: 14px; font-weight: 700; color: #1e293b; }
+        .factor-cat { font-size: 10px; background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 10px; }
+        .scale-container { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+        .scale-label { font-size: 12px; color: #64748b; min-width: 70px; }
+        .scale-value { font-size: 16px; font-weight: 700; color: #2563eb; min-width: 24px; text-align: center; }
+        .scale-text { font-size: 11px; color: #94a3b8; min-width: 80px; }
+        input[type="range"] { flex: 1; height: 6px; -webkit-appearance: none; background: #e2e8f0; border-radius: 3px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: #2563eb; border-radius: 50%; cursor: pointer; }
+        .scale-marks { display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; margin-top: 4px; padding: 0 2px; }
+        .submit-section { text-align: center; padding: 16px 0; }
+        .btn-submit { background: linear-gradient(135deg, #2563eb, #0ea5e9); color: white; border: none; padding: 14px 40px; border-radius: 12px; font-family: 'Vazirmatn', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(37,99,235,0.3); width: 100%; max-width: 400px; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,99,235,0.4); }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .success-msg { background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 12px; padding: 32px; text-align: center; color: #166534; }
+        .success-msg h2 { color: #166534; font-size: 20px; margin-bottom: 8px; }
+        .success-msg p { font-size: 14px; color: #15803d; }
+        .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+        .info-box h3 { color: #1d4ed8; font-size: 15px; margin-bottom: 6px; }
+        .info-box p { color: #1e40af; font-size: 13px; line-height: 1.8; }
+        .factor-counter { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 16px; }
+        .factor-counter strong { color: #2563eb; font-size: 16px; }
+        .form-group { margin-bottom: 12px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+        .form-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-family: 'Vazirmatn', sans-serif; font-size: 14px; direction: rtl; }
+        .form-input:focus { outline: none; border-color: #2563eb; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .step-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .step { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+        .step.active { background: #2563eb; color: white; }
+        .step.done { background: #16a34a; color: white; }
+        .step.pending { background: #e2e8f0; color: #94a3b8; }
+        .step-line { width: 40px; height: 2px; background: #e2e8f0; }
+        .step-line.done { background: #16a34a; }
+        @media (max-width: 640px) {
+            .survey-container { padding: 8px; }
+            .survey-hero { padding: 16px; border-radius: 12px; }
+            .survey-hero h1 { font-size: 18px; }
+            .survey-hero p { font-size: 13px; }
+            .survey-card { padding: 14px; border-radius: 12px; }
+            .scale-container { flex-wrap: wrap; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <div class="survey-hero">
+            <h1>پرسشنامه راند دوم دلفی</h1>
+            <p>اولویت‌بندی عوامل مؤثر بر صادرات برق ایران</p>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step active" id="step1-ind">۱</div>
+            <div class="step-line" id="step-line-1"></div>
+            <div class="step pending" id="step2-ind">۲</div>
+        </div>
+
+        <div id="expert-form-section">
+            <div class="survey-card">
+                <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 12px;">اطلاعات فردی</h3>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">لطفاً اطلاعات خود را تکمیل کنید تا بتوانید اولویت‌بندی عوامل را انجام دهید</p>
+                <div class="form-group">
+                    <label class="form-label">نام و نام خانوادگی *</label>
+                    <input type="text" class="form-input" id="expert-name" placeholder="مثال: علی رضایی">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">سازمان محل کار *</label>
+                        <select class="form-input" id="expert-org">
+                            <option value="">انتخاب کنید...</option>
+                            <option value="شرکت توانیر">شرکت توانیر</option>
+                            <option value="شرکت مهندسی برق ایران (مپنا)">شرکت مهندسی برق ایران (مپنا)</option>
+                            <option value="سازمان انرژی تجدیدپذیر و بهره‌وری انرژی (ساتبا)">ساتبا</option>
+                            <option value="شرکت توزیع نیروی برق">شرکت توزیع نیروی برق</option>
+                            <option value="شرکت برق منطقه‌ای">شرکت برق منطقه‌ای</option>
+                            <option value="وزارت نیرو">وزارت نیرو</option>
+                            <option value="پژوهشگاه نیرو">پژوهشگاه نیرو</option>
+                            <option value="دانشگاه">دانشگاه</option>
+                            <option value="شرکت خصوصی انرژی">شرکت خصوصی انرژی</option>
+                            <option value="مشاوران انرژی">مشاوران انرژی</option>
+                            <option value="سایر">سایر</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">سمت شغلی *</label>
+                        <select class="form-input" id="expert-pos">
+                            <option value="">انتخاب کنید...</option>
+                            <option value="مدیرعامل">مدیرعامل</option>
+                            <option value="معاون مدیرعامل">معاون مدیرعامل</option>
+                            <option value="مدیر فنی">مدیر فنی</option>
+                            <option value="مدیر پروژه">مدیر پروژه</option>
+                            <option value="کارشناس ارشد">کارشناس ارشد</option>
+                            <option value="کارشناس">کارشناس</option>
+                            <option value="استاد دانشگاه">استاد دانشگاه</option>
+                            <option value="دانشیار">دانشیار</option>
+                            <option value="محقق">محقق</option>
+                            <option value="مشاور">مشاور</option>
+                            <option value="سایر">سایر</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">رشته تخصصی *</label>
+                        <select class="form-input" id="expert-field">
+                            <option value="">انتخاب کنید...</option>
+                            <option value="مهندسی برق - قدرت">مهندسی برق - قدرت</option>
+                            <option value="مهندسی برق - الکترونیک">مهندسی برق - الکترونیک</option>
+                            <option value="مهندسی انرژی">مهندسی انرژی</option>
+                            <option value="مهندسی انرژی‌های تجدیدپذیر">مهندسی انرژی‌های تجدیدپذیر</option>
+                            <option value="مهندسی مکانیک">مهندسی مکانیک</option>
+                            <option value="مهندسی محیط زیست">مهندسی محیط زیست</option>
+                            <option value="اقتصاد انرژی">اقتصاد انرژی</option>
+                            <option value="مدیریت انرژی">مدیریت انرژی</option>
+                            <option value="فیزیک">فیزیک</option>
+                            <option value="شیمی">شیمی</option>
+                            <option value="سایر">سایر</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">مدرک تحصیلی *</label>
+                        <select class="form-input" id="expert-degree">
+                            <option value="">انتخاب کنید...</option>
+                            <option value="کارشناسی">کارشناسی</option>
+                            <option value="کارشناسی ارشد">کارشناسی ارشد</option>
+                            <option value="دکتری">دکتری</option>
+                            <option value="فوق‌دکتری">فوق‌دکتری</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">سابقه کار در حوزه انرژی *</label>
+                        <input type="text" class="form-input" id="expert-years" placeholder="۱۵ سال">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">شماره تماس (اختیاری)</label>
+                        <input type="text" class="form-input" id="expert-phone" placeholder="۰۹۱۲...">
+                    </div>
+                </div>
+                <div class="submit-section" style="padding-top: 8px;">
+                    <button class="btn-submit" onclick="submitExpert()" id="expert-btn">ذخیره و ادامه</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="factors-section" style="display: none;">
+            <div class="info-box">
+                <h3>راهنما</h3>
+                <p>عوامل شناسایی‌شده از راند اول در اختیار شما قرار گرفته است. لطفاً برای هر عامل میزان اهمیت آن را با استفاده از مقیاس ۱ تا ۹ مشخص کنید.</p>
+                <p style="margin-top: 6px;"><strong>مقیاس:</strong> ۱ = بی‌اهمیت | ۳ = کم‌اهمیت | ۵ = متوسط | ۷ = مهم | ۹ = بسیار مهم</p>
+            </div>
+
+            <div class="survey-card">
+                <h2>&#128203; عوامل شناسایی‌شده</h2>
+                <div class="factor-counter">
+                    تعداد عوامل: <strong id="factor-count">0</strong>
+                </div>
+                <div id="factors-container">
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        <div class="spinner" style="margin: 0 auto 12px;"></div>
+                        در حال بارگذاری عوامل...
+                    </div>
+                </div>
+            </div>
+
+            <div class="survey-card">
+                <h3>یادداشت اختیاری</h3>
+                <textarea id="survey-note" rows="3" placeholder="اگر نکته یا توضیحی دارید بنویسید..." style="width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-family: 'Vazirmatn', sans-serif; font-size: 14px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="submit-section">
+                <button class="btn-submit" onclick="submitRound2()" id="submit-btn">ارسال اولویت‌بندی</button>
+            </div>
+        </div>
+
+        <div id="success-container" style="display: none;"></div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        const API = '/api';
+        let factors = [];
+        let ratings = {};
+        let currentExpertId = null;
+
+        async function init() {
+            try {
+                const res = await fetch(`${API}/factor-bank`);
+                const bankData = await res.json();
+            } catch (e) { }
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+        }
+
+        async function submitExpert() {
+            const name = document.getElementById('expert-name').value.trim();
+            const org = document.getElementById('expert-org').value.trim();
+            const pos = document.getElementById('expert-pos').value.trim();
+            const field = document.getElementById('expert-field').value.trim();
+            const degree = document.getElementById('expert-degree').value.trim();
+            const years = document.getElementById('expert-years').value.trim();
+            const phone = document.getElementById('expert-phone').value.trim();
+
+            if (!name || !org || !pos || !field || !degree || !years) {
+                showToast('لطفاً فیلدهای الزامی را پر کنید', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('expert-btn');
+            btn.disabled = true;
+            btn.textContent = 'در حال ذخیره...';
+
+            try {
+                const res = await fetch(`${API}/experts`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        full_name: name,
+                        organization: org,
+                        position: pos,
+                        field_study: field,
+                        degree: degree,
+                        years_energy: years,
+                        phone: phone || null,
+                        email: null,
+                        qualification_method: 'پرسشنامه هدفمند',
+                        is_active_delphi: true
+                    })
+                });
+
+                if (!res.ok) throw new Error('خطا در ذخیره اطلاعات');
+                const data = await res.json();
+                currentExpertId = data.expert_id;
+
+                document.getElementById('step1-ind').className = 'step done';
+                document.getElementById('step-line-1').className = 'step-line done';
+                document.getElementById('step2-ind').className = 'step active';
+                document.getElementById('expert-form-section').style.display = 'none';
+                document.getElementById('factors-section').style.display = 'block';
+
+                loadFactors();
+                showToast('اطلاعات ذخیره شد');
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'ذخیره و ادامه';
+            }
+        }
+
+        async function loadFactors() {
+            try {
+                const res = await fetch(`${API}/analysis/unique-factors`);
+                factors = await res.json();
+                if (factors.length === 0) {
+                    const res2 = await fetch(`${API}/analysis/factor-frequency`);
+                    factors = await res2.json();
+                }
+                renderFactors();
+            } catch (e) {
+                document.getElementById('factors-container').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #ef4444;">
+                        خطا در بارگذاری عوامل. لطفاً دوباره تلاش کنید.
+                    </div>`;
+            }
+        }
+
+        function renderFactors() {
+            const container = document.getElementById('factors-container');
+            document.getElementById('factor-count').textContent = factors.length;
+
+            if (factors.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                        هنوز عاملی شناسایی نشده است.
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = factors.map((f, i) => {
+                ratings[f.title] = ratings[f.title] || 5;
+                return `
+                    <div class="factor-compare" id="fc-${i}">
+                        <div class="factor-header">
+                            <span class="factor-title">${i + 1}. ${f.title}</span>
+                            <span class="factor-cat">${f.category || 'نامشخص'}</span>
+                        </div>
+                        <div class="scale-container">
+                            <span class="scale-label">میزان اهمیت:</span>
+                            <input type="range" min="1" max="9" step="1" value="${ratings[f.title]}" 
+                                oninput="updateRating('${f.title.replace(/'/g, "\\'")}', this.value, ${i})">
+                            <span class="scale-value" id="sv-${i}">${ratings[f.title]}</span>
+                            <span class="scale-text" id="st-${i}">${getScaleText(ratings[f.title])}</span>
+                        </div>
+                        <div class="scale-marks">
+                            <span>۱ بی‌اهمیت</span>
+                            <span>۵ متوسط</span>
+                            <span>۹ بسیار مهم</span>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function getScaleText(val) {
+            const labels = {1:'بی‌اهمیت',2:'خیلی کم',3:'کم',4:'کم‌متوسط',5:'متوسط',6:'متوسط مهم',7:'مهم',8:'خیلی مهم',9:'بسیار مهم'};
+            return labels[val] || '';
+        }
+
+        function updateRating(title, val, idx) {
+            ratings[title] = parseInt(val);
+            document.getElementById(`sv-${idx}`).textContent = val;
+            document.getElementById(`st-${idx}`).textContent = getScaleText(val);
+        }
+
+        async function submitRound2() {
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'در حال ارسال...';
+
+            const factorsData = factors.map((f, i) => ({
+                factor_text: f.title,
+                factor_category: f.category,
+                factor_note: null,
+                factor_source: null,
+                row_no: i + 1,
+                is_from_reference_list: false,
+                rating: ratings[f.title] || 5
+            }));
+
+            const note = document.getElementById('survey-note').value.trim();
+
+            try {
+                const res = await fetch(`${API}/responses`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        expert_id: currentExpertId,
+                        round_no: 2,
+                        response_status: 'تکمیل‌شده',
+                        response_note: note ? `امتیازات: ${JSON.stringify(ratings)} | ${note}` : `امتیازات: ${JSON.stringify(ratings)}`,
+                        factors: factorsData
+                    })
+                });
+
+                if (!res.ok) throw new Error('خطا در ارسال');
+
+                document.getElementById('factors-section').style.display = 'none';
+                document.getElementById('step2-ind').className = 'step done';
+                const success = document.getElementById('success-container');
+                success.style.display = 'block';
+                success.innerHTML = `
+                    <div class="survey-card">
+                        <div class="success-msg">
+                            <h2>&#10003; اولویت‌بندی شما ثبت شد</h2>
+                            <p>از همکاری شما سپاسگزاریم</p>
+                            <p style="margin-top: 12px; font-size: 13px;">تعداد عوامل اولویت‌بندی شده: ${factors.length}</p>
+                        </div>
+                    </div>`;
+            } catch (err) {
+                showToast('خطا در ارسال. لطفاً دوباره تلاش کنید.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'ارسال اولویت‌بندی';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

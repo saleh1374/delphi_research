@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه مدیریت پژوهش دلفی</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-icon">D</div>
+                    <div class="logo-text">
+                        <h2>پژوهش دلفی</h2>
+                        <p>صادرات برق خورشیدی</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">منوی اصلی</div>
+                    <a class="nav-item active" onclick="showSection('dashboard')">
+                        <span class="nav-icon">&#9632;</span>
+                        داشبورد
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">مرحله اول: شناسایی</div>
+                    <a class="nav-item" onclick="showSection('experts')">
+                        <span class="nav-icon">&#9786;</span>
+                        نخبگان
+                        <span class="nav-badge" id="nav-badge-experts">0</span>
+                    </a>
+                    <a class="nav-item" onclick="showSection('delphi')">
+                        <span class="nav-icon">&#9998;</span>
+                        راند اول دلفی
+                    </a>
+                    <a class="nav-item" onclick="showSection('factorbank')">
+                        <span class="nav-icon">&#9733;</span>
+                        بانک عوامل مرجع
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">مرحله دوم: اولویت‌بندی</div>
+                    <a class="nav-item" onclick="showSection('round2')">
+                        <span class="nav-icon">&#9878;</span>
+                        راند دوم (AHP)
+                    </a>
+                    <a class="nav-item" onclick="showSection('ahp')">
+                        <span class="nav-icon">&#128200;</span>
+                        مقایسه زوجی
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">تحلیل و گزارش</div>
+                    <a class="nav-item" onclick="showSection('analysis')">
+                        <span class="nav-icon">&#128202;</span>
+                        تحلیل آماری
+                    </a>
+                    <a class="nav-item" onclick="showSection('activities')">
+                        <span class="nav-icon">&#9881;</span>
+                        پیگیری‌ها
+                    </a>
+                    <a class="nav-item" onclick="showSection('exports')">
+                        <span class="nav-icon">&#8681;</span>
+                        خروجی‌ها
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="topbar-right">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+                    <div class="topbar-title">
+                        <h1 id="page-title">داشبورد</h1>
+                        <p id="page-subtitle">نمای کلی سامانه مدیریت پژوهش دلفی</p>
+                    </div>
+                </div>
+                <div class="topbar-left">
+                    <div style="display: flex; gap: 8px;">
+                        <a href="/survey" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px;">
+                            &#128279; راند ۱
+                        </a>
+                        <a href="/survey2" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px; background: #8b5cf6;">
+                            &#128279; راند ۲
+                        </a>
+                    </div>
+                    <button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div id="section-dashboard" class="section"></div>
+                <div id="section-experts" class="section" style="display:none"></div>
+                <div id="section-delphi" class="section" style="display:none"></div>
+                <div id="section-round2" class="section" style="display:none"></div>
+                <div id="section-ahp" class="section" style="display:none"></div>
+                <div id="section-analysis" class="section" style="display:none"></div>
+                <div id="section-factorbank" class="section" style="display:none"></div>
+                <div id="section-activities" class="section" style="display:none"></div>
+                <div id="section-exports" class="section" style="display:none"></div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <div id="modal-container"></div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/experts.js"></script>
+    <script src="/static/js/responses.js"></script>
+    <script src="/static/js/activities.js"></script>
+    <script src="/static/js/factorbank.js"></script>
+    <script src="/static/js/exports.js"></script>
+    <script src="/static/js/ahp.js"></script>
+    <script src="/static/js/analysis.js"></script>
+    <script src="/static/js/round2.js"></script>
+</body>
+</html>
