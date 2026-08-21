@@ -60,7 +60,12 @@ def seed_ahp_factors(db):
 
 @app.on_event("startup")
 def startup():
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Warning during table creation: {e}")
+        pass
+    
     db = SessionLocal()
     try:
         seed_factor_bank(db)
@@ -142,3 +147,4 @@ def expert_profile(expert_id: int):
         }
     finally:
         db.close()
+
