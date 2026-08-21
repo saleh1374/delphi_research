@@ -9,15 +9,21 @@ router = APIRouter(prefix="/experts", tags=["experts"])
 
 
 @router.post("/", response_model=ExpertResponse)
+@router.post("", response_model=ExpertResponse)
 def create_expert(expert: ExpertCreate, db: Session = Depends(get_db)):
-    db_expert = Expert(**expert.model_dump())
-    db.add(db_expert)
-    db.commit()
-    db.refresh(db_expert)
-    return db_expert
+    try:
+        db_expert = Expert(**expert.model_dump())
+        db.add(db_expert)
+        db.commit()
+        db.refresh(db_expert)
+        return db_expert
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"خطا در ذخیره اطلاعات: {str(e)}")
 
 
 @router.get("/", response_model=List[ExpertResponse])
+@router.get("", response_model=List[ExpertResponse])
 def list_experts(
     search: Optional[str] = None,
     skip: int = 0,
@@ -64,3 +70,4 @@ def delete_expert(expert_id: int, db: Session = Depends(get_db)):
     db.delete(expert)
     db.commit()
     return {"message": "نخبه با موفقیت حذف شد"}
+

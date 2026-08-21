@@ -9,37 +9,43 @@ router = APIRouter(prefix="/responses", tags=["responses"])
 
 
 @router.post("/", response_model=ResponseDetail)
+@router.post("", response_model=ResponseDetail)
 def create_response(response: ResponseCreate, db: Session = Depends(get_db)):
     if not response.factors:
         raise HTTPException(status_code=400, detail="حداقل یک عامل باید ثبت شود")
 
-    db_response = Response(
-        expert_id=response.expert_id,
-        round_no=response.round_no,
-        response_status=response.response_status,
-        response_note=response.response_note
-    )
-    db.add(db_response)
-    db.flush()
-
-    for factor in response.factors:
-        db_factor = ResponseFactor(
-            response_id=db_response.response_id,
-            row_no=factor.row_no,
-            factor_text=factor.factor_text,
-            factor_note=factor.factor_note,
-            factor_source=factor.factor_source,
-            factor_category=factor.factor_category,
-            is_from_reference_list=factor.is_from_reference_list
+    try:
+        db_response = Response(
+            expert_id=response.expert_id,
+            round_no=response.round_no,
+            response_status=response.response_status,
+            response_note=response.response_note
         )
-        db.add(db_factor)
+        db.add(db_response)
+        db.flush()
 
-    db.commit()
-    db.refresh(db_response)
-    return db_response
+        for factor in response.factors:
+            db_factor = ResponseFactor(
+                response_id=db_response.response_id,
+                row_no=factor.row_no,
+                factor_text=factor.factor_text,
+                factor_note=factor.factor_note,
+                factor_source=factor.factor_source,
+                factor_category=factor.factor_category,
+                is_from_reference_list=factor.is_from_reference_list
+            )
+            db.add(db_factor)
+
+        db.commit()
+        db.refresh(db_response)
+        return db_response
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"خطا در ذخیره پاسخ: {str(e)}")
 
 
 @router.get("/", response_model=List[ResponseDetail])
+@router.get("", response_model=List[ResponseDetail])
 def list_responses(
     expert_id: Optional[int] = None,
     round_no: Optional[int] = None,
@@ -114,3 +120,4 @@ def delete_response(response_id: int, db: Session = Depends(get_db)):
     db.delete(response)
     db.commit()
     return {"message": "پاسخ با موفقیت حذف شد"}
+

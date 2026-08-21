@@ -9,15 +9,21 @@ router = APIRouter(prefix="/activities", tags=["activities"])
 
 
 @router.post("/", response_model=ActivityResponse)
+@router.post("", response_model=ActivityResponse)
 def create_activity(activity: ActivityCreate, db: Session = Depends(get_db)):
-    db_activity = Activity(**activity.model_dump())
-    db.add(db_activity)
-    db.commit()
-    db.refresh(db_activity)
-    return db_activity
+    try:
+        db_activity = Activity(**activity.model_dump())
+        db.add(db_activity)
+        db.commit()
+        db.refresh(db_activity)
+        return db_activity
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"خطا در ذخیره فعالیت: {str(e)}")
 
 
 @router.get("/", response_model=List[ActivityResponse])
+@router.get("", response_model=List[ActivityResponse])
 def list_activities(
     expert_id: Optional[int] = None,
     db: Session = Depends(get_db)
@@ -64,3 +70,4 @@ def delete_activity(activity_id: int, db: Session = Depends(get_db)):
     db.delete(activity)
     db.commit()
     return {"message": "فعالیت با موفقیت حذف شد"}
+
