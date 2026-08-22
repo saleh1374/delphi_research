@@ -204,12 +204,24 @@
         let factors = [];
         let ratings = {};
         let currentExpertId = null;
+        let siteSettings = {};
 
         async function init() {
             try {
-                const res = await fetch(`${API}/factor-bank`);
-                const bankData = await res.json();
+                const settingsRes = await fetch(`${API}/settings/public`);
+                siteSettings = await settingsRes.json();
+                applySettings();
             } catch (e) { }
+        }
+
+        function applySettings() {
+            const s = siteSettings;
+            if (s.s2_page_title) document.title = s.s2_page_title;
+            if (s.s2_hero_title) document.querySelector('.survey-hero h1').textContent = s.s2_hero_title;
+            if (s.s2_hero_subtitle) document.querySelector('.survey-hero p').textContent = s.s2_hero_subtitle;
+            if (s.s2_guide_title) document.querySelector('.info-box h3').textContent = s.s2_guide_title;
+            if (s.s2_guide_text) document.querySelector('.info-box p').textContent = s.s2_guide_text;
+            if (s.s2_guide_scale) document.querySelector('.info-box p:last-child strong').parentElement.innerHTML = '<strong>' + (s.s2_guide_scale.split(':')[0] || 'مقیاس') + ':</strong> ' + (s.s2_guide_scale.split(':').slice(1).join(':') || '۱ = بی‌اهمیت | ۳ = کم‌اهمیت | ۵ = متوسط | ۷ = مهم | ۹ = بسیار مهم');
         }
 
         function showToast(msg, type = 'success') {
@@ -380,8 +392,8 @@
                 success.innerHTML = `
                     <div class="survey-card">
                         <div class="success-msg">
-                            <h2>&#10003; اولویت‌بندی شما ثبت شد</h2>
-                            <p>از همکاری شما سپاسگزاریم</p>
+                            <h2>&#10003; ${siteSettings.s2_success_title || 'اولویت‌بندی شما ثبت شد'}</h2>
+                            <p>${siteSettings.s2_success_desc || 'از همکاری شما سپاسگزاریم'}</p>
                             <p style="margin-top: 12px; font-size: 13px;">تعداد عوامل اولویت‌بندی شده: ${factors.length}</p>
                         </div>
                     </div>`;

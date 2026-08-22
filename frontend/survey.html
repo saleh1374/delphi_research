@@ -230,13 +230,46 @@
         let refCategory = 'all';
         let currentExpertId = null;
         let selectedFactors = new Set();
-        const FACTOR_COUNT = 20;
+        let FACTOR_COUNT = 20;
+        let siteSettings = {};
 
         async function init() {
             try {
-                const res = await fetch(`${API}/factor-bank`);
-                refBankData = await res.json();
+                const [bankRes, settingsRes] = await Promise.all([
+                    fetch(`${API}/factor-bank`),
+                    fetch(`${API}/settings/public`)
+                ]);
+                refBankData = await bankRes.json();
+                siteSettings = await settingsRes.json();
+                applySettings();
             } catch (e) { }
+        }
+
+        function applySettings() {
+            const s = siteSettings;
+            if (s.s1_page_title) document.title = s.s1_page_title;
+            if (s.s1_hero_title) document.querySelector('.survey-hero h1').textContent = s.s1_hero_title;
+            if (s.s1_hero_subtitle) document.querySelector('.survey-hero p').textContent = s.s1_hero_subtitle;
+            if (s.s1_question_title) document.querySelector('.question-box h2').textContent = s.s1_question_title;
+            if (s.s1_question_text) document.querySelector('.question-box p').textContent = s.s1_question_text;
+            if (s.s1_section_title_info) document.querySelector('#expert-form-section .section-title').textContent = s.s1_section_title_info;
+            if (s.s1_section_desc_info) document.querySelector('#expert-form-section p').textContent = s.s1_section_desc_info;
+            if (s.s1_section_title_factors) document.querySelector('#factors-section .section-title').textContent = s.s1_section_title_factors;
+            if (s.s1_section_desc_factors) {
+                const descEl = document.querySelector('#factors-section .survey-card p');
+                if (descEl) descEl.textContent = s.s1_section_desc_factors;
+            }
+            if (s.s1_ref_section_title) document.querySelector('.ref-section h3').textContent = '★ ' + s.s1_ref_section_title;
+            if (s.s1_ref_section_desc) document.querySelector('.ref-section p').textContent = s.s1_ref_section_desc;
+            if (s.s1_ref_tip) document.querySelector('.tip-box').innerHTML = '💡 ' + s.s1_ref_tip;
+            if (s.s1_note_title) document.querySelector('.note-section h3').textContent = s.s1_note_title;
+            if (s.s1_note_placeholder) document.getElementById('survey-note').placeholder = s.s1_note_placeholder;
+            if (s.s1_max_factors) {
+                FACTOR_COUNT = parseInt(s.s1_max_factors) || 20;
+                document.querySelector('.factor-counter').innerHTML =
+                    (s.s1_factor_count_label || 'تعداد عوامل ثبت‌شده') + ': <strong id="factor-count">0</strong> از ' + FACTOR_COUNT;
+                renderFactors();
+            }
         }
 
         function showToast(msg, type = 'success') {
@@ -439,8 +472,8 @@
                 success.innerHTML = `
                     <div class="survey-card">
                         <div class="success-msg">
-                            <h2>&#10003; پاسخ شما ثبت شد</h2>
-                            <p>از همکاری شما سپاسگزاریم</p>
+                            <h2>&#10003; ${siteSettings.s1_success_title || 'پاسخ شما ثبت شد'}</h2>
+                            <p>${siteSettings.s1_success_desc || 'از همکاری شما سپاسگزاریم'}</p>
                             <p style="margin-top: 12px; font-size: 13px;">تعداد عوامل: ${factors.length}</p>
                         </div>
                     </div>`;

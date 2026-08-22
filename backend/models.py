@@ -123,3 +123,15 @@ class UniqueFactor(Base):
     frequency = Column(Integer, default=1)
     source_response_ids = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SiteSettings(Base):
+    __tablename__ = "site_settings"
+
+    setting_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    setting_key = Column(String(100), nullable=False, unique=True, index=True)
+    setting_value = Column(Text, nullable=True)
+    setting_group = Column(String(50), nullable=False, default="general")
+    label = Column(String(200), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

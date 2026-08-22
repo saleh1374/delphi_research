@@ -18,7 +18,8 @@ function showSection(section) {
         analysis: ['تحلیل آماری', 'آمار توصیفی، نمودارها و تحلیل فراوانی'],
         factorbank: ['بانک عوامل مرجع', 'فهرست پیشنهادی عوامل مرجع پژوهش'],
         activities: ['پیگیری‌ها', 'مدیریت فعالیت‌ها و پیگیری‌های نخبگان'],
-        exports: ['خروجی‌ها', 'دریافت گزارش‌ها و خروجی‌های مختلف']
+        exports: ['خروجی‌ها', 'دریافت گزارش‌ها و خروجی‌های مختلف'],
+        settings: ['تنظیمات فرم', 'ویرایش عنوان‌ها و متون فرم‌های پرسشنامه']
     };
     document.getElementById('page-title').textContent = titles[section]?.[0] || '';
     document.getElementById('page-subtitle').textContent = titles[section]?.[1] || '';
@@ -32,6 +33,7 @@ function showSection(section) {
     else if (section === 'factorbank') loadFactorBank();
     else if (section === 'activities') loadActivities();
     else if (section === 'exports') loadExports();
+    else if (section === 'settings') loadSettings();
 
     document.getElementById('sidebar').classList.remove('open');
 }
