@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import inspect
 from typing import Dict, List, Optional
 from pydantic import BaseModel
-from database import get_db
-from models import SiteSettings
+from database import get_db, engine
+from models import SiteSettings, Base
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
@@ -63,8 +64,22 @@ DEFAULT_SETTINGS = [
 ]
 
 
+def ensure_settings_table():
+    inspector = inspect(engine)
+    if "site_settings" not in inspector.get_table_names():
+        SiteSettings.__table__.create(bind=engine, checkfirst=True)
+
+
 def seed_settings(db: Session):
-    existing = db.query(SiteSettings).count()
+    try:
+        ensure_settings_table()
+    except Exception:
+        pass
+    try:
+        existing = db.query(SiteSettings).count()
+    except Exception:
+        Base.metadata.create_all(bind=engine)
+        existing = 0
     if existing > 0:
         return
     for item in DEFAULT_SETTINGS:
@@ -79,34 +94,61 @@ def seed_settings(db: Session):
 
 @router.get("/", response_model=List[SettingOut])
 def list_settings(group: Optional[str] = None, db: Session = Depends(get_db)):
-    query = db.query(SiteSettings)
-    if group:
-        query = query.filter(SiteSettings.setting_group == group)
-    return query.order_by(SiteSettings.setting_id).all()
+    try:
+        query = db.query(SiteSettings)
+        if group:
+            query = query.filter(SiteSettings.setting_group == group)
+        return query.order_by(SiteSettings.setting_id).all()
+    except Exception:
+        ensure_settings_table()
+        return []
 
 
 @router.get("/public")
 def get_public_settings(db: Session = Depends(get_db)):
-    rows = db.query(SiteSettings).all()
-    return {r.setting_key: r.setting_value for r in rows}
+    try:
+        rows = db.query(SiteSettings).all()
+        return {r.setting_key: r.setting_value for r in rows}
+    except Exception:
+        ensure_settings_table()
+        return {}
 
 
 @router.get("/group/{group_name}", response_model=List[SettingOut])
 def get_group_settings(group_name: str, db: Session = Depends(get_db)):
-    return db.query(SiteSettings).filter(
-        SiteSettings.setting_group == group_name
-    ).order_by(SiteSettings.setting_id).all()
+    try:
+        return db.query(SiteSettings).filter(
+            SiteSettings.setting_group == group_name
+        ).order_by(SiteSettings.setting_id).all()
+    except Exception:
+        ensure_settings_table()
+        return []
 
 
 @router.put("/bulk")
 def bulk_update_settings(body: SettingBulkUpdate, db: Session = Depends(get_db)):
-    for key, value in body.settings.items():
-        row = db.query(SiteSettings).filter(SiteSettings.setting_key == key).first()
-        if row:
-            row.setting_value = value
-        else:
-            db.add(SiteSettings(setting_key=key, setting_value=value, setting_group="custom"))
-    db.commit()
+    try:
+        ensure_settings_table()
+    except Exception:
+        pass
+    try:
+        for key, value in body.settings.items():
+            row = db.query(SiteSettings).filter(SiteSettings.setting_key == key).first()
+            if row:
+                row.setting_value = value
+            else:
+                db.add(SiteSettings(setting_key=key, setting_value=value, setting_group="custom"))
+        db.commit()
+    except Exception:
+        Base.metadata.create_all(bind=engine)
+        db.rollback()
+        for key, value in body.settings.items():
+            row = db.query(SiteSettings).filter(SiteSettings.setting_key == key).first()
+            if row:
+                row.setting_value = value
+            else:
+                db.add(SiteSettings(setting_key=key, setting_value=value, setting_group="custom"))
+        db.commit()
     return {"message": "تنظیمات با موفقیت ذخیره شد"}
 
 

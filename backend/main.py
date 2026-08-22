@@ -75,6 +75,13 @@ def startup():
         seed_settings(db)
     except Exception as e:
         print(f"Warning during seeding: {e}")
+        # Try again with fresh table creation
+        try:
+            Base.metadata.create_all(bind=engine)
+            db.rollback()
+            seed_settings(db)
+        except Exception as e2:
+            print(f"Warning during retry seeding: {e2}")
     finally:
         db.close()
 

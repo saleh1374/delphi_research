@@ -7,7 +7,68 @@ const SETTINGS_GROUPS = {
 };
 
 async function loadSettings() {
+    const el = document.getElementById('section-settings');
+    el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center;padding:40px;color:var(--text-muted);">در حال بارگذاری...</div></div>';
     try {
+        settingsData = await api.get('/settings/');
+        if (!settingsData || settingsData.length === 0) {
+            el.innerHTML = `
+                <div class="card">
+                    <div class="card-header"><h3>&#9881; تنظیمات فرم</h3></div>
+                    <div class="card-body" style="text-align:center;padding:40px;">
+                        <p style="color:var(--text-secondary);margin-bottom:16px;">تنظیمات هنوز ایجاد نشده است.</p>
+                        <button class="btn btn-primary" onclick="initSettings()" style="padding:10px 24px;">ایجاد تنظیمات پیش‌فرض</button>
+                    </div>
+                </div>`;
+            return;
+        }
+        renderSettings();
+    } catch (e) {
+        el.innerHTML = `
+            <div class="card">
+                <div class="card-header"><h3>&#9881; تنظیمات فرم</h3></div>
+                <div class="card-body" style="text-align:center;padding:40px;">
+                    <p style="color:var(--danger);margin-bottom:12px;">خطا در بارگذاری تنظیمات: ${e.message}</p>
+                    <button class="btn btn-primary" onclick="initSettings()" style="padding:10px 24px;">ایجاد تنظیمات پیش‌فرض</button>
+                </div>
+            </div>`;
+    }
+}
+
+async function initSettings() {
+    const defaults = {
+        s1_page_title: 'پرسشنامه راند اول دلفی',
+        s1_hero_title: 'پرسشنامه راند اول دلفی',
+        s1_hero_subtitle: 'بررسی عوامل مؤثر بر صادرات برق ایران با به‌کارگیری استراتژی توسعه نیروگاه‌های تجدیدپذیر (خورشیدی)',
+        s1_question_title: 'سؤال اصلی پژوهش',
+        s1_question_text: 'عوامل مؤثر بر توسعه صادرات برق ایران با تأکید بر توسعه نیروگاه‌های تجدیدپذیر (خورشیدی) کدامند؟',
+        s1_section_title_info: 'اطلاعات فردی',
+        s1_section_desc_info: 'لطفاً اطلاعات خود را تکمیل کنید تا بتوانید در پژوهش شرکت کنید',
+        s1_section_title_factors: 'فهرست عوامل پیشنهادی شما',
+        s1_section_desc_factors: 'عوامل خود را در ردیف‌های زیر وارد کنید یا از فهرست بالا انتخاب کنید',
+        s1_ref_section_title: 'فهرست پیشنهادی عوامل مرجع',
+        s1_ref_section_desc: 'می‌توانید از این عوامل الهام بگیرید یا آنها را مستقیماً به فرم اضافه کنید',
+        s1_ref_tip: 'روی دکمه «افزودن به فرم» کلیک کنید تا عامل به اولین ردیف خالی اضافه شود',
+        s1_note_title: 'یادداشت اختیاری',
+        s1_note_placeholder: 'اگر نکته یا توضیحی دارید بنویسید...',
+        s1_factor_count_label: 'تعداد عوامل ثبت‌شده',
+        s1_success_title: 'پاسخ شما ثبت شد',
+        s1_success_desc: 'از همکاری شما سپاسگزاریم',
+        s1_max_factors: '20',
+        s2_page_title: 'پرسشنامه راند دوم - اولویت‌بندی عوامل',
+        s2_hero_title: 'پرسشنامه راند دوم دلفی',
+        s2_hero_subtitle: 'اولویت‌بندی عوامل مؤثر بر صادرات برق ایران',
+        s2_guide_title: 'راهنما',
+        s2_guide_text: 'عوامل شناسایی‌شده از راند اول در اختیار شما قرار گرفته است. لطفاً برای هر عامل میزان اهمیت آن را با استفاده از مقیاس ۱ تا ۹ مشخص کنید.',
+        s2_guide_scale: 'مقیاس: ۱ = بی‌اهمیت | ۳ = کم‌اهمیت | ۵ = متوسط | ۷ = مهم | ۹ = بسیار مهم',
+        s2_success_title: 'اولویت‌بندی شما ثبت شد',
+        s2_success_desc: 'از همکاری شما سپاسگزاریم',
+        site_title: 'سامانه مدیریت پژوهش دلفی',
+        site_subtitle: 'صادرات برق خورشیدی',
+    };
+    try {
+        await api.put('/settings/bulk', { settings: defaults });
+        showToast('تنظیمات پیش‌فرض ایجاد شد');
         settingsData = await api.get('/settings/');
         renderSettings();
     } catch (e) {
@@ -35,7 +96,7 @@ function renderSettings() {
 
         <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
             ${Object.entries(SETTINGS_GROUPS).map(([key, g]) => `
-                <button class="btn btn-outline settings-tab active" onclick="filterSettingsGroup('${key}', this)">
+                <button class="btn btn-outline settings-tab" onclick="filterSettingsGroup('${key}', this)">
                     ${g.icon} ${g.label}
                 </button>
             `).join('')}
