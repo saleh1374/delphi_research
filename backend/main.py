@@ -54,7 +54,7 @@ async def admin_auth_middleware(request: Request, call_next):
     path = request.url.path
 
     # Static + pages always allowed
-    if path.startswith("/static") or path in ("/", "/survey", "/survey2"):
+    if path.startswith("/static") or path in ("/", "/survey", "/survey2", "/health"):
         return await call_next(request)
 
     # Public API paths (auth, public settings, factor-bank GET for surveys, etc.)
@@ -168,6 +168,11 @@ def startup():
             print(f"Warning during retry seeding: {e2}")
     finally:
         db.close()
+
+
+@app.get("/health")
+def public_health():
+    return {"status": "ok", "version": "2.0.0"}
 
 
 @app.get("/")
