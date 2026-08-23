@@ -234,6 +234,49 @@
         let selectedFactors = new Set();
         let FACTOR_COUNT = 20;
         let siteSettings = {};
+        const STORAGE_KEY = 'delphi_survey_state';
+
+        function saveSurveyState() {
+            const state = { expertId: currentExpertId, step: currentExpertId ? 2 : 1, expertInfo: {}, factors: {} };
+            const fields = ['expert-name', 'expert-org', 'expert-pos', 'expert-field', 'expert-degree', 'expert-years', 'expert-phone'];
+            fields.forEach(id => { const el = document.getElementById(id); if (el) state.expertInfo[id] = el.value; });
+            for (let i = 1; i <= FACTOR_COUNT; i++) {
+                const t = document.getElementById(`ftext-${i}`);
+                const n = document.getElementById(`fnote-${i}`);
+                if (t && t.value.trim()) state.factors[i] = { text: t.value, note: n ? n.value : '' };
+            }
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { }
+        }
+
+        function loadSurveyState() {
+            try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; }
+        }
+
+        function clearSurveyState() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { }
+        }
+
+        function restoreExpertInfo(info) {
+            if (!info) return;
+            Object.keys(info).forEach(id => { const el = document.getElementById(id); if (el) el.value = info[id]; });
+        }
+
+        function restoreFactors(factors) {
+            if (!factors) return;
+            Object.keys(factors).forEach(i => {
+                const t = document.getElementById(`ftext-${parseInt(i)}`);
+                const n = document.getElementById(`fnote-${parseInt(i)}`);
+                if (t) { t.value = factors[i].text; autoResize(t); }
+                if (n) n.value = factors[i].note || '';
+            });
+            syncSelectedFactors();
+            updateCount();
+            for (let i = 1; i <= FACTOR_COUNT; i++) {
+                const t = document.getElementById(`ftext-${i}`);
+                const btn = document.getElementById(`fremove-${i}`);
+                if (t && t.value.trim() && btn) btn.style.display = 'inline-block';
+            }
+        }
 
         async function init() {
             try {
@@ -245,6 +288,31 @@
                 siteSettings = await settingsRes.json();
                 applySettings();
             } catch (e) { }
+            restoreFromStorage();
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('form-input') || e.target.id?.startsWith('ftext-') || e.target.id?.startsWith('fnote-')) {
+                    saveSurveyState();
+                }
+            });
+        }
+
+        function restoreFromStorage() {
+            const state = loadSurveyState();
+            if (!state) return;
+            if (state.expertId) {
+                currentExpertId = state.expertId;
+                document.getElementById('step1-ind').className = 'step done';
+                document.getElementById('step-line-1').className = 'step-line done';
+                document.getElementById('step2-ind').className = 'step active';
+                document.getElementById('expert-form-section').style.display = 'none';
+                document.getElementById('factors-section').style.display = 'block';
+                renderFactors();
+                renderRefChips();
+                renderRefList();
+                restoreFactors(state.factors);
+            } else if (state.expertInfo) {
+                restoreExpertInfo(state.expertInfo);
+            }
         }
 
         function applySettings() {
@@ -332,6 +400,7 @@
                 renderFactors();
                 renderRefChips();
                 renderRefList();
+                saveSurveyState();
                 showToast('اطلاعات ذخیره شد');
             } catch (err) {
                 showToast(err.message, 'error');
@@ -376,6 +445,7 @@
             syncSelectedFactors();
             updateCount();
             renderRefList(document.getElementById('ref-search')?.value || '');
+            saveSurveyState();
         }
 
         function syncSelectedFactors() {
@@ -396,6 +466,7 @@
             syncSelectedFactors();
             updateCount();
             renderRefList(document.getElementById('ref-search')?.value || '');
+            saveSurveyState();
             showToast('عامل حذف شد');
         }
 
@@ -464,6 +535,7 @@
                     selectedFactors.add(title);
                     renderRefList(document.getElementById('ref-search')?.value || '');
                     updateCount();
+                    saveSurveyState();
                     showToast(`افزوده شد`);
                     return;
                 }
@@ -506,6 +578,7 @@
 
                 if (!res.ok) throw new Error('خطا در ارسال');
 
+                clearSurveyState();
                 document.getElementById('factors-section').style.display = 'none';
                 document.getElementById('step2-ind').className = 'step done';
                 const success = document.getElementById('success-container');
