@@ -360,6 +360,16 @@
                     factors = await res2.json();
                 }
                 factors.sort((a, b) => (b.frequency || b.count || 0) - (a.frequency || a.count || 0));
+
+                const state = loadSurveyState();
+                if (state && state.ratings) {
+                    Object.keys(state.ratings).forEach(key => {
+                        if (!(key in ratings)) {
+                            ratings[key] = state.ratings[key];
+                        }
+                    });
+                }
+
                 renderCategoryFilters();
                 renderFactors();
             } catch (e) {
@@ -405,10 +415,20 @@
                 return;
             }
 
+            const state = loadSurveyState();
+            const savedRatings = (state && state.ratings) ? state.ratings : {};
+
+            filtered.forEach((f, i) => {
+                const globalIdx = factors.indexOf(f);
+                if (!(f.title in ratings)) {
+                    ratings[f.title] = savedRatings[f.title] || 5;
+                }
+            });
+
             container.innerHTML = filtered.map((f, i) => {
                 const freq = f.frequency || f.count || 0;
                 const globalIdx = factors.indexOf(f);
-                ratings[f.title] = ratings[f.title] || 5;
+                const val = ratings[f.title] || 5;
                 return `
                     <div class="factor-compare" id="fc-${globalIdx}">
                         <div class="factor-header">
@@ -420,10 +440,11 @@
                         </div>
                         <div class="scale-container">
                             <span class="scale-label">میزان اهمیت:</span>
-                            <input type="range" min="1" max="9" step="1" value="${ratings[f.title]}" 
-                                oninput="updateRating('${f.title.replace(/'/g, "\\'")}', this.value, ${globalIdx})">
-                            <span class="scale-value" id="sv-${globalIdx}">${ratings[f.title]}</span>
-                            <span class="scale-text" id="st-${globalIdx}">${getScaleText(ratings[f.title])}</span>
+                            <input type="range" min="1" max="9" step="1" value="${val}" 
+                                data-factor-idx="${globalIdx}"
+                                oninput="onSliderChange(${globalIdx}, this.value)">
+                            <span class="scale-value" id="sv-${globalIdx}">${val}</span>
+                            <span class="scale-text" id="st-${globalIdx}">${getScaleText(val)}</span>
                         </div>
                         <div class="scale-marks">
                             <span>۱ بی‌اهمیت</span>
@@ -434,16 +455,18 @@
             }).join('');
         }
 
-        function getScaleText(val) {
-            const labels = {1:'بی‌اهمیت',2:'خیلی کم',3:'کم',4:'کم‌متوسط',5:'متوسط',6:'متوسط مهم',7:'مهم',8:'خیلی مهم',9:'بسیار مهم'};
-            return labels[val] || '';
-        }
-
-        function updateRating(title, val, idx) {
-            ratings[title] = parseInt(val);
+        function onSliderChange(idx, val) {
+            const factor = factors[idx];
+            if (!factor) return;
+            ratings[factor.title] = parseInt(val);
             document.getElementById(`sv-${idx}`).textContent = val;
             document.getElementById(`st-${idx}`).textContent = getScaleText(val);
             saveSurveyState();
+        }
+
+        function getScaleText(val) {
+            const labels = {1:'بی‌اهمیت',2:'خیلی کم',3:'کم',4:'کم‌متوسط',5:'متوسط',6:'متوسط مهم',7:'مهم',8:'خیلی مهم',9:'بسیار مهم'};
+            return labels[val] || '';
         }
 
         async function submitRound2() {
@@ -456,15 +479,19 @@
             btn.disabled = true;
             btn.textContent = 'در حال ارسال...';
 
-            const factorsData = factors.map((f, i) => ({
-                factor_text: f.title,
-                factor_category: f.category,
-                factor_note: null,
-                factor_source: null,
-                row_no: i + 1,
-                is_from_reference_list: false,
-                rating: ratings[f.title] || 5
-            }));
+            const factorsData = factors.map((f, i) => {
+                const r = ratings[f.title];
+                const ratingVal = (r !== undefined && r !== null) ? parseInt(r) : 5;
+                return {
+                    factor_text: f.title,
+                    factor_category: f.category,
+                    factor_note: null,
+                    factor_source: null,
+                    row_no: i + 1,
+                    is_from_reference_list: false,
+                    rating: ratingVal
+                };
+            });
 
             const note = document.getElementById('survey-note').value.trim();
 
