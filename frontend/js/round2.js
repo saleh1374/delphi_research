@@ -64,7 +64,11 @@ function renderRound2() {
                                         <td style="max-width: 200px; font-size: 13px;">${r.response_note ? r.response_note.substring(0, 80) + '...' : '-'}</td>
                                         <td style="font-size: 12px;">${formatDate(r.created_at)}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline" onclick="viewRound2Response(${r.response_id})">مشاهده</button>
+                                            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                                <button class="btn btn-sm btn-outline" onclick="viewRound2Response(${r.response_id})">مشاهده</button>
+                                                <button class="btn btn-sm btn-outline" onclick="editRound2Response(${r.response_id}, ${r.expert_id}, ${r.round_no}, '${r.response_status}', '${(r.response_note || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')">&#9998;</button>
+                                                <button class="btn btn-sm btn-danger" onclick="confirmDeleteRound2Response(${r.response_id}, '${getExpertName(r.expert_id).replace(/'/g, "\\'")}')">&#10005;</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -200,5 +204,104 @@ async function loadRound2Analysis() {
             </div>`;
     } catch (e) {
         console.error(e);
+    }
+}
+
+function confirmDeleteRound2Response(responseId, expertName) {
+    showConfirm(`آیا از حذف پاسخ راند دوم «${expertName}» اطمینان دارید؟`, async () => {
+        try {
+            await api.del(`/responses/${responseId}`);
+            showToast('پاسخ با موفقیت حذف شد');
+            loadRound2();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    });
+}
+
+async function editRound2Response(responseId, expertId, roundNo, status, note) {
+    try {
+        const response = await api.get(`/responses/${responseId}`);
+        const factors = response.factors || [];
+
+        let factorsHTML = factors.map((f, i) => `
+            <div class="factor-row" style="margin-bottom: 8px;">
+                <div class="row-num">${i + 1}</div>
+                <div>
+                    <textarea class="form-textarea" name="factor_text_${i}" rows="2">${(f.factor_text || '').replace(/"/g, '&quot;')}</textarea>
+                    <input class="form-input" type="text" name="factor_note_${i}" placeholder="یادداشت" value="${(f.factor_note || '').replace(/"/g, '&quot;')}" style="margin-top: 4px; font-size: 12px;">
+                </div>
+                <div>
+                    <select class="form-select" name="factor_category_${i}" style="font-size: 12px;">
+                        <option value="">دسته‌بندی</option>
+                        ${['زیرساخت و شبکه','بازار و تنظیم‌گری','اقتصادی و مالی','فنی و فناوری','راهبردی و رقابتی','منطقه‌ای و ژئوپلیتیکی'].map(c =>
+                            `<option value="${c}" ${f.factor_category === c ? 'selected' : ''}>${c}</option>`
+                        ).join('')}
+                    </select>
+                    <input type="number" class="form-input" name="rating_${i}" placeholder="امتیاز ۱-۹" min="1" max="9" value="${f.rating || 5}" style="margin-top: 4px; font-size: 12px;">
+                </div>
+            </div>
+        `).join('');
+
+        showModal(`ویرایش پاسخ راند ۲`, `
+            <form id="editRound2Form" onsubmit="saveEditRound2(event, ${responseId}, ${factors.length})">
+                <div class="form-row" style="margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label class="form-label">وضعیت</label>
+                        <select class="form-select" name="response_status">
+                            ${['ناتمام','تکمیل‌شده'].map(s => `<option value="${s}" ${status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">شماره راند</label>
+                        <input class="form-input" type="number" name="round_no" value="${roundNo}" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">یادداشت</label>
+                    <textarea class="form-textarea" name="response_note" rows="2">${note.replace(/"/g, '&quot;')}</textarea>
+                </div>
+                <h3 style="margin: 16px 0 12px; font-size: 15px;">&#128203; عوامل</h3>
+                ${factorsHTML}
+            </form>
+        `, `
+            <button class="btn btn-primary" onclick="document.getElementById('editRound2Form').requestSubmit()">ذخیره تغییرات</button>
+            <button class="btn btn-outline" onclick="closeModal()">انصراف</button>
+        `);
+    } catch (err) {
+        showToast(err.message, 'error');
+    }
+}
+
+async function saveEditRound2(e, responseId, factorCount) {
+    e.preventDefault();
+    const form = e.target;
+    const factors = [];
+    for (let i = 0; i < factorCount; i++) {
+        const text = form[`factor_text_${i}`]?.value?.trim();
+        if (!text) continue;
+        factors.push({
+            row_no: i + 1,
+            factor_text: text,
+            factor_note: form[`factor_note_${i}`]?.value?.trim() || null,
+            factor_category: form[`factor_category_${i}`]?.value || null,
+            rating: parseInt(form[`rating_${i}`]?.value) || null
+        });
+    }
+
+    const payload = {
+        round_no: parseInt(form.round_no.value) || 2,
+        response_status: form.response_status.value,
+        response_note: form.response_note.value.trim() || null,
+        factors
+    };
+
+    try {
+        await api.put(`/responses/${responseId}`, payload);
+        showToast('پاسخ با موفقیت ویرایش شد');
+        closeModal();
+        loadRound2();
+    } catch (err) {
+        showToast(err.message, 'error');
     }
 }

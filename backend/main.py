@@ -8,6 +8,7 @@ from routers import experts, responses, activities, factor_bank, exports
 from routers.analysis import router as analysis_router
 from routers.analysis2 import router2 as analysis2_router
 from routers.settings import router as settings_router, seed_settings
+from routers.final_factors import router as final_factors_router
 from seed import seed_factor_bank
 import os
 from sqlalchemy import text
@@ -34,6 +35,7 @@ app.include_router(exports.router, prefix="/api")
 app.include_router(analysis_router, prefix="/api")
 app.include_router(analysis2_router, prefix="/api")
 app.include_router(settings_router, prefix="/api")
+app.include_router(final_factors_router, prefix="/api")
 
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 app.mount("/static", StaticFiles(directory=frontend_dir), name="static")

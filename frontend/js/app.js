@@ -13,6 +13,7 @@ function showSection(section) {
         dashboard: ['داشبورد', 'نمای کلی سامانه مدیریت پژوهش دلفی'],
         experts: ['مدیریت نخبگان', 'ثبت و ویرایش فهرست نخبگان'],
         delphi: ['راند اول دلفی', 'انتخاب نخبه و ثبت پاسخ راند اول'],
+        finalfactors: ['بانک عوامل نهایی', 'مدیریت و ویرایش عوامل شناسایی‌شده برای راند دوم'],
         round2: ['راند دوم دلفی', 'مشاهده پاسخ‌های راند دوم و اولویت‌بندی'],
         ahp: ['مقایسه زوجی AHP', 'اولویت‌بندی عوامل با روش تحلیل سلسله مراتبی'],
         analysis: ['تحلیل آماری', 'آمار توصیفی، نمودارها و تحلیل فراوانی'],
@@ -27,6 +28,7 @@ function showSection(section) {
     if (section === 'dashboard') loadDashboard();
     else if (section === 'experts') loadExperts();
     else if (section === 'delphi') loadDelphiSection();
+    else if (section === 'finalfactors') loadFinalFactors();
     else if (section === 'round2') loadRound2();
     else if (section === 'ahp') loadAHP();
     else if (section === 'analysis') loadAnalysis();
