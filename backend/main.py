@@ -10,6 +10,7 @@ from routers.analysis2 import router2 as analysis2_router
 from routers.settings import router as settings_router, seed_settings
 from seed import seed_factor_bank
 import os
+import sqlite3
 
 app = FastAPI(
     title="سامانه مدیریت پژوهش دلفی",
@@ -68,6 +69,24 @@ def startup():
     except Exception as e:
         print(f"Warning during table creation (may be expected): {e}")
     
+    # Migration: Add rating column to response_factors if missing
+    try:
+        db_url = str(engine.url)
+        if 'sqlite' in db_url:
+            db_path = database_path = engine.url.database
+            if db_path and os.path.exists(db_path):
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+                cursor.execute("PRAGMA table_info(response_factors)")
+                columns = [col[1] for col in cursor.fetchall()]
+                if 'rating' not in columns:
+                    cursor.execute("ALTER TABLE response_factors ADD COLUMN rating INTEGER")
+                    conn.commit()
+                    print("Added 'rating' column to response_factors table")
+                conn.close()
+    except Exception as e:
+        print(f"Migration warning (may be expected): {e}")
+
     db = SessionLocal()
     try:
         seed_factor_bank(db)
@@ -75,7 +94,6 @@ def startup():
         seed_settings(db)
     except Exception as e:
         print(f"Warning during seeding: {e}")
-        # Try again with fresh table creation
         try:
             Base.metadata.create_all(bind=engine)
             db.rollback()

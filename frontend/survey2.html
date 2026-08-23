@@ -16,9 +16,10 @@
         .survey-card h2 { font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
         .factor-compare { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 10px; transition: all 0.2s; }
         .factor-compare:hover { border-color: #2563eb; }
-        .factor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .factor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px; }
         .factor-title { font-size: 14px; font-weight: 700; color: #1e293b; }
         .factor-cat { font-size: 10px; background: #eff6ff; color: #2563eb; padding: 2px 8px; border-radius: 10px; }
+        .factor-freq { font-size: 10px; background: #ecfdf5; color: #166534; padding: 2px 8px; border-radius: 10px; }
         .scale-container { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
         .scale-label { font-size: 12px; color: #64748b; min-width: 70px; }
         .scale-value { font-size: 16px; font-weight: 700; color: #2563eb; min-width: 24px; text-align: center; }
@@ -51,6 +52,11 @@
         .step.pending { background: #e2e8f0; color: #94a3b8; }
         .step-line { width: 40px; height: 2px; background: #e2e8f0; }
         .step-line.done { background: #16a34a; }
+        .filter-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .filter-chip { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid #d1d5db; background: white; color: #374151; transition: all 0.2s; }
+        .filter-chip:hover, .filter-chip.active { background: #2563eb; color: white; border-color: #2563eb; }
+        .no-factors-msg { text-align: center; padding: 40px; color: #94a3b8; }
+        .no-factors-msg h4 { margin-bottom: 8px; }
         @media (max-width: 640px) {
             .survey-container { padding: 8px; }
             .survey-hero { padding: 16px; border-radius: 12px; }
@@ -66,7 +72,7 @@
     <div class="survey-container">
         <div class="survey-hero">
             <h1>پرسشنامه راند دوم دلفی</h1>
-            <p>اولویت‌بندی عوامل مؤثر بر صادرات برق ایران</p>
+            <p>اولویت‌بندی عوامل شناسایی‌شده توسط نخبگان راند اول</p>
         </div>
 
         <div class="step-indicator">
@@ -166,20 +172,22 @@
 
         <div id="factors-section" style="display: none;">
             <div class="info-box">
-                <h3>راهنما</h3>
-                <p>عوامل شناسایی‌شده از راند اول در اختیار شما قرار گرفته است. لطفاً برای هر عامل میزان اهمیت آن را با استفاده از مقیاس ۱ تا ۹ مشخص کنید.</p>
+                <h3>راهنمای اولویت‌بندی</h3>
+                <p>عوامل زیر توسط <strong>نخبگان راند اول</strong> شناسایی شده‌اند. لطفاً بر اساس تجربه و تخصص خود، میزان اهمیت هر عامل را مشخص کنید.</p>
                 <p style="margin-top: 6px;"><strong>مقیاس:</strong> ۱ = بی‌اهمیت | ۳ = کم‌اهمیت | ۵ = متوسط | ۷ = مهم | ۹ = بسیار مهم</p>
+                <p style="margin-top: 4px; font-size: 11px; color: #64748b;">ستون «تعداد» نشان‌دهنده تعداد نخبگانی است که این عامل را انتخاب کرده‌اند.</p>
             </div>
 
             <div class="survey-card">
-                <h2>&#128203; عوامل شناسایی‌شده</h2>
+                <h2>&#128203; عوامل شناسایی‌شده از راند اول</h2>
                 <div class="factor-counter">
                     تعداد عوامل: <strong id="factor-count">0</strong>
                 </div>
+                <div class="filter-chips" id="category-filters"></div>
                 <div id="factors-container">
-                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
-                        <div class="spinner" style="margin: 0 auto 12px;"></div>
-                        در حال بارگذاری عوامل...
+                    <div class="no-factors-msg">
+                        <h4>هنوز عاملی شناسایی نشده است</h4>
+                        <p>ابتدا نخبگان راند اول باید پاسخ‌های خود را ثبت کنند.</p>
                     </div>
                 </div>
             </div>
@@ -205,13 +213,66 @@
         let ratings = {};
         let currentExpertId = null;
         let siteSettings = {};
+        let selectedCategory = 'all';
+        const STORAGE_KEY = 'delphi_survey2_state';
+
+        function saveSurveyState() {
+            const state = {
+                expertId: currentExpertId,
+                expertInfo: {},
+                ratings: ratings,
+                note: document.getElementById('survey-note')?.value || ''
+            };
+            ['expert-name', 'expert-org', 'expert-pos', 'expert-field', 'expert-degree', 'expert-years', 'expert-phone'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) state.expertInfo[id] = el.value;
+            });
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { }
+        }
+
+        function loadSurveyState() {
+            try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; }
+        }
+
+        function clearSurveyState() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { }
+        }
+
+        function restoreFromStorage() {
+            const state = loadSurveyState();
+            if (!state) return;
+            if (state.expertId) {
+                currentExpertId = state.expertId;
+                document.getElementById('step1-ind').className = 'step done';
+                document.getElementById('step-line-1').className = 'step-line done';
+                document.getElementById('step2-ind').className = 'step active';
+                document.getElementById('expert-form-section').style.display = 'none';
+                document.getElementById('factors-section').style.display = 'block';
+                if (state.ratings) ratings = state.ratings;
+                if (state.note) document.getElementById('survey-note').value = state.note;
+            } else if (state.expertInfo) {
+                Object.keys(state.expertInfo).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = state.expertInfo[id];
+                });
+            }
+        }
 
         async function init() {
+            restoreFromStorage();
             try {
                 const settingsRes = await fetch(`${API}/settings/public`);
                 siteSettings = await settingsRes.json();
                 applySettings();
             } catch (e) { }
+            if (currentExpertId) {
+                loadFactors();
+            }
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('form-input') || e.target.id === 'survey-note') {
+                    saveSurveyState();
+                }
+            });
         }
 
         function applySettings() {
@@ -264,7 +325,7 @@
                         years_energy: years,
                         phone: phone || null,
                         email: null,
-                        qualification_method: 'پرسشنامه هدفمند',
+                        qualification_method: 'راند دوم',
                         is_active_delphi: true
                     })
                 });
@@ -279,6 +340,7 @@
                 document.getElementById('expert-form-section').style.display = 'none';
                 document.getElementById('factors-section').style.display = 'block';
 
+                saveSurveyState();
                 loadFactors();
                 showToast('اطلاعات ذخیره شد');
             } catch (err) {
@@ -297,41 +359,71 @@
                     const res2 = await fetch(`${API}/analysis/factor-frequency`);
                     factors = await res2.json();
                 }
+                factors.sort((a, b) => (b.frequency || b.count || 0) - (a.frequency || a.count || 0));
+                renderCategoryFilters();
                 renderFactors();
             } catch (e) {
                 document.getElementById('factors-container').innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #ef4444;">
-                        خطا در بارگذاری عوامل. لطفاً دوباره تلاش کنید.
+                    <div class="no-factors-msg" style="color: #ef4444;">
+                        <h4>خطا در بارگذاری عوامل</h4>
+                        <p>لطفاً دوباره تلاش کنید.</p>
                     </div>`;
             }
         }
 
+        function renderCategoryFilters() {
+            const categories = [...new Set(factors.map(f => f.category).filter(Boolean))];
+            const container = document.getElementById('category-filters');
+            if (categories.length === 0) { container.innerHTML = ''; return; }
+            container.innerHTML = `
+                <span class="filter-chip ${selectedCategory === 'all' ? 'active' : ''}" onclick="filterByCategory('all', this)">همه (${factors.length})</span>
+                ${categories.map(c => {
+                    const count = factors.filter(f => f.category === c).length;
+                    return `<span class="filter-chip" onclick="filterByCategory('${c}', this)">${c} (${count})</span>`;
+                }).join('')}
+            `;
+        }
+
+        function filterByCategory(cat, el) {
+            selectedCategory = cat;
+            document.querySelectorAll('#category-filters .filter-chip').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderFactors();
+        }
+
         function renderFactors() {
             const container = document.getElementById('factors-container');
-            document.getElementById('factor-count').textContent = factors.length;
+            let filtered = selectedCategory === 'all' ? factors : factors.filter(f => f.category === selectedCategory);
+            document.getElementById('factor-count').textContent = filtered.length;
 
-            if (factors.length === 0) {
+            if (filtered.length === 0) {
                 container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #94a3b8;">
-                        هنوز عاملی شناسایی نشده است.
+                    <div class="no-factors-msg">
+                        <h4>هنوز عاملی شناسایی نشده است</h4>
+                        <p>ابتدا نخبگان راند اول باید پاسخ‌های خود را ثبت کنند.</p>
                     </div>`;
                 return;
             }
 
-            container.innerHTML = factors.map((f, i) => {
+            container.innerHTML = filtered.map((f, i) => {
+                const freq = f.frequency || f.count || 0;
+                const globalIdx = factors.indexOf(f);
                 ratings[f.title] = ratings[f.title] || 5;
                 return `
-                    <div class="factor-compare" id="fc-${i}">
+                    <div class="factor-compare" id="fc-${globalIdx}">
                         <div class="factor-header">
                             <span class="factor-title">${i + 1}. ${f.title}</span>
-                            <span class="factor-cat">${f.category || 'نامشخص'}</span>
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                ${f.category ? `<span class="factor-cat">${f.category}</span>` : ''}
+                                <span class="factor-freq">تعداد: ${freq}</span>
+                            </div>
                         </div>
                         <div class="scale-container">
                             <span class="scale-label">میزان اهمیت:</span>
                             <input type="range" min="1" max="9" step="1" value="${ratings[f.title]}" 
-                                oninput="updateRating('${f.title.replace(/'/g, "\\'")}', this.value, ${i})">
-                            <span class="scale-value" id="sv-${i}">${ratings[f.title]}</span>
-                            <span class="scale-text" id="st-${i}">${getScaleText(ratings[f.title])}</span>
+                                oninput="updateRating('${f.title.replace(/'/g, "\\'")}', this.value, ${globalIdx})">
+                            <span class="scale-value" id="sv-${globalIdx}">${ratings[f.title]}</span>
+                            <span class="scale-text" id="st-${globalIdx}">${getScaleText(ratings[f.title])}</span>
                         </div>
                         <div class="scale-marks">
                             <span>۱ بی‌اهمیت</span>
@@ -351,9 +443,15 @@
             ratings[title] = parseInt(val);
             document.getElementById(`sv-${idx}`).textContent = val;
             document.getElementById(`st-${idx}`).textContent = getScaleText(val);
+            saveSurveyState();
         }
 
         async function submitRound2() {
+            if (factors.length === 0) {
+                showToast('هنوز عاملی برای اولویت‌بندی وجود ندارد', 'error');
+                return;
+            }
+
             const btn = document.getElementById('submit-btn');
             btn.disabled = true;
             btn.textContent = 'در حال ارسال...';
@@ -369,6 +467,7 @@
             }));
 
             const note = document.getElementById('survey-note').value.trim();
+            const ratingsSummary = factors.map(f => `${f.title}: ${ratings[f.title] || 5}`).join(' | ');
 
             try {
                 const res = await fetch(`${API}/responses`, {
@@ -378,13 +477,14 @@
                         expert_id: currentExpertId,
                         round_no: 2,
                         response_status: 'تکمیل‌شده',
-                        response_note: note ? `امتیازات: ${JSON.stringify(ratings)} | ${note}` : `امتیازات: ${JSON.stringify(ratings)}`,
+                        response_note: note ? `${ratingsSummary} | ${note}` : ratingsSummary,
                         factors: factorsData
                     })
                 });
 
                 if (!res.ok) throw new Error('خطا در ارسال');
 
+                clearSurveyState();
                 document.getElementById('factors-section').style.display = 'none';
                 document.getElementById('step2-ind').className = 'step done';
                 const success = document.getElementById('success-container');
@@ -395,6 +495,7 @@
                             <h2>&#10003; ${siteSettings.s2_success_title || 'اولویت‌بندی شما ثبت شد'}</h2>
                             <p>${siteSettings.s2_success_desc || 'از همکاری شما سپاسگزاریم'}</p>
                             <p style="margin-top: 12px; font-size: 13px;">تعداد عوامل اولویت‌بندی شده: ${factors.length}</p>
+                            <p style="margin-top: 4px; font-size: 12px; color: #15803d;">نتایج پس از جمع‌آوری پاسخ‌های تمام شرکت‌کنندگان در داشبورد قابل مشاهده خواهد بود.</p>
                         </div>
                     </div>`;
             } catch (err) {

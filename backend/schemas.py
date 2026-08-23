@@ -51,6 +51,7 @@ class FactorBase(BaseModel):
     factor_source: Optional[str] = None
     factor_category: Optional[str] = None
     is_from_reference_list: Optional[bool] = False
+    rating: Optional[int] = None
 
 
 class FactorCreate(FactorBase):

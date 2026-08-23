@@ -37,10 +37,6 @@ def get_factor_frequency(round_no: Optional[int] = None, db: Session = Depends(g
 
 @router2.get("/unique-factors")
 def get_unique_factors(db: Session = Depends(get_db)):
-    existing = db.query(UniqueFactor).all()
-    if existing:
-        return [{"title": f.title, "category": f.category, "frequency": f.frequency} for f in existing]
-
     all_factors = db.query(ResponseFactor).all()
     factor_map = {}
     for f in all_factors:
@@ -54,16 +50,12 @@ def get_unique_factors(db: Session = Depends(get_db)):
 
     unique_factors = []
     for text, data in sorted(factor_map.items(), key=lambda x: x[1]["count"], reverse=True):
-        uf = UniqueFactor(
-            title=text,
-            category=data["category"],
-            frequency=data["count"],
-            source_response_ids=",".join(str(r) for r in data["response_ids"])
-        )
-        db.add(uf)
-        unique_factors.append({"title": text, "category": data["category"], "frequency": data["count"]})
-
-    db.commit()
+        unique_factors.append({
+            "title": text,
+            "category": data["category"],
+            "frequency": data["count"],
+            "response_count": len(data["response_ids"])
+        })
     return unique_factors
 
 
@@ -105,3 +97,43 @@ def get_research_stats(db: Session = Depends(get_db)):
         "average_factors_per_expert": avg_factors,
         "factor_categories": categories
     }
+
+
+@router2.get("/round2-ratings")
+def get_round2_ratings(db: Session = Depends(get_db)):
+    round2_responses = db.query(Response).filter(Response.round_no == 2).all()
+    if not round2_responses:
+        return {"factors": [], "total_respondents": 0}
+
+    response_ids = [r.response_id for r in round2_responses]
+    factors = db.query(ResponseFactor).filter(
+        ResponseFactor.response_id.in_(response_ids),
+        ResponseFactor.rating.isnot(None)
+    ).all()
+
+    factor_ratings = {}
+    for f in factors:
+        text = f.factor_text.strip()
+        if text:
+            if text not in factor_ratings:
+                factor_ratings[text] = {
+                    "category": f.factor_category,
+                    "ratings": [],
+                    "count": 0
+                }
+            factor_ratings[text]["ratings"].append(f.rating)
+            factor_ratings[text]["count"] += 1
+
+    result = []
+    for text, data in sorted(factor_ratings.items(), key=lambda x: sum(x[1]["ratings"]) / len(x[1]["ratings"]) if x[1]["ratings"] else 0, reverse=True):
+        avg = sum(data["ratings"]) / len(data["ratings"]) if data["ratings"] else 0
+        result.append({
+            "title": text,
+            "category": data["category"],
+            "average_rating": round(avg, 2),
+            "rating_count": data["count"],
+            "min_rating": min(data["ratings"]),
+            "max_rating": max(data["ratings"])
+        })
+
+    return {"factors": result, "total_respondents": len(round2_responses)}

@@ -53,6 +53,7 @@ class ResponseFactor(Base):
     factor_source = Column(String(300), nullable=True)
     factor_category = Column(String(100), nullable=True)
     is_from_reference_list = Column(Boolean, default=False)
+    rating = Column(Integer, nullable=True)
 
     response = relationship("Response", back_populates="factors")
 

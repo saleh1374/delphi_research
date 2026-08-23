@@ -32,7 +32,8 @@ def create_response(response: ResponseCreate, db: Session = Depends(get_db)):
                 factor_note=factor.factor_note,
                 factor_source=factor.factor_source,
                 factor_category=factor.factor_category,
-                is_from_reference_list=factor.is_from_reference_list
+                is_from_reference_list=factor.is_from_reference_list,
+                rating=factor.rating
             )
             db.add(db_factor)
 
@@ -103,7 +104,8 @@ def update_response(response_id: int, response: ResponseUpdate, db: Session = De
                 factor_note=factor.get("factor_note"),
                 factor_source=factor.get("factor_source"),
                 factor_category=factor.get("factor_category"),
-                is_from_reference_list=factor.get("is_from_reference_list", False)
+                is_from_reference_list=factor.get("is_from_reference_list", False),
+                rating=factor.get("rating")
             )
             db.add(db_factor)
 
