@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import ResponseFactor, Response, Expert, UniqueFactor, AHPComparison
 from typing import Optional
+import math
 
 router2 = APIRouter(prefix="/analysis", tags=["analysis2"])
 
@@ -126,14 +127,18 @@ def get_round2_ratings(db: Session = Depends(get_db)):
 
     result = []
     for text, data in sorted(factor_ratings.items(), key=lambda x: sum(x[1]["ratings"]) / len(x[1]["ratings"]) if x[1]["ratings"] else 0, reverse=True):
-        avg = sum(data["ratings"]) / len(data["ratings"]) if data["ratings"] else 0
+        ratings = data["ratings"]
+        avg = sum(ratings) / len(ratings) if ratings else 0
+        variance = sum((r - avg) ** 2 for r in ratings) / len(ratings) if ratings else 0
+        std_dev = math.sqrt(variance)
         result.append({
             "title": text,
             "category": data["category"],
             "average_rating": round(avg, 2),
             "rating_count": data["count"],
-            "min_rating": min(data["ratings"]),
-            "max_rating": max(data["ratings"])
+            "min_rating": min(ratings),
+            "max_rating": max(ratings),
+            "std_dev": round(std_dev, 2)
         })
 
     return {"factors": result, "total_respondents": len(round2_responses)}

@@ -137,26 +137,26 @@ async function viewRound2Response(responseId) {
 
 async function loadRound2Analysis() {
     try {
-        const allFactors = {};
-        round2Responses.forEach(r => {
-            r.factors?.forEach(f => {
-                if (!allFactors[f.factor_text]) {
-                    allFactors[f.factor_text] = { text: f.factor_text, category: f.factor_category, ratings: [], count: 0 };
-                }
-                allFactors[f.factor_text].ratings.push(f.rating || 5);
-                allFactors[f.factor_text].count++;
-            });
-        });
-
-        const factorList = Object.values(allFactors).map(f => ({
-            ...f,
-            avgRating: f.ratings.reduce((a, b) => a + b, 0) / f.ratings.length,
-            maxRating: Math.max(...f.ratings),
-            minRating: Math.min(...f.ratings),
-            stdDev: calculateStdDev(f.ratings)
-        })).sort((a, b) => b.avgRating - a.avgRating);
-
+        const data = await api.get('/analysis/round2-ratings');
         const container = document.getElementById('round2-analysis-container');
+
+        if (!data.factors || data.factors.length === 0) {
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h3>&#128202; تحلیل اولویت‌بندی راند دوم</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <div class="empty-icon">&#128202;</div>
+                            <h4>هنوز داده‌ای برای تحلیل وجود ندارد</h4>
+                            <p>منتظر دریافت پاسخ‌ها از شرکت‌کنندگان باشید</p>
+                        </div>
+                    </div>
+                </div>`;
+            return;
+        }
+
         container.innerHTML = `
             <div class="card">
                 <div class="card-header">
@@ -164,7 +164,7 @@ async function loadRound2Analysis() {
                 </div>
                 <div class="card-body">
                     <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                        میانگین امتیازات ${round2Responses.length} شرکت‌کننده
+                        میانگین امتیازات ${data.total_respondents} شرکت‌کننده
                     </p>
                     <div class="table-wrapper">
                         <table class="data-table">
@@ -181,16 +181,16 @@ async function loadRound2Analysis() {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${factorList.map((f, i) => `
+                                ${data.factors.map((f, i) => `
                                     <tr>
                                         <td><span class="badge ${i < 3 ? 'badge-success' : i < 6 ? 'badge-warning' : 'badge-info'}">${i + 1}</span></td>
-                                        <td><strong>${f.text}</strong></td>
+                                        <td><strong>${f.title}</strong></td>
                                         <td><span class="badge badge-primary">${f.category || 'نامشخص'}</span></td>
-                                        <td><strong style="color: var(--primary);">${f.avgRating.toFixed(2)}</strong></td>
-                                        <td>${f.maxRating}</td>
-                                        <td>${f.minRating}</td>
-                                        <td>${f.stdDev.toFixed(2)}</td>
-                                        <td>${f.count}</td>
+                                        <td><strong style="color: var(--primary);">${f.average_rating}</strong></td>
+                                        <td>${f.max_rating}</td>
+                                        <td>${f.min_rating}</td>
+                                        <td>${f.std_dev}</td>
+                                        <td>${f.rating_count}</td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -201,11 +201,4 @@ async function loadRound2Analysis() {
     } catch (e) {
         console.error(e);
     }
-}
-
-function calculateStdDev(arr) {
-    const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
-    const squareDiffs = arr.map(v => Math.pow(v - mean, 2));
-    const avgSquareDiff = squareDiffs.reduce((a, b) => a + b, 0) / arr.length;
-    return Math.sqrt(avgSquareDiff);
 }
