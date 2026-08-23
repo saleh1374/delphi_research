@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from database import engine, SessionLocal, Base
-from models import Expert, Response, ResponseFactor, Activity, FactorBank, AHPFactor
+from models import Expert, Response, ResponseFactor, Activity, FactorBank, AHPFactor, AHPComparison
 from routers import experts, responses, activities, factor_bank, exports
 from routers.analysis import router as analysis_router
 from routers.analysis2 import router2 as analysis2_router
