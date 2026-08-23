@@ -279,6 +279,7 @@
         }
 
         async function init() {
+            restoreFromStorage();
             try {
                 const [bankRes, settingsRes] = await Promise.all([
                     fetch(`${API}/factor-bank`),
@@ -288,7 +289,10 @@
                 siteSettings = await settingsRes.json();
                 applySettings();
             } catch (e) { }
-            restoreFromStorage();
+            if (currentExpertId) {
+                renderRefChips();
+                renderRefList();
+            }
             document.addEventListener('input', function(e) {
                 if (e.target.classList.contains('form-input') || e.target.id?.startsWith('ftext-') || e.target.id?.startsWith('fnote-')) {
                     saveSurveyState();
