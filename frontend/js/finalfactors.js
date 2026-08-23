@@ -18,6 +18,10 @@ async function loadFinalFactors() {
 }
 
 function renderFinalFactors() {
+    if (!Array.isArray(finalFactorsData)) {
+        console.error('finalFactorsData is not an array:', finalFactorsData);
+        finalFactorsData = [];
+    }
     let filtered = [...finalFactorsData];
     if (finalFactorsCategory !== 'all') {
         filtered = filtered.filter(f => f.category === finalFactorsCategory);
