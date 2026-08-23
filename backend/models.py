@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, UTC
 from database import Base
 
 
@@ -19,8 +19,8 @@ class Expert(Base):
     qualification_method = Column(String(100), nullable=True)
     qualification_note = Column(Text, nullable=True)
     is_active_delphi = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
     responses = relationship("Response", back_populates="expert", cascade="all, delete-orphan")
     activities = relationship("Activity", back_populates="expert", cascade="all, delete-orphan")
@@ -35,8 +35,8 @@ class Response(Base):
     round_no = Column(Integer, default=1)
     response_status = Column(String(50), default="ناتمام")
     response_note = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
     expert = relationship("Expert", back_populates="responses")
     factors = relationship("ResponseFactor", back_populates="response", cascade="all, delete-orphan")
@@ -67,8 +67,8 @@ class Activity(Base):
     activity_status = Column(String(50), default="در انتظار")
     follow_up_date = Column(String(20), nullable=True)
     activity_note = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
     expert = relationship("Expert", back_populates="activities")
 
@@ -86,7 +86,7 @@ class FactorBank(Base):
     source_ref = Column(String(300), nullable=True)
     tags = Column(String(500), nullable=True)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
 
 class AHPFactor(Base):
@@ -97,7 +97,7 @@ class AHPFactor(Base):
     category = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
 
 class AHPComparison(Base):
@@ -108,7 +108,7 @@ class AHPComparison(Base):
     factor_a_id = Column(Integer, ForeignKey("ahp_factors.ahp_factor_id"), nullable=False)
     factor_b_id = Column(Integer, ForeignKey("ahp_factors.ahp_factor_id"), nullable=False)
     value = Column(Float, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
     expert = relationship("Expert", back_populates="ahp_comparisons")
     factor_a = relationship("AHPFactor", foreign_keys=[factor_a_id])
@@ -123,7 +123,7 @@ class UniqueFactor(Base):
     category = Column(String(100), nullable=True)
     frequency = Column(Integer, default=1)
     source_response_ids = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
 
 class SiteSettings(Base):
@@ -134,5 +134,5 @@ class SiteSettings(Base):
     setting_value = Column(Text, nullable=True)
     setting_group = Column(String(50), nullable=False, default="general")
     label = Column(String(200), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))

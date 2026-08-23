@@ -71,15 +71,20 @@ def startup():
     except Exception as e:
         print(f"Warning during table creation: {e}")
     
-    # Migration: Add rating column if missing (ignore error if already exists)
+    # Migration: Add rating column if missing
     db = None
     try:
         db = SessionLocal()
-        db.execute(text("ALTER TABLE response_factors ADD COLUMN rating INTEGER"))
-        db.commit()
-        print("Added 'rating' column to response_factors")
-    except Exception:
-        pass
+        # Check if column exists first
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+        columns = [c["name"] for c in inspector.get_columns("response_factors")]
+        if "rating" not in columns:
+            db.execute(text("ALTER TABLE response_factors ADD COLUMN rating INTEGER"))
+            db.commit()
+            print("Added 'rating' column to response_factors")
+    except Exception as e:
+        print(f"Migration note: {e}")
     finally:
         if db:
             try:
