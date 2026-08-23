@@ -278,6 +278,8 @@
             }
         }
 
+        let restoredFactors = null;
+
         async function init() {
             restoreFromStorage();
             try {
@@ -290,6 +292,10 @@
                 applySettings();
             } catch (e) { }
             if (currentExpertId) {
+                if (restoredFactors) {
+                    restoreFactors(restoredFactors);
+                    restoredFactors = null;
+                }
                 renderRefChips();
                 renderRefList();
             }
@@ -313,7 +319,10 @@
                 renderFactors();
                 renderRefChips();
                 renderRefList();
-                restoreFactors(state.factors);
+                if (state.factors && Object.keys(state.factors).length > 0) {
+                    restoredFactors = state.factors;
+                    restoreFactors(state.factors);
+                }
             } else if (state.expertInfo) {
                 restoreExpertInfo(state.expertInfo);
             }
