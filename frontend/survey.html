@@ -18,6 +18,8 @@
         .question-box p { color: #1e40af; font-size: 14px; line-height: 1.8; margin: 0; }
         .factor-entry { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 10px; transition: all 0.2s; }
         .factor-entry:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .factor-remove-btn { transition: all 0.2s; }
+        .factor-remove-btn:hover { background: #dc2626 !important; transform: scale(1.05); }
         .factor-entry-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .factor-num { width: 32px; height: 32px; background: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
         .factor-entry textarea { width: 100%; min-height: 60px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-family: 'Vazirmatn', sans-serif; font-size: 14px; resize: vertical; line-height: 1.8; direction: rtl; }
@@ -346,8 +348,9 @@
                     <div class="factor-entry-header">
                         <div class="factor-num">${i+1}</div>
                         <span style="font-size: 13px; font-weight: 600; color: #475569;">عامل ${i+1}</span>
+                        <button type="button" class="factor-remove-btn" id="fremove-${i+1}" onclick="removeFactor(${i+1})" style="display:none; margin-right:auto; background:#ef4444; color:white; border:none; border-radius:6px; padding:4px 10px; font-size:12px; font-family:'Vazirmatn',sans-serif; cursor:pointer;">حذف ✕</button>
                     </div>
-                    <textarea id="ftext-${i+1}" placeholder="عامل ${i+1} را وارد کنید..." oninput="updateCount(); autoResize(this)"></textarea>
+                    <textarea id="ftext-${i+1}" placeholder="عامل ${i+1} را وارد کنید..." oninput="onFactorInput(${i+1}); autoResize(this)"></textarea>
                     <div class="factor-label">توضیح اضافی (اختیاری)</div>
                     <input type="text" id="fnote-${i+1}" placeholder="توضیح کوتاه...">
                 </div>
@@ -358,6 +361,42 @@
         function autoResize(el) {
             el.style.height = 'auto';
             el.style.height = el.scrollHeight + 'px';
+        }
+
+        function onFactorInput(i) {
+            const field = document.getElementById(`ftext-${i}`);
+            const removeBtn = document.getElementById(`fremove-${i}`);
+            if (!field) return;
+            const val = field.value.trim();
+            if (val) {
+                if (removeBtn) removeBtn.style.display = 'inline-block';
+            } else {
+                if (removeBtn) removeBtn.style.display = 'none';
+            }
+            syncSelectedFactors();
+            updateCount();
+            renderRefList(document.getElementById('ref-search')?.value || '');
+        }
+
+        function syncSelectedFactors() {
+            selectedFactors.clear();
+            for (let i = 1; i <= FACTOR_COUNT; i++) {
+                const t = document.getElementById(`ftext-${i}`);
+                if (t && t.value.trim()) selectedFactors.add(t.value.trim());
+            }
+        }
+
+        function removeFactor(i) {
+            const field = document.getElementById(`ftext-${i}`);
+            const note = document.getElementById(`fnote-${i}`);
+            const removeBtn = document.getElementById(`fremove-${i}`);
+            if (field) field.value = '';
+            if (note) note.value = '';
+            if (removeBtn) removeBtn.style.display = 'none';
+            syncSelectedFactors();
+            updateCount();
+            renderRefList(document.getElementById('ref-search')?.value || '');
+            showToast('عامل حذف شد');
         }
 
         function updateCount() {
@@ -420,6 +459,8 @@
                     setTimeout(() => { field.style.borderColor = '#e2e8f0'; field.style.background = ''; }, 1500);
                     const note = document.getElementById(`fnote-${i}`);
                     if (note && desc) note.value = desc;
+                    const removeBtn = document.getElementById(`fremove-${i}`);
+                    if (removeBtn) removeBtn.style.display = 'inline-block';
                     selectedFactors.add(title);
                     renderRefList(document.getElementById('ref-search')?.value || '');
                     updateCount();
