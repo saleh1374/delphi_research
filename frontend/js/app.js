@@ -50,7 +50,7 @@ function toggleTheme() {
     const next = current === 'dark' ? 'light' : 'dark';
     html.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
-    document.querySelector('.theme-toggle').textContent = next === 'dark' ? '&#9788;' : '&#9790;';
+    document.querySelector('.theme-toggle').innerHTML = next === 'dark' ? '☼' : '☾';
 }
 
 async function loadDashboard() {
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     const themeBtn = document.querySelector('.theme-toggle');
-    if (themeBtn) themeBtn.textContent = savedTheme === 'dark' ? '&#9788;' : '&#9790;';
+    if (themeBtn) themeBtn.innerHTML = savedTheme === 'dark' ? '☼' : '☾';
 
     // Check admin session
     const token = getAdminToken();
