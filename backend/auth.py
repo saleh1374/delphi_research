@@ -2,11 +2,15 @@ import os
 import hashlib
 import secrets
 import hmac
+import time
 
 # ── Admin token ──
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
-_tokens: set[str] = set()
+SECRET_KEY = hashlib.sha256(("delphi:" + ADMIN_PASSWORD).encode()).digest()
+
+# Simple in-memory blacklist for revoked tokens (survives per-worker)
+_revoked: set[str] = set()
 
 
 def verify_admin_password(password: str) -> bool:
@@ -14,17 +18,30 @@ def verify_admin_password(password: str) -> bool:
 
 
 def issue_token() -> str:
-    t = secrets.token_urlsafe(32)
-    _tokens.add(t)
-    return t
+    """Create an HMAC-signed token that any worker can verify independently."""
+    payload = f"{secrets.token_urlsafe(16)}:{int(time.time())}"
+    sig = hmac.new(SECRET_KEY, payload.encode(), hashlib.sha256).hexdigest()[:24]
+    return f"{payload}:{sig}"
 
 
 def is_valid_token(token: str) -> bool:
-    return token in _tokens
+    """Verify token signature without shared memory. Also check blacklist."""
+    if token in _revoked:
+        return False
+    try:
+        parts = token.rsplit(":", 1)
+        if len(parts) != 2:
+            return False
+        payload, sig = parts
+        expected = hmac.new(SECRET_KEY, payload.encode(), hashlib.sha256).hexdigest()[:24]
+        return hmac.compare_digest(sig, expected)
+    except Exception:
+        return False
 
 
 def revoke_token(token: str) -> None:
-    _tokens.discard(token)
+    """Add token to per-worker blacklist."""
+    _revoked.add(token)
 
 
 # ── Participant password ──

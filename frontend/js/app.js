@@ -340,19 +340,34 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => {});
     }
 
-    // Handle 401 from admin panel API calls
+    // Handle 401 from admin panel API calls — only kick out if token is truly invalid
+    let consecutive401 = 0;
     const origFetch = window.fetch;
     window.fetch = function(...args) {
-        return origFetch.apply(this, args).then(res => {
-            if (res.url?.includes('/api/') && res.status === 401 && !res.url?.includes('/api/auth/')) {
+        return origFetch.apply(this, args).then(async res => {
+            if (res.status === 401 && res.url?.includes('/api/') && !res.url?.includes('/api/auth/')) {
                 const token = getAdminToken();
-                if (token) {
-                    setAdminToken('');
-                    document.getElementById('admin-login-screen').style.display = 'flex';
-                    document.getElementById('app-layout').style.display = 'none';
-                }
+                if (!token) return res;
+
+                // Verify token is actually invalid (not just a worker sync issue)
+                try {
+                    const checkRes = await origFetch(`${API_BASE}/auth/admin-check?token=${encodeURIComponent(token)}`);
+                    const checkData = await checkRes.json();
+                    if (!checkData.valid) {
+                        consecutive401++;
+                        if (consecutive401 >= 3) {
+                            consecutive401 = 0;
+                            setAdminToken('');
+                            document.getElementById('admin-login-screen').style.display = 'flex';
+                            document.getElementById('app-layout').style.display = 'none';
+                        }
+                    } else {
+                        consecutive401 = 0;
+                    }
+                } catch {}
                 return res;
             }
+            consecutive401 = 0;
             return res;
         });
     };
