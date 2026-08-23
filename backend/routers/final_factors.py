@@ -39,7 +39,10 @@ def batch_delete_factors(payload: dict, db: Session = Depends(get_db)):
     text = payload.get("text", "").strip()
     if not text:
         raise HTTPException(status_code=400, detail="متن عامل الزامی است")
-    deleted = db.query(ResponseFactor).filter(ResponseFactor.factor_text == text).delete(synchronize_session='fetch')
+    factors = db.query(ResponseFactor).filter(ResponseFactor.factor_text == text).all()
+    deleted = len(factors)
+    for f in factors:
+        db.delete(f)
     db.commit()
     return {"message": f"{deleted} مورد حذف شد", "deleted": deleted}
 

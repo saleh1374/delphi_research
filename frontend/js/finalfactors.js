@@ -7,8 +7,10 @@ async function loadFinalFactors() {
     const el = document.getElementById('section-finalfactors');
     el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center;padding:40px;color:var(--text-muted);">در حال بارگذاری عوامل...</div></div>';
     try {
-        const res = await fetch(`${API_BASE}/final-factors/`);
-        finalFactorsData = await res.json();
+        finalFactorsData = await api.get('/final-factors/');
+        if (!Array.isArray(finalFactorsData)) {
+            throw new Error('داده‌های دریافتی نامعتبر است');
+        }
         renderFinalFactors();
     } catch (e) {
         el.innerHTML = `<div class="card"><div class="card-body" style="text-align:center;padding:40px;color:var(--danger);">خطا: ${e.message}</div></div>`;
@@ -129,13 +131,9 @@ async function saveFactorRename(oldTitle, rowIdx) {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/final-factors/batch-rename`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ old_text: oldTitle, new_text: newTitle, category: newCategory })
+        const data = await api.put('/final-factors/batch-rename', {
+            old_text: oldTitle, new_text: newTitle, category: newCategory
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || 'خطا');
         showToast(data.message || 'ذخیره شد');
         loadFinalFactors();
     } catch (e) {
@@ -145,8 +143,7 @@ async function saveFactorRename(oldTitle, rowIdx) {
 
 async function viewFactorDetail(title) {
     try {
-        const res = await fetch(`${API_BASE}/final-factors/detail/${encodeURIComponent(title)}`);
-        const details = await res.json();
+        const details = await api.get(`/final-factors/detail/${encodeURIComponent(title)}`);
         const container = document.getElementById('ff-detail-container');
 
         container.innerHTML = `
@@ -192,33 +189,16 @@ async function viewFactorDetail(title) {
 
 async function editSingleFactor(factorId, currentText, currentCategory) {
     const newText = prompt('ویرایش متن عامل:', currentText);
-    if (!newText || newText.trim() === '' || newText.trim() === currentText) {
-        if (newText !== null) {
-            const newCat = prompt('ویرایش دسته‌بندی (اختیاری):', currentCategory);
-            if (newCat !== null) {
-                try {
-                    const res = await fetch(`${API_BASE}/final-factors/${factorId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ factor_category: newCat })
-                    });
-                    if (!res.ok) throw new Error('خطا');
-                    showToast('دسته‌بندی ذخیره شد');
-                    loadFinalFactors();
-                } catch (e) {
-                    showToast(e.message, 'error');
-                }
-            }
-        }
-        return;
-    }
+    if (!newText || newText.trim() === '') return;
+
     try {
-        const res = await fetch(`${API_BASE}/final-factors/${factorId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ factor_text: newText })
-        });
-        if (!res.ok) throw new Error('خطا');
+        if (newText.trim() !== currentText) {
+            await api.put(`/final-factors/${factorId}`, { factor_text: newText.trim() });
+        }
+        const newCat = prompt('ویرایش دسته‌بندی (اختیاری):', currentCategory);
+        if (newCat !== null && newCat !== currentCategory) {
+            await api.put(`/final-factors/${factorId}`, { factor_category: newCat });
+        }
         showToast('ذخیره شد');
         loadFinalFactors();
     } catch (e) {
@@ -229,8 +209,7 @@ async function editSingleFactor(factorId, currentText, currentCategory) {
 async function deleteSingleFactor(factorId, title) {
     showConfirm(`آیا از حذف عامل «${title.substring(0, 40)}» اطمینان دارید؟`, async () => {
         try {
-            const res = await fetch(`${API_BASE}/final-factors/${factorId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('خطا');
+            await api.del(`/final-factors/${factorId}`);
             showToast('حذف شد');
             loadFinalFactors();
         } catch (e) {
@@ -244,13 +223,7 @@ function confirmDeleteFactorText(title, count) {
         `آیا از حذف تمام ${count} مورد از عامل «${title.substring(0, 50)}» اطمینان دارید؟ این عمل تمام رخدادهای این عامل را از پاسخ نخبگان حذف می‌کند.`,
         async () => {
             try {
-                const res = await fetch(`${API_BASE}/final-factors/batch-delete`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: title })
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.detail || 'خطا');
+                const data = await api.post('/final-factors/batch-delete', { text: title });
                 showToast(data.message || 'حذف شد');
                 loadFinalFactors();
             } catch (e) {
@@ -292,17 +265,18 @@ function showAddFactorModal() {
         <button class="btn btn-outline" onclick="closeModal()">انصراف</button>
     `);
 
-    // Load experts for the select
-    fetch(`${API_BASE}/experts`)
-        .then(r => r.json())
+    // Load experts for the select dropdown
+    api.get('/experts?limit=200')
         .then(experts => {
             const select = document.querySelector('[name="expert_id"]');
-            if (select) {
+            if (select && Array.isArray(experts)) {
                 experts.forEach(e => {
-                    select.innerHTML += `<option value="${e.expert_id}">${e.full_name}</option>`;
+                    const roleLabel = e.role === 'participant' ? ' (راند ۲)' : '';
+                    select.innerHTML += `<option value="${e.expert_id}">${e.full_name}${roleLabel}</option>`;
                 });
             }
-        });
+        })
+        .catch(() => {});
 }
 
 async function saveNewFactor(e) {
@@ -311,84 +285,21 @@ async function saveNewFactor(e) {
     const text = form.factor_text.value.trim();
     if (!text) { showToast('عنوان الزامی است', 'error'); return; }
 
-    // Create a response for the expert if specified, or use first expert
     const expertId = parseInt(form.expert_id.value) || null;
 
     try {
         if (expertId) {
             // Get or create a Round 1 response for this expert
-            let response = await fetch(`${API_BASE}/responses/expert/${expertId}/latest`).then(r => r.json());
-            if (!response || !response.response_id) {
-                const createRes = await fetch(`${API_BASE}/responses`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        expert_id: expertId,
-                        round_no: 1,
-                        response_status: 'ناتمام',
-                        factors: [{
-                            row_no: 1,
-                            factor_text: text,
-                            factor_note: form.factor_note.value.trim() || null,
-                            factor_category: form.factor_category.value || null
-                        }]
-                    })
-                });
-                if (!createRes.ok) throw new Error('خطا در ثبت');
-            } else {
-                // Add factor to existing response
-                const currentFactors = response.factors || [];
-                const newFactor = {
-                    row_no: currentFactors.length + 1,
-                    factor_text: text,
-                    factor_note: form.factor_note.value.trim() || null,
-                    factor_category: form.factor_category.value || null
-                };
-                await fetch(`${API_BASE}/responses/${response.response_id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        round_no: response.round_no,
-                        response_status: response.response_status,
-                        response_note: response.response_note,
-                        factors: [...currentFactors.map(f => ({
-                            row_no: f.row_no,
-                            factor_text: f.factor_text,
-                            factor_note: f.factor_note,
-                            factor_source: f.factor_source,
-                            factor_category: f.factor_category,
-                            is_from_reference_list: f.is_from_reference_list,
-                            rating: f.rating
-                        })), {
-                            row_no: currentFactors.length + 1,
-                            factor_text: text,
-                            factor_note: form.factor_note.value.trim() || null,
-                            factor_category: form.factor_category.value || null
-                        }]
-                    })
-                });
+            let response;
+            try {
+                response = await api.get(`/responses/expert/${expertId}/latest`);
+            } catch (e) {
+                response = null;
             }
-        } else {
-            // Create a new temporary expert and response
-            const expertRes = await fetch(`${API_BASE}/experts`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    full_name: 'افزودن دستی',
-                    organization: 'پنل مدیریت',
-                    position: '-',
-                    field_study: '-',
-                    degree: '-',
-                    years_energy: '-',
-                    qualification_method: 'افزودن دستی توسط مدیر'
-                })
-            });
-            const expert = await expertRes.json();
-            await fetch(`${API_BASE}/responses`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    expert_id: expert.expert_id,
+
+            if (!response || !response.response_id) {
+                await api.post('/responses', {
+                    expert_id: expertId,
                     round_no: 1,
                     response_status: 'ناتمام',
                     factors: [{
@@ -397,7 +308,56 @@ async function saveNewFactor(e) {
                         factor_note: form.factor_note.value.trim() || null,
                         factor_category: form.factor_category.value || null
                     }]
-                })
+                });
+            } else {
+                const currentFactors = response.factors || [];
+                const newRowNo = currentFactors.length + 1;
+                const updatedFactors = [
+                    ...currentFactors.map(f => ({
+                        row_no: f.row_no,
+                        factor_text: f.factor_text,
+                        factor_note: f.factor_note,
+                        factor_source: f.factor_source,
+                        factor_category: f.factor_category,
+                        is_from_reference_list: f.is_from_reference_list,
+                        rating: f.rating
+                    })),
+                    {
+                        row_no: newRowNo,
+                        factor_text: text,
+                        factor_note: form.factor_note.value.trim() || null,
+                        factor_category: form.factor_category.value || null
+                    }
+                ];
+                await api.put(`/responses/${response.response_id}`, {
+                    round_no: response.round_no,
+                    response_status: response.response_status,
+                    response_note: response.response_note,
+                    factors: updatedFactors
+                });
+            }
+        } else {
+            // Create a new temporary expert and response
+            const expert = await api.post('/experts', {
+                full_name: 'افزودن دستی',
+                organization: 'پنل مدیریت',
+                position: '-',
+                field_study: '-',
+                degree: '-',
+                years_energy: '-',
+                qualification_method: 'افزودن دستی توسط مدیر',
+                role: 'expert'
+            });
+            await api.post('/responses', {
+                expert_id: expert.expert_id,
+                round_no: 1,
+                response_status: 'ناتمام',
+                factors: [{
+                    row_no: 1,
+                    factor_text: text,
+                    factor_note: form.factor_note.value.trim() || null,
+                    factor_category: form.factor_category.value || null
+                }]
             });
         }
 
