@@ -81,7 +81,10 @@ def delete_activity(activity_id: int, db: Session = Depends(get_db)):
 def bulk_delete_activities(request: BulkDeleteRequest, db: Session = Depends(get_db)):
     if not request.ids:
         raise HTTPException(status_code=400, detail="لیست آی‌دی‌ها خالی است")
-    deleted = db.query(Activity).filter(Activity.activity_id.in_(request.ids)).delete(synchronize_session='fetch')
+    activities = db.query(Activity).filter(Activity.activity_id.in_(request.ids)).all()
+    deleted = len(activities)
+    for activity in activities:
+        db.delete(activity)
     db.commit()
     return {"message": f"{deleted} فعالیت با موفقیت حذف شد", "deleted_count": deleted}
 

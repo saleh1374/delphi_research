@@ -81,7 +81,10 @@ def delete_expert(expert_id: int, db: Session = Depends(get_db)):
 def bulk_delete_experts(request: BulkDeleteRequest, db: Session = Depends(get_db)):
     if not request.ids:
         raise HTTPException(status_code=400, detail="لیست آی‌دی‌ها خالی است")
-    deleted = db.query(Expert).filter(Expert.expert_id.in_(request.ids)).delete(synchronize_session='fetch')
+    experts = db.query(Expert).filter(Expert.expert_id.in_(request.ids)).all()
+    deleted = len(experts)
+    for expert in experts:
+        db.delete(expert)
     db.commit()
     return {"message": f"{deleted} نخبه با موفقیت حذف شد", "deleted_count": deleted}
 
