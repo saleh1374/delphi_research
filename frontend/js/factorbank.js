@@ -1,6 +1,7 @@
 let currentFactorBank = [];
 let selectedCategory = 'all';
 let factorBankSearch = '';
+let selectedFactorIds = new Set();
 
 function renderFactorCategories() {
     const categories = [...new Set(factorBankData.map(f => f.category))];
@@ -95,7 +96,14 @@ function renderFactorBankPage() {
         <div class="card">
             <div class="card-header">
                 <h3>&#9733; فهرست پیشنهادی عوامل مرجع (${factorBankData.length})</h3>
-                <button class="btn btn-primary" onclick="showAddFactorForm()">+ عامل جدید</button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    ${selectedFactorIds.size > 0 ? `
+                        <span class="bulk-count">${selectedFactorIds.size} مورد انتخاب شده</span>
+                        <button class="btn btn-danger btn-sm" onclick="bulkDeleteFactors()">&#10005; حذف انتخاب‌شده</button>
+                        <button class="btn btn-outline btn-sm" onclick="clearFactorSelection()">انصراف</button>
+                    ` : ''}
+                    <button class="btn btn-primary" onclick="showAddFactorForm()">+ عامل جدید</button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="search-box">
@@ -142,6 +150,7 @@ function renderFBPageList() {
             <table class="data-table">
                 <thead>
                     <tr>
+                        <th style="width: 40px;"><input type="checkbox" onchange="toggleAllFactors(this.checked)" ${selectedFactorIds.size === filtered.length && filtered.length > 0 ? 'checked' : ''}></th>
                         <th>#</th>
                         <th>عنوان عامل</th>
                         <th>دسته</th>
@@ -152,7 +161,8 @@ function renderFBPageList() {
                 </thead>
                 <tbody>
                     ${filtered.map((f, i) => `
-                        <tr>
+                        <tr class="${selectedFactorIds.has(f.bank_factor_id) ? 'row-selected' : ''}">
+                            <td><input type="checkbox" ${selectedFactorIds.has(f.bank_factor_id) ? 'checked' : ''} onchange="toggleFactorSelection(${f.bank_factor_id}, this.checked)"></td>
                             <td>${i + 1}</td>
                             <td><strong>${f.title}</strong></td>
                             <td><span class="badge badge-primary">${f.category}</span></td>
@@ -248,6 +258,52 @@ function confirmDeleteFactor(id) {
         try {
             await api.del(`/factor-bank/${id}`);
             showToast('عامل با موفقیت حذف شد');
+            loadFactorBank();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    });
+}
+
+function toggleAllFactors(checked) {
+    let filtered = factorBankData;
+    if (fbPageCategory !== 'all') filtered = filtered.filter(f => f.category === fbPageCategory);
+    if (fbPageSearch) {
+        const q = fbPageSearch.toLowerCase();
+        filtered = filtered.filter(f => f.title.toLowerCase().includes(q) || f.short_description.toLowerCase().includes(q) || (f.tags || '').toLowerCase().includes(q));
+    }
+    if (checked) {
+        filtered.forEach(f => selectedFactorIds.add(f.bank_factor_id));
+    } else {
+        selectedFactorIds.clear();
+    }
+    renderFBPageList();
+    renderFactorBankPage();
+}
+
+function toggleFactorSelection(id, checked) {
+    if (checked) {
+        selectedFactorIds.add(id);
+    } else {
+        selectedFactorIds.delete(id);
+    }
+    renderFBPageList();
+    renderFactorBankPage();
+}
+
+function clearFactorSelection() {
+    selectedFactorIds.clear();
+    renderFBPageList();
+    renderFactorBankPage();
+}
+
+function bulkDeleteFactors() {
+    const count = selectedFactorIds.size;
+    showConfirm(`آیا از حذف ${count} عامل انتخاب‌شده اطمینان دارید؟`, async () => {
+        try {
+            await api.post('/factor-bank/delete-bulk', { ids: [...selectedFactorIds] });
+            showToast(`${count} عامل با موفقیت حذف شد`);
+            selectedFactorIds.clear();
             loadFactorBank();
         } catch (err) {
             showToast(err.message, 'error');

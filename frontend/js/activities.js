@@ -1,4 +1,5 @@
 let activitiesData = [];
+let selectedActivityIds = new Set();
 
 async function loadActivities() {
     try {
@@ -11,11 +12,19 @@ async function loadActivities() {
 
 function renderActivities() {
     const container = document.getElementById('section-activities');
+    const hasSelection = selectedActivityIds.size > 0;
     container.innerHTML = `
         <div class="card">
             <div class="card-header">
                 <h3>&#8987; فعالیت‌ها و پیگیری‌ها (${activitiesData.length})</h3>
-                <button class="btn btn-primary" onclick="showActivityForm()">+ فعالیت جدید</button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    ${hasSelection ? `
+                        <span class="bulk-count">${selectedActivityIds.size} مورد انتخاب شده</span>
+                        <button class="btn btn-danger btn-sm" onclick="bulkDeleteActivities()">&#10005; حذف انتخاب‌شده</button>
+                        <button class="btn btn-outline btn-sm" onclick="clearActivitySelection()">انصراف</button>
+                    ` : ''}
+                    <button class="btn btn-primary" onclick="showActivityForm()">+ فعالیت جدید</button>
+                </div>
             </div>
             <div class="card-body">
                 ${activitiesData.length === 0 ? `
@@ -29,6 +38,7 @@ function renderActivities() {
                         <table class="data-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 40px;"><input type="checkbox" onchange="toggleAllActivities(this.checked)" ${selectedActivityIds.size === activitiesData.length ? 'checked' : ''}></th>
                                     <th>#</th>
                                     <th>نام نخبه</th>
                                     <th>نوع فعالیت</th>
@@ -41,7 +51,8 @@ function renderActivities() {
                             </thead>
                             <tbody>
                                 ${activitiesData.map((a, i) => `
-                                    <tr>
+                                    <tr class="${selectedActivityIds.has(a.activity_id) ? 'row-selected' : ''}">
+                                        <td><input type="checkbox" ${selectedActivityIds.has(a.activity_id) ? 'checked' : ''} onchange="toggleActivitySelection(${a.activity_id}, this.checked)"></td>
                                         <td>${i + 1}</td>
                                         <td><strong>${getExpertName(a.expert_id)}</strong></td>
                                         <td>${a.activity_type}</td>
@@ -161,6 +172,43 @@ function confirmDeleteActivity(id) {
         try {
             await api.del(`/activities/${id}`);
             showToast('فعالیت با موفقیت حذف شد');
+            loadActivities();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    });
+}
+
+function toggleAllActivities(checked) {
+    if (checked) {
+        activitiesData.forEach(a => selectedActivityIds.add(a.activity_id));
+    } else {
+        selectedActivityIds.clear();
+    }
+    renderActivities();
+}
+
+function toggleActivitySelection(id, checked) {
+    if (checked) {
+        selectedActivityIds.add(id);
+    } else {
+        selectedActivityIds.delete(id);
+    }
+    renderActivities();
+}
+
+function clearActivitySelection() {
+    selectedActivityIds.clear();
+    renderActivities();
+}
+
+function bulkDeleteActivities() {
+    const count = selectedActivityIds.size;
+    showConfirm(`آیا از حذف ${count} فعالیت انتخاب‌شده اطمینان دارید؟`, async () => {
+        try {
+            await api.post('/activities/delete-bulk', { ids: [...selectedActivityIds] });
+            showToast(`${count} فعالیت با موفقیت حذف شد`);
+            selectedActivityIds.clear();
             loadActivities();
         } catch (err) {
             showToast(err.message, 'error');

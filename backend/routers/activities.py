@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from pydantic import BaseModel
 from database import get_db
 from models import Activity
 from schemas import ActivityCreate, ActivityUpdate, ActivityResponse
 
 router = APIRouter(prefix="/activities", tags=["activities"])
+
+
+class BulkDeleteRequest(BaseModel):
+    ids: List[int]
 
 
 @router.post("/", response_model=ActivityResponse)
@@ -70,4 +75,13 @@ def delete_activity(activity_id: int, db: Session = Depends(get_db)):
     db.delete(activity)
     db.commit()
     return {"message": "فعالیت با موفقیت حذف شد"}
+
+
+@router.post("/delete-bulk")
+def bulk_delete_activities(request: BulkDeleteRequest, db: Session = Depends(get_db)):
+    if not request.ids:
+        raise HTTPException(status_code=400, detail="لیست آی‌دی‌ها خالی است")
+    deleted = db.query(Activity).filter(Activity.activity_id.in_(request.ids)).delete(synchronize_session='fetch')
+    db.commit()
+    return {"message": f"{deleted} فعالیت با موفقیت حذف شد", "deleted_count": deleted}
 

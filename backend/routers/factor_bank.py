@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from pydantic import BaseModel
 from database import get_db
 from models import FactorBank
 from schemas import FactorBankCreate, FactorBankUpdate, FactorBankResponse
 
 router = APIRouter(prefix="/factor-bank", tags=["factor-bank"])
+
+
+class BulkDeleteRequest(BaseModel):
+    ids: List[int]
 
 
 @router.post("/", response_model=FactorBankResponse)
@@ -89,4 +94,13 @@ def delete_factor(factor_id: int, db: Session = Depends(get_db)):
     db.delete(factor)
     db.commit()
     return {"message": "عامل با موفقیت حذف شد"}
+
+
+@router.post("/delete-bulk")
+def bulk_delete_factors(request: BulkDeleteRequest, db: Session = Depends(get_db)):
+    if not request.ids:
+        raise HTTPException(status_code=400, detail="لیست آی‌دی‌ها خالی است")
+    deleted = db.query(FactorBank).filter(FactorBank.bank_factor_id.in_(request.ids)).delete(synchronize_session='fetch')
+    db.commit()
+    return {"message": f"{deleted} عامل با موفقیت حذف شد", "deleted_count": deleted}
 

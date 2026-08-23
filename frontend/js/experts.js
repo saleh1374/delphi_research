@@ -1,5 +1,6 @@
 let expertsData = [];
 let expertSearchTerm = '';
+let selectedExpertIds = new Set();
 
 async function loadExperts() {
     try {
@@ -14,11 +15,19 @@ async function loadExperts() {
 
 function renderExperts() {
     const container = document.getElementById('section-experts');
+    const hasSelection = selectedExpertIds.size > 0;
     container.innerHTML = `
         <div class="card">
             <div class="card-header">
                 <h3>&#9786; فهرست نخبگان (${expertsData.length})</h3>
-                <button class="btn btn-primary" onclick="showExpertForm()">+ نخبه جدید</button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    ${hasSelection ? `
+                        <span class="bulk-count">${selectedExpertIds.size} مورد انتخاب شده</span>
+                        <button class="btn btn-danger btn-sm" onclick="bulkDeleteExperts()">&#10005; حذف انتخاب‌شده</button>
+                        <button class="btn btn-outline btn-sm" onclick="clearExpertSelection()">انصراف</button>
+                    ` : ''}
+                    <button class="btn btn-primary" onclick="showExpertForm()">+ نخبه جدید</button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="search-box">
@@ -36,6 +45,7 @@ function renderExperts() {
                         <table class="data-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 40px;"><input type="checkbox" onchange="toggleAllExperts(this.checked)" ${selectedExpertIds.size === expertsData.length ? 'checked' : ''}></th>
                                     <th>#</th>
                                     <th>نام و نام خانوادگی</th>
                                     <th>سازمان</th>
@@ -50,7 +60,8 @@ function renderExperts() {
                             </thead>
                             <tbody>
                                 ${expertsData.map((e, i) => `
-                                    <tr>
+                                    <tr class="${selectedExpertIds.has(e.expert_id) ? 'row-selected' : ''}">
+                                        <td><input type="checkbox" ${selectedExpertIds.has(e.expert_id) ? 'checked' : ''} onchange="toggleExpertSelection(${e.expert_id}, this.checked)"></td>
                                         <td>${i + 1}</td>
                                         <td><strong>${e.full_name}</strong></td>
                                         <td>${e.organization}</td>
@@ -202,4 +213,41 @@ function selectExpertForDelphi(id) {
     showSection('delphi');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.querySelectorAll('.nav-item')[2].classList.add('active');
+}
+
+function toggleAllExperts(checked) {
+    if (checked) {
+        expertsData.forEach(e => selectedExpertIds.add(e.expert_id));
+    } else {
+        selectedExpertIds.clear();
+    }
+    renderExperts();
+}
+
+function toggleExpertSelection(id, checked) {
+    if (checked) {
+        selectedExpertIds.add(id);
+    } else {
+        selectedExpertIds.delete(id);
+    }
+    renderExperts();
+}
+
+function clearExpertSelection() {
+    selectedExpertIds.clear();
+    renderExperts();
+}
+
+function bulkDeleteExperts() {
+    const count = selectedExpertIds.size;
+    showConfirm(`آیا از حذف ${count} نخبه انتخاب‌شده اطمینان دارید؟ تمام پاسخ‌ها و پیگیری‌های مرتبط نیز حذف خواهند شد.`, async () => {
+        try {
+            await api.post('/experts/delete-bulk', { ids: [...selectedExpertIds] });
+            showToast(`${count} نخبه با موفقیت حذف شد`);
+            selectedExpertIds.clear();
+            loadExperts();
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    });
 }

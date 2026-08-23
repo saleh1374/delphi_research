@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from pydantic import BaseModel
 from database import get_db
 from models import Expert
 from schemas import ExpertCreate, ExpertUpdate, ExpertResponse
 
 router = APIRouter(prefix="/experts", tags=["experts"])
+
+
+class BulkDeleteRequest(BaseModel):
+    ids: List[int]
 
 
 @router.post("/", response_model=ExpertResponse)
@@ -70,4 +75,13 @@ def delete_expert(expert_id: int, db: Session = Depends(get_db)):
     db.delete(expert)
     db.commit()
     return {"message": "نخبه با موفقیت حذف شد"}
+
+
+@router.post("/delete-bulk")
+def bulk_delete_experts(request: BulkDeleteRequest, db: Session = Depends(get_db)):
+    if not request.ids:
+        raise HTTPException(status_code=400, detail="لیست آی‌دی‌ها خالی است")
+    deleted = db.query(Expert).filter(Expert.expert_id.in_(request.ids)).delete(synchronize_session='fetch')
+    db.commit()
+    return {"message": f"{deleted} نخبه با موفقیت حذف شد", "deleted_count": deleted}
 
