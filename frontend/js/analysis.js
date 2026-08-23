@@ -298,16 +298,9 @@ function calculateKendallW(responses) {
 
     const factorRatings = {};
     responses.forEach(r => {
-        let ratings = {};
-        if (r.response_note) {
-            try {
-                const match = r.response_note.match(/امتیازات: ({.*})/);
-                if (match) ratings = JSON.parse(match[1]);
-            } catch (e) {}
-        }
         r.factors?.forEach(f => {
             if (!factorRatings[f.factor_text]) factorRatings[f.factor_text] = {};
-            factorRatings[f.factor_text][r.expert_id] = ratings[f.factor_text] || 5;
+            factorRatings[f.factor_text][r.expert_id] = f.rating || 5;
         });
     });
 

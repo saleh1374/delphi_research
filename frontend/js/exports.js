@@ -121,7 +121,7 @@ async function importBackup(file) {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch('/export/import', {
+        const response = await fetch(`${API_BASE}/export/import`, {
             method: 'POST',
             body: formData
         });

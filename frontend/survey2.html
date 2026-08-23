@@ -81,6 +81,39 @@
             <div class="step pending" id="step2-ind">۲</div>
         </div>
 
+        <div id="returning-choice-section">
+            <div class="survey-card">
+                <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 16px;">نحوه شرکت در پژوهش</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;" id="choice-returning" onclick="toggleReturningMode('returning')">
+                        <input type="radio" name="participation_mode" value="returning" style="width: 18px; height: 18px; accent-color: #2563eb;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">قبلاً در پژوهش شرکت کرده‌ام</div>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">اگر در راند اول پرسشنامه را پر کرده‌اید، نام خود را جستجو کنید</div>
+                        </div>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;" id="choice-new" onclick="toggleReturningMode('new')">
+                        <input type="radio" name="participation_mode" value="new" checked style="width: 18px; height: 18px; accent-color: #2563eb;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">اولین بار است شرکت می‌کنم</div>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">اطلاعات خود را وارد کنید تا در پژوهش ثبت نام شوید</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div id="returning-search-section" style="display: none;">
+                <div class="survey-card">
+                    <h3 style="font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 12px;">جستجوی نام شما</h3>
+                    <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">نام خود را وارد کنید تا از لیست شرکت‌کنندگان قبلی پیدا شوید</p>
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="returning-search-input" placeholder="نام یا نام خانوادگی خود را جستجو کنید..." oninput="searchReturningExperts(this.value)">
+                    </div>
+                    <div id="returning-search-results"></div>
+                </div>
+            </div>
+        </div>
+
         <div id="expert-form-section">
             <div class="survey-card">
                 <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 12px;">اطلاعات فردی</h3>
@@ -214,11 +247,13 @@
         let currentExpertId = null;
         let siteSettings = {};
         let selectedCategory = 'all';
+        let returningMode = 'new';
         const STORAGE_KEY = 'delphi_survey2_state';
 
         function saveSurveyState() {
             const state = {
                 expertId: currentExpertId,
+                returningMode: returningMode,
                 expertInfo: {},
                 ratings: ratings,
                 note: document.getElementById('survey-note')?.value || ''
@@ -243,6 +278,8 @@
             if (!state) return;
             if (state.expertId) {
                 currentExpertId = state.expertId;
+                returningMode = state.returningMode || 'new';
+                document.getElementById('returning-choice-section').style.display = 'none';
                 document.getElementById('step1-ind').className = 'step done';
                 document.getElementById('step-line-1').className = 'step-line done';
                 document.getElementById('step2-ind').className = 'step active';
@@ -273,6 +310,70 @@
                     saveSurveyState();
                 }
             });
+        }
+
+        function toggleReturningMode(mode) {
+            returningMode = mode;
+            document.querySelectorAll('#choice-returning, #choice-new').forEach(el => el.style.borderColor = '#e2e8f0');
+            document.getElementById('choice-' + mode).style.borderColor = '#2563eb';
+            document.querySelector('input[name="participation_mode"][value="' + mode + '"]').checked = true;
+            if (mode === 'returning') {
+                document.getElementById('returning-search-section').style.display = 'block';
+                document.getElementById('expert-form-section').style.display = 'none';
+                document.getElementById('returning-search-input').focus();
+            } else {
+                document.getElementById('returning-search-section').style.display = 'none';
+                document.getElementById('expert-form-section').style.display = 'block';
+            }
+        }
+
+        let returningSearchTimeout = null;
+        function searchReturningExperts(query) {
+            if (returningSearchTimeout) clearTimeout(returningSearchTimeout);
+            if (!query || query.length < 2) {
+                document.getElementById('returning-search-results').innerHTML = '';
+                return;
+            }
+            returningSearchTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`${API}/experts?search=${encodeURIComponent(query)}`);
+                    const experts = await res.json();
+                    const container = document.getElementById('returning-search-results');
+                    if (experts.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 13px;">موردی یافت نشد. لطفاً فرم زیر را پر کنید یا جستجوی دیگری انجام دهید.</div>';
+                        return;
+                    }
+                    container.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            ${experts.map(e => `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: all 0.2s;" 
+                                     onclick="selectReturningExpert(${e.expert_id}, '${e.full_name.replace(/'/g, "\\'")}')"
+                                     onmouseover="this.style.borderColor='#2563eb'; this.style.background='#eff6ff'"
+                                     onmouseout="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
+                                    <div>
+                                        <strong style="font-size: 14px; color: #1e293b;">${e.full_name}</strong>
+                                        <div style="font-size: 12px; color: #64748b; margin-top: 2px;">${e.organization} - ${e.position}</div>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary" style="pointer-events: none;">این من هستم</button>
+                                </div>
+                            `).join('')}
+                        </div>`;
+                } catch (e) {}
+            }, 300);
+        }
+
+        function selectReturningExpert(id, name) {
+            currentExpertId = id;
+            document.getElementById('returning-choice-section').style.display = 'none';
+            document.getElementById('expert-form-section').style.display = 'none';
+            document.getElementById('returning-search-section').style.display = 'none';
+            document.getElementById('step1-ind').className = 'step done';
+            document.getElementById('step-line-1').className = 'step-line done';
+            document.getElementById('step2-ind').className = 'step active';
+            document.getElementById('factors-section').style.display = 'block';
+            saveSurveyState();
+            loadFactors();
+            showToast(name + ' عزیز، خوش آمدید');
         }
 
         function applySettings() {
