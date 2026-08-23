@@ -279,9 +279,81 @@ function renderDashboardCharts(stats, frequency, priorities) {
     });
 }
 
+async function adminLogin(e) {
+    e.preventDefault();
+    const password = document.getElementById('admin-password-input').value;
+    const errEl = document.getElementById('admin-login-error');
+    try {
+        const res = await fetch(`${API_BASE}/auth/admin-login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'رمز اشتباه');
+        }
+        const data = await res.json();
+        setAdminToken(data.token);
+        document.getElementById('admin-login-screen').style.display = 'none';
+        document.getElementById('app-layout').style.display = 'flex';
+        loadDashboard();
+    } catch (err) {
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+    }
+}
+
+async function adminLogout() {
+    const token = getAdminToken();
+    if (token) {
+        await fetch(`${API_BASE}/auth/admin-logout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ token })
+        }).catch(() => {});
+    }
+    setAdminToken('');
+    document.getElementById('admin-login-screen').style.display = 'flex';
+    document.getElementById('app-layout').style.display = 'none';
+    document.getElementById('admin-password-input').value = '';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    document.querySelector('.theme-toggle').textContent = savedTheme === 'dark' ? '&#9788;' : '&#9790;';
-    loadDashboard();
+    const themeBtn = document.querySelector('.theme-toggle');
+    if (themeBtn) themeBtn.textContent = savedTheme === 'dark' ? '&#9788;' : '&#9790;';
+
+    // Check admin session
+    const token = getAdminToken();
+    if (token) {
+        fetch(`${API_BASE}/auth/admin-check?token=${encodeURIComponent(token)}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.valid) {
+                    document.getElementById('admin-login-screen').style.display = 'none';
+                    document.getElementById('app-layout').style.display = 'flex';
+                    loadDashboard();
+                }
+            })
+            .catch(() => {});
+    }
+
+    // Handle 401 from admin panel API calls
+    const origFetch = window.fetch;
+    window.fetch = function(...args) {
+        return origFetch.apply(this, args).then(res => {
+            if (res.url?.includes('/api/') && res.status === 401 && !res.url?.includes('/api/auth/')) {
+                const token = getAdminToken();
+                if (token) {
+                    setAdminToken('');
+                    document.getElementById('admin-login-screen').style.display = 'flex';
+                    document.getElementById('app-layout').style.display = 'none';
+                }
+                return res;
+            }
+            return res;
+        });
+    };
 });

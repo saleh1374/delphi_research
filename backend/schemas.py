@@ -14,6 +14,7 @@ class ExpertBase(BaseModel):
     email: Optional[str] = None
     qualification_method: Optional[str] = None
     qualification_note: Optional[str] = None
+    password: Optional[str] = None
     is_active_delphi: Optional[bool] = True
 
 
@@ -32,6 +33,7 @@ class ExpertUpdate(BaseModel):
     email: Optional[str] = None
     qualification_method: Optional[str] = None
     qualification_note: Optional[str] = None
+    password: Optional[str] = None
     is_active_delphi: Optional[bool] = None
 
 

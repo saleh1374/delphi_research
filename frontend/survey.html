@@ -177,6 +177,11 @@
                         <input type="text" class="form-input" id="expert-phone" placeholder="۰۹۱۲...">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">رمز عبور شخصی *</label>
+                    <input type="password" class="form-input" id="expert-password" placeholder="یک رمز برای ورود مجدد انتخاب کنید...">
+                    <span style="font-size: 11px; color: #64748b;">این رمز را به خاطر بسپارید. برای راند دوم به آن نیاز دارید.</span>
+                </div>
                 <div class="submit-section" style="padding-top: 8px;">
                     <button class="btn-submit" onclick="submitExpert()" id="expert-btn">ذخیره و ادامه</button>
                 </div>
@@ -372,6 +377,7 @@
             const degree = document.getElementById('expert-degree').value.trim();
             const years = document.getElementById('expert-years').value.trim();
             const phone = document.getElementById('expert-phone').value.trim();
+            const password = document.getElementById('expert-password').value.trim();
 
             if (!name || !org || !pos || !field || !degree || !years) {
                 showToast('لطفاً فیلدهای الزامی را پر کنید', 'error');
@@ -396,6 +402,7 @@
                         phone: phone || null,
                         email: null,
                         qualification_method: 'پرسشنامه هدفمند',
+                        password: password || null,
                         is_active_delphi: true
                     })
                 });

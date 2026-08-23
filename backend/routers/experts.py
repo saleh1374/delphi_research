@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from database import get_db
 from models import Expert
 from schemas import ExpertCreate, ExpertUpdate, ExpertResponse
+from auth import hash_password
 
 router = APIRouter(prefix="/experts", tags=["experts"])
 
@@ -17,7 +18,11 @@ class BulkDeleteRequest(BaseModel):
 @router.post("", response_model=ExpertResponse)
 def create_expert(expert: ExpertCreate, db: Session = Depends(get_db)):
     try:
-        db_expert = Expert(**expert.model_dump())
+        data = expert.model_dump()
+        password = data.pop("password", None)
+        if password:
+            data["password_hash"] = hash_password(password)
+        db_expert = Expert(**data)
         db.add(db_expert)
         db.commit()
         db.refresh(db_expert)
@@ -60,6 +65,9 @@ def update_expert(expert_id: int, expert: ExpertUpdate, db: Session = Depends(ge
     if not db_expert:
         raise HTTPException(status_code=404, detail="نخبه یافت نشد")
     update_data = expert.model_dump(exclude_unset=True)
+    password = update_data.pop("password", None)
+    if password:
+        update_data["password_hash"] = hash_password(password)
     for key, value in update_data.items():
         setattr(db_expert, key, value)
     db.commit()

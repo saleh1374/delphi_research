@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from database import engine, SessionLocal, Base
 from models import Expert, Response, ResponseFactor, Activity, FactorBank, AHPFactor, AHPComparison
 from routers import experts, responses, activities, factor_bank, exports
@@ -9,6 +9,8 @@ from routers.analysis import router as analysis_router
 from routers.analysis2 import router2 as analysis2_router
 from routers.settings import router as settings_router, seed_settings
 from routers.final_factors import router as final_factors_router
+from routers.auth_router import router as auth_router
+from auth import is_valid_token
 from seed import seed_factor_bank
 import os
 from sqlalchemy import text
@@ -36,6 +38,57 @@ app.include_router(analysis_router, prefix="/api")
 app.include_router(analysis2_router, prefix="/api")
 app.include_router(settings_router, prefix="/api")
 app.include_router(final_factors_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
+
+# Public API paths (no admin token needed)
+PUBLIC_PATHS = {
+    "/api/auth",
+    "/api/factor-bank",
+    "/api/settings/public",
+    "/api/analysis/unique-factors",
+    "/api/analysis/factor-frequency",
+}
+
+@app.middleware("http")
+async def admin_auth_middleware(request: Request, call_next):
+    path = request.url.path
+
+    # Static + pages always allowed
+    if path.startswith("/static") or path in ("/", "/survey", "/survey2"):
+        return await call_next(request)
+
+    # Public API paths (auth, public settings, factor-bank GET for surveys, etc.)
+    if path.startswith("/api/auth"):
+        return await call_next(request)
+    if path.startswith("/api/settings/public"):
+        return await call_next(request)
+    if path == "/api/factor-bank" and request.method == "GET":
+        return await call_next(request)
+    if path == "/api/factor-bank/categories" and request.method == "GET":
+        return await call_next(request)
+    if path.startswith("/api/factor-bank/search") and request.method == "GET":
+        return await call_next(request)
+    if path == "/api/analysis/unique-factors" and request.method == "GET":
+        return await call_next(request)
+    if path == "/api/analysis/factor-frequency" and request.method == "GET":
+        return await call_next(request)
+
+    # Survey submissions: allow POST /api/experts and POST /api/responses from survey pages
+    # (the survey pages are public, so their submissions must be allowed)
+    if path == "/api/experts" and request.method == "POST":
+        return await call_next(request)
+    if path == "/api/responses" and request.method == "POST":
+        return await call_next(request)
+    if path.startswith("/api/experts") and request.method == "GET" and "/profile" not in path and "?search=" in request.url.query:
+        # Only allow expert-lookup style searches from surveys
+        return await call_next(request)
+
+    # Everything else (admin panel API) requires token
+    token = request.headers.get("Authorization", "").replace("Bearer ", "").strip()
+    if not token or not is_valid_token(token):
+        return JSONResponse(status_code=401, content={"detail": "نیاز به ورود مدیر"})
+
+    return await call_next(request)
 
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
@@ -71,18 +124,26 @@ def startup():
     except Exception as e:
         print(f"Warning during table creation: {e}")
     
-    # Migration: Add rating column if missing
+    # Migration: Add missing columns
     db = None
     try:
         db = SessionLocal()
-        # Check if column exists first
         from sqlalchemy import inspect
         inspector = inspect(engine)
-        columns = [c["name"] for c in inspector.get_columns("response_factors")]
-        if "rating" not in columns:
+
+        # rating column on response_factors
+        resp_cols = [c["name"] for c in inspector.get_columns("response_factors")]
+        if "rating" not in resp_cols:
             db.execute(text("ALTER TABLE response_factors ADD COLUMN rating INTEGER"))
             db.commit()
             print("Added 'rating' column to response_factors")
+
+        # password_hash column on experts
+        exp_cols = [c["name"] for c in inspector.get_columns("experts")]
+        if "password_hash" not in exp_cols:
+            db.execute(text("ALTER TABLE experts ADD COLUMN password_hash VARCHAR(255)"))
+            db.commit()
+            print("Added 'password_hash' column to experts")
     except Exception as e:
         print(f"Migration note: {e}")
     finally:

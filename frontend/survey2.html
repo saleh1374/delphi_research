@@ -197,6 +197,11 @@
                         <input type="text" class="form-input" id="expert-phone" placeholder="۰۹۱۲...">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">رمز عبور شخصی *</label>
+                    <input type="password" class="form-input" id="expert-password" placeholder="یک رمز برای خود انتخاب کنید...">
+                    <span style="font-size: 11px; color: #64748b;">اگر قبلاً در راند اول ثبت‌نام کرده‌اید، همان رمز را وارد کنید.</span>
+                </div>
                 <div class="submit-section" style="padding-top: 8px;">
                     <button class="btn-submit" onclick="submitExpert()" id="expert-btn">ذخیره و ادامه</button>
                 </div>
@@ -336,7 +341,11 @@
             }
             returningSearchTimeout = setTimeout(async () => {
                 try {
-                    const res = await fetch(`${API}/experts?search=${encodeURIComponent(query)}`);
+                    const res = await fetch(`${API}/auth/expert-lookup`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: query })
+                    });
                     const experts = await res.json();
                     const container = document.getElementById('returning-search-results');
                     if (experts.length === 0) {
@@ -346,15 +355,20 @@
                     container.innerHTML = `
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             ${experts.map(e => `
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: all 0.2s;" 
-                                     onclick="selectReturningExpert(${e.expert_id}, '${e.full_name.replace(/'/g, "\\'")}')"
-                                     onmouseover="this.style.borderColor='#2563eb'; this.style.background='#eff6ff'"
-                                     onmouseout="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
-                                    <div>
-                                        <strong style="font-size: 14px; color: #1e293b;">${e.full_name}</strong>
-                                        <div style="font-size: 12px; color: #64748b; margin-top: 2px;">${e.organization} - ${e.position}</div>
+                                <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: ${e.has_password ? '8px' : '0'};">
+                                        <div>
+                                            <strong style="font-size: 14px; color: #1e293b;">${e.name}</strong>
+                                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">${e.org}</div>
+                                        </div>
+                                        ${!e.has_password ? `<button class="btn btn-sm btn-outline" onclick="toggleReturningMode('new'); searchReturningExperts(''); document.getElementById('expert-name').value='${e.name.replace(/'/g, "\\'")}'">ثبت مجدد</button>` : ''}
                                     </div>
-                                    <button class="btn btn-sm btn-primary" style="pointer-events: none;">این من هستم</button>
+                                    ${e.has_password ? `
+                                        <div style="display: flex; gap: 8px;">
+                                            <input type="password" class="form-input" id="returning-pw-${e.expert_id}" placeholder="رمز عبور خود را وارد کنید..." style="flex:1;font-size:13px;padding:8px 10px;">
+                                            <button class="btn btn-sm btn-primary" onclick="verifyReturningExpert(${e.expert_id}, '${e.name.replace(/'/g, "\\'")}')">ورود</button>
+                                        </div>
+                                    ` : ''}
                                 </div>
                             `).join('')}
                         </div>`;
@@ -362,18 +376,36 @@
             }, 300);
         }
 
-        function selectReturningExpert(id, name) {
-            currentExpertId = id;
-            document.getElementById('returning-choice-section').style.display = 'none';
-            document.getElementById('expert-form-section').style.display = 'none';
-            document.getElementById('returning-search-section').style.display = 'none';
-            document.getElementById('step1-ind').className = 'step done';
-            document.getElementById('step-line-1').className = 'step-line done';
-            document.getElementById('step2-ind').className = 'step active';
-            document.getElementById('factors-section').style.display = 'block';
-            saveSurveyState();
-            loadFactors();
-            showToast(name + ' عزیز، خوش آمدید');
+        async function verifyReturningExpert(id, name) {
+            const pw = document.getElementById('returning-pw-' + id)?.value?.trim();
+            if (!pw) {
+                showToast('لطفاً رمز عبور خود را وارد کنید', 'error');
+                return;
+            }
+            try {
+                const res = await fetch(`${API}/auth/expert-verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ expert_id: id, password: pw })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'خطا');
+                }
+                currentExpertId = id;
+                document.getElementById('returning-choice-section').style.display = 'none';
+                document.getElementById('expert-form-section').style.display = 'none';
+                document.getElementById('returning-search-section').style.display = 'none';
+                document.getElementById('step1-ind').className = 'step done';
+                document.getElementById('step-line-1').className = 'step-line done';
+                document.getElementById('step2-ind').className = 'step active';
+                document.getElementById('factors-section').style.display = 'block';
+                saveSurveyState();
+                loadFactors();
+                showToast(name + ' عزیز، خوش آمدید');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
         }
 
         function applySettings() {
@@ -403,6 +435,7 @@
             const degree = document.getElementById('expert-degree').value.trim();
             const years = document.getElementById('expert-years').value.trim();
             const phone = document.getElementById('expert-phone').value.trim();
+            const password = document.getElementById('expert-password')?.value?.trim();
 
             if (!name || !org || !pos || !field || !degree || !years) {
                 showToast('لطفاً فیلدهای الزامی را پر کنید', 'error');
@@ -427,6 +460,7 @@
                         phone: phone || null,
                         email: null,
                         qualification_method: 'راند دوم',
+                        password: password || null,
                         is_active_delphi: true
                     })
                 });

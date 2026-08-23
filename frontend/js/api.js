@@ -1,11 +1,27 @@
 const API_BASE = '/api';
 
+function getAdminToken() {
+    return localStorage.getItem('admin_token') || '';
+}
+
+function setAdminToken(token) {
+    if (token) localStorage.setItem('admin_token', token);
+    else localStorage.removeItem('admin_token');
+}
+
+function isAdminLoggedIn() {
+    return !!getAdminToken();
+}
+
 const api = {
     async request(url, options = {}) {
-        const config = {
-            headers: { 'Content-Type': 'application/json' },
-            ...options
-        };
+        const token = getAdminToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+        }
+        const config = { headers, ...options };
+        config.headers = { ...headers, ...(options.headers || {}) };
         if (config.body && typeof config.body === 'object') {
             config.body = JSON.stringify(config.body);
         }

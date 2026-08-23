@@ -18,6 +18,7 @@ class Expert(Base):
     email = Column(String(200), nullable=True)
     qualification_method = Column(String(100), nullable=True)
     qualification_note = Column(Text, nullable=True)
+    password_hash = Column(String(255), nullable=True)
     is_active_delphi = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))

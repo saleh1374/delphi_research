@@ -8,7 +8,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="app-layout">
+    <div id="admin-login-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a,#1e3a5f);">
+        <div style="background:white;border-radius:20px;padding:48px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <div style="width:64px;height:64px;background:linear-gradient(135deg,#2563eb,#0ea5e9);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:white;margin:0 auto 20px;">D</div>
+            <h2 style="font-size:20px;font-weight:800;color:#1e293b;margin-bottom:4px;">سامانه مدیریت پژوهش دلفی</h2>
+            <p style="font-size:13px;color:#64748b;margin-bottom:28px;">برای مشاهده داشبورد لطفاً رمز مدیر را وارد کنید</p>
+            <form onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <input type="password" id="admin-password-input" class="form-input" placeholder="رمز عبور مدیر" style="font-size:15px;padding:14px 16px;text-align:center;letter-spacing:4px;" autofocus>
+                </div>
+                <p id="admin-login-error" style="color:#ef4444;font-size:13px;margin-bottom:12px;display:none;"></p>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;padding:14px;">ورود به داشبورد</button>
+            </form>
+        </div>
+    </div>
+    <div class="app-layout" id="app-layout" style="display:none;">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
@@ -89,17 +103,18 @@
                         <p id="page-subtitle">نمای کلی سامانه مدیریت پژوهش دلفی</p>
                     </div>
                 </div>
-                <div class="topbar-left">
-                    <div style="display: flex; gap: 8px;">
-                        <a href="/survey" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px;">
-                            &#128279; راند ۱
-                        </a>
-                        <a href="/survey2" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px; background: #8b5cf6;">
-                            &#128279; راند ۲
-                        </a>
-                    </div>
-                    <button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
+            <div class="topbar-left">
+                <div style="display: flex; gap: 8px;">
+                    <a href="/survey" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px;">
+                        &#128279; راند ۱
+                    </a>
+                    <a href="/survey2" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px; background: #8b5cf6;">
+                        &#128279; راند ۲
+                    </a>
                 </div>
+                <button id="topbar-logout-btn" class="btn btn-outline btn-sm" style="font-size:12px;" title="خروج">&#128682; خروج</button>
+                <button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
+            </div>
             </header>
 
             <div class="page-content">
