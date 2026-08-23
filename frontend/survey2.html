@@ -85,18 +85,18 @@
             <div class="survey-card">
                 <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 16px;">نحوه شرکت در پژوهش</h3>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;" id="choice-new" onclick="toggleReturningMode('new')">
+                        <input type="radio" name="participation_mode" value="new" checked style="width: 18px; height: 18px; accent-color: #2563eb;">
+                        <div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">برای اولین بار شرکت می‌کنم</div>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">اطلاعات خود را وارد و اولویت‌بندی را شروع کنید</div>
+                        </div>
+                    </label>
                     <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;" id="choice-returning" onclick="toggleReturningMode('returning')">
                         <input type="radio" name="participation_mode" value="returning" style="width: 18px; height: 18px; accent-color: #2563eb;">
                         <div>
                             <div style="font-size: 14px; font-weight: 700; color: #1e293b;">قبلاً در پژوهش شرکت کرده‌ام</div>
-                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">اگر در راند اول پرسشنامه را پر کرده‌اید، نام خود را جستجو کنید</div>
-                        </div>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;" id="choice-new" onclick="toggleReturningMode('new')">
-                        <input type="radio" name="participation_mode" value="new" checked style="width: 18px; height: 18px; accent-color: #2563eb;">
-                        <div>
-                            <div style="font-size: 14px; font-weight: 700; color: #1e293b;">اولین بار است شرکت می‌کنم</div>
-                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">اطلاعات خود را وارد کنید تا در پژوهش ثبت نام شوید</div>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">در راند اول یا راند دوم قبلی ثبت‌نام کرده‌اید</div>
                         </div>
                     </label>
                 </div>
@@ -461,6 +461,7 @@
                         email: null,
                         qualification_method: 'راند دوم',
                         password: password || null,
+                        role: 'participant',
                         is_active_delphi: true
                     })
                 });

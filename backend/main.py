@@ -138,12 +138,16 @@ def startup():
             db.commit()
             print("Added 'rating' column to response_factors")
 
-        # password_hash column on experts
+        # password_hash and role columns on experts
         exp_cols = [c["name"] for c in inspector.get_columns("experts")]
         if "password_hash" not in exp_cols:
             db.execute(text("ALTER TABLE experts ADD COLUMN password_hash VARCHAR(255)"))
             db.commit()
             print("Added 'password_hash' column to experts")
+        if "role" not in exp_cols:
+            db.execute(text("ALTER TABLE experts ADD COLUMN role VARCHAR(50) DEFAULT 'expert'"))
+            db.commit()
+            print("Added 'role' column to experts")
     except Exception as e:
         print(f"Migration note: {e}")
     finally:
@@ -195,17 +199,25 @@ def dashboard_stats():
     db = SessionLocal()
     try:
         total_experts = db.query(Expert).count()
+        total_round1_experts = db.query(Expert).filter(Expert.role == "expert").count()
+        total_round2_participants = db.query(Expert).filter(Expert.role == "participant").count()
         total_responses = db.query(Response).count()
         total_activities = db.query(Activity).count()
         total_factors = db.query(ResponseFactor).count()
         completed = db.query(Response).filter(Response.response_status == "تکمیل‌شده").count()
+        completed_r1 = db.query(Response).filter(Response.response_status == "تکمیل‌شده", Response.round_no == 1).count()
+        completed_r2 = db.query(Response).filter(Response.response_status == "تکمیل‌شده", Response.round_no == 2).count()
         pending = db.query(Activity).filter(Activity.activity_status == "در انتظار").count()
         return {
             "total_experts": total_experts,
+            "total_round1_experts": total_round1_experts,
+            "total_round2_participants": total_round2_participants,
             "total_responses": total_responses,
             "total_activities": total_activities,
             "total_factors": total_factors,
             "completed_responses": completed,
+            "completed_r1": completed_r1,
+            "completed_r2": completed_r2,
             "pending_activities": pending
         }
     finally:
@@ -227,6 +239,7 @@ def expert_progress():
                 "name": e.full_name,
                 "org": e.organization,
                 "qualification_method": e.qualification_method or "-",
+                "role": e.role or "expert",
                 "is_active": e.is_active_delphi,
                 "round1_status": r1.response_status if r1 else "انجام نشده",
                 "round1_date": r1.created_at.strftime("%Y-%m-%d %H:%M") if r1 else None,

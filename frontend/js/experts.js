@@ -1,10 +1,14 @@
 let expertsData = [];
 let expertSearchTerm = '';
 let selectedExpertIds = new Set();
+let expertRoleFilter = ''; // '', 'expert', 'participant'
 
 async function loadExperts() {
     try {
-        const url = expertSearchTerm ? `/experts?search=${encodeURIComponent(expertSearchTerm)}` : '/experts';
+        const params = new URLSearchParams();
+        if (expertSearchTerm) params.append('search', expertSearchTerm);
+        if (expertRoleFilter) params.append('role', expertRoleFilter);
+        const url = `/experts${params.toString() ? '?' + params.toString() : ''}`;
         expertsData = await api.get(url);
         renderExperts();
         document.getElementById('nav-badge-experts').textContent = expertsData.length;
@@ -16,6 +20,8 @@ async function loadExperts() {
 function renderExperts() {
     const container = document.getElementById('section-experts');
     const hasSelection = selectedExpertIds.size > 0;
+    const expertCount = expertsData.filter(e => e.role === 'expert').length;
+    const participantCount = expertsData.filter(e => e.role === 'participant').length;
     container.innerHTML = `
         <div class="card">
             <div class="card-header">
@@ -30,6 +36,17 @@ function renderExperts() {
                 </div>
             </div>
             <div class="card-body">
+                <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                    <button class="btn btn-sm ${expertRoleFilter === '' ? 'btn-primary' : 'btn-outline'}" onclick="setRoleFilter('')">
+                        همه (${expertsData.length})
+                    </button>
+                    <button class="btn btn-sm ${expertRoleFilter === 'expert' ? 'btn-primary' : 'btn-outline'}" onclick="setRoleFilter('expert')">
+                        &#127891; نخبگان راند ۱ (${expertCount})
+                    </button>
+                    <button class="btn btn-sm ${expertRoleFilter === 'participant' ? 'btn-primary' : 'btn-outline'}" onclick="setRoleFilter('participant')">
+                        &#128101; شرکت‌کنندگان راند ۲ (${participantCount})
+                    </button>
+                </div>
                 <div class="search-box">
                     <input type="text" placeholder="جست‌وجو در نام، سازمان، سمت..." value="${expertSearchTerm}" oninput="expertSearch(this.value); debounceSearch()">
                     <span class="search-icon">&#128269;</span>
@@ -37,19 +54,20 @@ function renderExperts() {
                 ${expertsData.length === 0 ? `
                     <div class="empty-state">
                         <div class="empty-icon">&#128101;</div>
-                        <h4>هنوز نخبه‌ای ثبت نشده</h4>
-                        <p>اولین نخبه خود را ثبت کنید</p>
+                        <h4>هنوز ${expertRoleFilter === 'participant' ? 'شرکت‌کننده‌ای' : 'نخبه‌ای'} ثبت نشده</h4>
+                        <p>${expertRoleFilter === 'participant' ? 'با تکمیل پرسشنامه راند دوم، شرکت‌کنندگان اینجا نمایش داده می‌شوند' : 'اولین نخبه خود را ثبت کنید'}</p>
                     </div>
                 ` : `
                     <div class="table-wrapper">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 40px;"><input type="checkbox" onchange="toggleAllExperts(this.checked)" ${selectedExpertIds.size === expertsData.length ? 'checked' : ''}></th>
+                                    <th style="width: 40px;"><input type="checkbox" onchange="toggleAllExperts(this.checked)" ${selectedExpertIds.size === expertsData.length && expertsData.length > 0 ? 'checked' : ''}></th>
                                     <th>#</th>
                                     <th>نام و نام خانوادگی</th>
                                     <th>سازمان</th>
                                     <th>سمت</th>
+                                    <th>نقش</th>
                                     <th>رشته</th>
                                     <th>مدرک</th>
                                     <th>سابقه</th>
@@ -66,6 +84,7 @@ function renderExperts() {
                                         <td><strong>${e.full_name}</strong></td>
                                         <td>${e.organization}</td>
                                         <td>${e.position}</td>
+                                        <td><span class="badge ${e.role === 'participant' ? 'badge-info' : 'badge-warning'}">${e.role === 'participant' ? 'راند ۲' : 'نخبه'}</span></td>
                                         <td>${e.field_study}</td>
                                         <td>${e.degree}</td>
                                         <td>${e.years_energy}</td>
@@ -75,7 +94,7 @@ function renderExperts() {
                                             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                                 <button class="btn btn-sm btn-outline" onclick="showExpertForm(${e.expert_id})">&#9998;</button>
                                                 <button class="btn btn-sm btn-danger" onclick="confirmDeleteExpert(${e.expert_id}, '${e.full_name.replace(/'/g, "\\'")}')">&#10005;</button>
-                                                <button class="btn btn-sm btn-primary" onclick="selectExpertForDelphi(${e.expert_id})">&#10148;</button>
+                                                ${e.role === 'expert' ? `<button class="btn btn-sm btn-primary" onclick="selectExpertForDelphi(${e.expert_id})">&#10148;</button>` : ''}
                                             </div>
                                         </td>
                                     </tr>
@@ -86,6 +105,12 @@ function renderExperts() {
                 `}
             </div>
         </div>`;
+}
+
+function setRoleFilter(role) {
+    expertRoleFilter = role;
+    selectedExpertIds.clear();
+    loadExperts();
 }
 
 let searchTimeout;
@@ -138,6 +163,22 @@ function showExpertForm(id = null) {
             </div>
             <div class="form-row">
                 <div class="form-group">
+                    <label class="form-label">نقش</label>
+                    <select class="form-select" name="role">
+                        <option value="expert" ${(expert?.role || 'expert') === 'expert' ? 'selected' : ''}>نخبه (راند ۱)</option>
+                        <option value="participant" ${expert?.role === 'participant' ? 'selected' : ''}>شرکت‌کننده (راند ۲)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">وضعیت مشارکت</label>
+                    <select class="form-select" name="is_active_delphi">
+                        <option value="true" ${expert?.is_active_delphi !== false ? 'selected' : ''}>فعال</option>
+                        <option value="false" ${expert?.is_active_delphi === false ? 'selected' : ''}>غیرفعال</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
                     <label class="form-label">تلفن</label>
                     <input class="form-input" name="phone" value="${expert?.phone || ''}" dir="ltr">
                 </div>
@@ -151,17 +192,14 @@ function showExpertForm(id = null) {
                     <label class="form-label">روش شناسایی نخبه</label>
                     <select class="form-select" name="qualification_method">
                         <option value="">انتخاب کنید</option>
-                        ${['نمونه‌گیری هدفمند', 'نمونه‌گیری گلوله برفی', 'معرفی توسط نهاد', 'خودمعرف'].map(m =>
+                        ${['نمونه‌گیری هدفمند', 'نمونه‌گیری گلوله برفی', 'معرفی توسط نهاد', 'خودمعرف', 'پرسشنامه هدفمند', 'راند دوم'].map(m =>
                             `<option value="${m}" ${expert?.qualification_method === m ? 'selected' : ''}>${m}</option>`
                         ).join('')}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">وضعیت مشارکت</label>
-                    <select class="form-select" name="is_active_delphi">
-                        <option value="true" ${expert?.is_active_delphi !== false ? 'selected' : ''}>فعال</option>
-                        <option value="false" ${expert?.is_active_delphi === false ? 'selected' : ''}>غیرفعال</option>
-                    </select>
+                    <label class="form-label">رمز عبور جدید (اختیاری)</label>
+                    <input class="form-input" name="password" type="password" placeholder="در صورت تغییر رمز پر کنید">
                 </div>
             </div>
             <div class="form-group">
@@ -180,6 +218,7 @@ async function saveExpert(e, id) {
     const form = e.target;
     const data = Object.fromEntries(new FormData(form));
     if (data.is_active_delphi) data.is_active_delphi = data.is_active_delphi === 'true';
+    if (!data.password) delete data.password;
 
     try {
         if (id) {
@@ -250,4 +289,4 @@ function bulkDeleteExperts() {
             showToast(err.message, 'error');
         }
     });
-}
+}

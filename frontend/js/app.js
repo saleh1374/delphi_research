@@ -64,17 +64,24 @@ async function loadDashboard() {
         document.getElementById('section-dashboard').innerHTML = `
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon blue">&#9786;</div>
+                    <div class="stat-icon blue">&#127891;</div>
                     <div class="stat-info">
-                        <h4>${stats.total_experts}</h4>
-                        <p>نخبه ثبت‌شده</p>
+                        <h4>${stats.total_round1_experts || stats.total_experts}</h4>
+                        <p>نخبه راند ۱</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">&#128101;</div>
+                    <div class="stat-info">
+                        <h4>${stats.total_round2_participants || 0}</h4>
+                        <p>شرکت‌کننده راند ۲</p>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon green">&#9998;</div>
                     <div class="stat-info">
-                        <h4>${stats.completed_responses}/${stats.total_responses}</h4>
-                        <p>راند اول تکمیل</p>
+                        <h4>${stats.completed_r1 || stats.completed_responses}/${stats.total_responses}</h4>
+                        <p>پاسخ تکمیل‌شده</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -89,13 +96,6 @@ async function loadDashboard() {
                     <div class="stat-info">
                         <h4>${researchStats.total_ahp_comparisons || 0}</h4>
                         <p>مقایسه AHP</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon green">&#10003;</div>
-                    <div class="stat-info">
-                        <h4>${researchStats.average_factors_per_expert || 0}</h4>
-                        <p>میانگین عوامل/نخبه</p>
                     </div>
                 </div>
                 <div class="stat-card">

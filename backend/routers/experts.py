@@ -36,6 +36,7 @@ def create_expert(expert: ExpertCreate, db: Session = Depends(get_db)):
 @router.get("", response_model=List[ExpertResponse])
 def list_experts(
     search: Optional[str] = None,
+    role: Optional[str] = None,
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db)
@@ -48,6 +49,8 @@ def list_experts(
             Expert.position.contains(search) |
             Expert.field_study.contains(search)
         )
+    if role and role in ("expert", "participant"):
+        query = query.filter(Expert.role == role)
     return query.order_by(Expert.expert_id.desc()).offset(skip).limit(limit).all()
 
 
