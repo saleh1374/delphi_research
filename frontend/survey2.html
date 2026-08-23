@@ -467,7 +467,6 @@
             }));
 
             const note = document.getElementById('survey-note').value.trim();
-            const ratingsSummary = factors.map(f => `${f.title}: ${ratings[f.title] || 5}`).join(' | ');
 
             try {
                 const res = await fetch(`${API}/responses`, {
@@ -477,7 +476,7 @@
                         expert_id: currentExpertId,
                         round_no: 2,
                         response_status: 'تکمیل‌شده',
-                        response_note: note ? `${ratingsSummary} | ${note}` : ratingsSummary,
+                        response_note: note || null,
                         factors: factorsData
                     })
                 });

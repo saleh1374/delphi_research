@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session, joinedload
 from database import get_db
@@ -6,6 +6,7 @@ from models import Expert, Response, ResponseFactor, Activity, FactorBank
 import csv
 import io
 import json
+import math
 
 router = APIRouter(prefix="/export", tags=["export"])
 
@@ -209,7 +210,8 @@ def export_backup(db: Session = Depends(get_db)):
              "factors": [
                  {"row": f.row_no, "text": f.factor_text, "note": f.factor_note,
                   "source": f.factor_source, "category": f.factor_category,
-                  "from_reference": f.is_from_reference_list}
+                  "from_reference": f.is_from_reference_list,
+                  "rating": f.rating}
                  for f in r.factors
              ]}
             for r in responses
@@ -233,3 +235,170 @@ def export_backup(db: Session = Depends(get_db)):
         media_type="application/json; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=backup.json"}
     )
+
+
+def calculate_kendall_w(ratings_list):
+    if not ratings_list or len(ratings_list[0]) < 2:
+        return 0.0
+    m = len(ratings_list)
+    n = len(ratings_list[0])
+    if n < 2:
+        return 0.0
+    mean_ranks = [0.0] * n
+    for r in ratings_list:
+        ranked = sorted(range(n), key=lambda i: r[i])
+        for rank, idx in enumerate(ranked, 1):
+            mean_ranks[idx] += rank
+    for i in range(n):
+        mean_ranks[i] /= m
+    mean_all = sum(mean_ranks) / n
+    ss = sum((R - mean_all) ** 2 for R in mean_ranks)
+    w = 12 * ss / (m * m * (n ** 3 - n))
+    return w
+
+
+@router.get("/round2-priorities.csv")
+def export_round2_priorities(db: Session = Depends(get_db)):
+    responses = db.query(Response).options(
+        joinedload(Response.factors),
+        joinedload(Response.expert)
+    ).filter(Response.round_no == 2).all()
+
+    factor_data = {}
+    for r in responses:
+        expert_name = r.expert.full_name if r.expert else ""
+        for f in r.factors:
+            text = f.factor_text.strip()
+            if text:
+                if text not in factor_data:
+                    factor_data[text] = {"category": f.factor_category, "ratings": [], "expert_names": []}
+                rating = f.rating if f.rating is not None else 5
+                factor_data[text]["ratings"].append(rating)
+                factor_data[text]["expert_names"].append(expert_name)
+
+    if not factor_data:
+        return make_csv_response([], ["رتبه", "عنوان عامل", "دسته", "میانگین امتیاز", "حداکثر", "حداقل", "انحراف معیار", "تعداد رأی", "افراد"], "round2_priorities.csv")
+
+    factor_list = []
+    for text, data in factor_data.items():
+        ratings = data["ratings"]
+        avg = sum(ratings) / len(ratings)
+        variance = sum((r - avg) ** 2 for r in ratings) / len(ratings)
+        std_dev = math.sqrt(variance)
+        factor_list.append({
+            "text": text,
+            "category": data["category"],
+            "avg": avg,
+            "max": max(ratings),
+            "min": min(ratings),
+            "std_dev": std_dev,
+            "count": len(ratings),
+            "experts": ", ".join(data["expert_names"])
+        })
+
+    factor_list.sort(key=lambda x: x["avg"], reverse=True)
+
+    all_ratings = []
+    for data in factor_data.values():
+        all_ratings.append(data["ratings"])
+
+    kendall_w = calculate_kendall_w(all_ratings) if len(all_ratings[0]) > 1 else 0
+
+    headers = ["رتبه", "عنوان عامل", "دسته", "میانگین امتیاز", "حداکثر", "حداقل", "انحراف معیار", "تعداد رأی", "افراد رأی‌دهنده"]
+    rows = []
+    for rank, f in enumerate(factor_list, 1):
+        rows.append([
+            rank, f["text"], f["category"] or "نامشخص",
+            round(f["avg"], 2), f["max"], f["min"],
+            round(f["std_dev"], 2), f["count"], f["experts"]
+        ])
+
+    return make_csv_response(rows, headers, "round2_priorities.csv")
+
+
+@router.post("/import")
+async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    content = await file.read()
+    text = content.decode('utf-8-sig')
+    data = json.loads(text)
+
+    imported = {"experts": 0, "responses": 0, "factors": 0, "activities": 0, "factor_bank": 0}
+
+    expert_id_map = {}
+    for e_data in data.get("experts", []):
+        existing = db.query(Expert).filter(Expert.full_name == e_data["full_name"]).first()
+        if existing:
+            expert_id_map[e_data["id"]] = existing.expert_id
+        else:
+            expert = Expert(
+                full_name=e_data["full_name"],
+                organization=e_data.get("organization", ""),
+                position=e_data.get("position", ""),
+                field_study=e_data.get("field_study", ""),
+                degree=e_data.get("degree", ""),
+                years_energy=e_data.get("years_energy", 0),
+                phone=e_data.get("phone"),
+                email=e_data.get("email")
+            )
+            db.add(expert)
+            db.flush()
+            expert_id_map[e_data["id"]] = expert.expert_id
+            imported["experts"] += 1
+
+    for fb_data in data.get("factor_bank", []):
+        existing = db.query(FactorBank).filter(FactorBank.title == fb_data["title"]).first()
+        if not existing:
+            fb = FactorBank(
+                title=fb_data["title"],
+                category=fb_data.get("category", ""),
+                short_description=fb_data.get("description", ""),
+                why_important=fb_data.get("why_important", ""),
+                source_label=fb_data.get("source", "")
+            )
+            db.add(fb)
+            imported["factor_bank"] += 1
+
+    for r_data in data.get("responses", []):
+        old_expert_id = r_data.get("expert_id")
+        new_expert_id = expert_id_map.get(old_expert_id, old_expert_id)
+
+        response = Response(
+            expert_id=new_expert_id,
+            round_no=r_data.get("round_no", 1),
+            response_status=r_data.get("status", "ناقص"),
+            response_note=r_data.get("note")
+        )
+        db.add(response)
+        db.flush()
+        imported["responses"] += 1
+
+        for f_data in r_data.get("factors", []):
+            factor = ResponseFactor(
+                response_id=response.response_id,
+                row_no=f_data.get("row", 0),
+                factor_text=f_data.get("text", ""),
+                factor_note=f_data.get("note"),
+                factor_source=f_data.get("source"),
+                factor_category=f_data.get("category"),
+                is_from_reference_list=f_data.get("from_reference", False),
+                rating=f_data.get("rating")
+            )
+            db.add(factor)
+            imported["factors"] += 1
+
+    for a_data in data.get("activities", []):
+        old_expert_id = a_data.get("expert_id")
+        new_expert_id = expert_id_map.get(old_expert_id, old_expert_id)
+
+        activity = Activity(
+            expert_id=new_expert_id,
+            activity_type=a_data.get("type", ""),
+            activity_status=a_data.get("status", ""),
+            follow_up_date=a_data.get("follow_up_date"),
+            activity_note=a_data.get("note")
+        )
+        db.add(activity)
+        imported["activities"] += 1
+
+    db.commit()
+    return {"message": "بازیابی با موفقیت انجام شد", "imported": imported}

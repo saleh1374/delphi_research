@@ -57,6 +57,7 @@ async function loadDashboard() {
         const researchStats = await api.get('/analysis/research-stats');
         const frequency = await api.get('/analysis/factor-frequency');
         const priorities = await api.get('/analysis/ahp-priorities');
+        const expertProgress = await api.get('/expert-progress');
 
         document.getElementById('section-dashboard').innerHTML = `
             <div class="stats-grid">
@@ -101,6 +102,45 @@ async function loadDashboard() {
                         <h4>${stats.pending_activities}</h4>
                         <p>پیگیری در انتظار</p>
                     </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header"><h3>&#128203; وضعیت پیشرفت نخبگان</h3></div>
+                <div class="card-body">
+                    ${expertProgress.length === 0 ? '<div class="empty-state"><p>هنوز نخبه‌ای ثبت نشده</p></div>' : `
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>نام</th>
+                                    <th>سازمان</th>
+                                    <th>روش شناسایی</th>
+                                    <th>راند ۱</th>
+                                    <th>تاریخ راند ۱</th>
+                                    <th>راند ۲</th>
+                                    <th>تاریخ راند ۲</th>
+                                    <th>مقایسه AHP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${expertProgress.map((e, i) => `
+                                    <tr>
+                                        <td>${i + 1}</td>
+                                        <td><strong>${e.name}</strong></td>
+                                        <td style="font-size: 12px;">${e.org}</td>
+                                        <td><span class="badge badge-primary">${e.qualification_method}</span></td>
+                                        <td><span class="badge ${e.round1_status === 'تکمیل‌شده' ? 'badge-success' : e.round1_status === 'انجام نشده' ? 'badge-danger' : 'badge-warning'}">${e.round1_status}</span></td>
+                                        <td style="font-size: 11px; color: var(--text-muted);">${e.round1_date || '-'}</td>
+                                        <td><span class="badge ${e.round2_status === 'تکمیل‌شده' ? 'badge-success' : e.round2_status === 'انجام نشده' ? 'badge-danger' : 'badge-warning'}">${e.round2_status}</span></td>
+                                        <td style="font-size: 11px; color: var(--text-muted);">${e.round2_date || '-'}</td>
+                                        <td style="text-align: center;">${e.ahp_count}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>`}
                 </div>
             </div>
 

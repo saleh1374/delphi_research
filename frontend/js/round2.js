@@ -1,13 +1,23 @@
 let round2Responses = [];
+let expertNamesMap = {};
 
 async function loadRound2() {
     try {
-        const responses = await api.get('/responses?round_no=2');
+        const [responses, experts] = await Promise.all([
+            api.get('/responses?round_no=2'),
+            api.get('/experts')
+        ]);
+        expertNamesMap = {};
+        experts.forEach(e => { expertNamesMap[e.expert_id] = e.full_name; });
         round2Responses = responses;
         renderRound2();
     } catch (e) {
         showToast(e.message, 'error');
     }
+}
+
+function getExpertName(id) {
+    return expertNamesMap[id] || `نخبه #${id}`;
 }
 
 function renderRound2() {
@@ -22,13 +32,13 @@ function renderRound2() {
             </div>
             <div class="card-body">
                 <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
-                    پاسخ‌های دریافتی از نخبگان در راند دوم (اولویت‌بندی عوامل)
+                    پاسخ‌های دریافتی از شرکت‌کنندگان در راند دوم (اولویت‌بندی عوامل)
                 </p>
                 ${round2Responses.length === 0 ? `
                     <div class="empty-state">
                         <div class="empty-icon">&#9878;</div>
                         <h4>هنوز پاسخی دریافت نشده</h4>
-                        <p>لینک پرسشنامه راند ۲ را برای نخبگان بفرستید</p>
+                        <p>لینک پرسشنامه راند ۲ را برای شرکت‌کنندگان بفرستید</p>
                     </div>
                 ` : `
                     <div class="table-wrapper">
@@ -36,7 +46,7 @@ function renderRound2() {
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>شناسه نخبه</th>
+                                    <th>نام شرکت‌کننده</th>
                                     <th>تعداد عوامل</th>
                                     <th>وضعیت</th>
                                     <th>یادداشت</th>
@@ -48,7 +58,7 @@ function renderRound2() {
                                 ${round2Responses.map((r, i) => `
                                     <tr>
                                         <td>${i + 1}</td>
-                                        <td><strong>نخبه ${r.expert_id}</strong></td>
+                                        <td><strong>${getExpertName(r.expert_id)}</strong></td>
                                         <td><span class="badge badge-primary">${r.factors?.length || 0} عامل</span></td>
                                         <td><span class="badge ${r.response_status === 'تکمیل‌شده' ? 'badge-success' : 'badge-warning'}">${r.response_status}</span></td>
                                         <td style="max-width: 200px; font-size: 13px;">${r.response_note ? r.response_note.substring(0, 80) + '...' : '-'}</td>
@@ -77,26 +87,17 @@ async function viewRound2Response(responseId) {
         const response = await api.get(`/responses/${responseId}`);
         const container = document.getElementById('round2-detail-container');
 
-        const factorsWithRatings = response.factors.map(f => {
-            let rating = 5;
-            if (response.response_note) {
-                try {
-                    const match = response.response_note.match(/امتیازات: ({.*})/);
-                    if (match) {
-                        const ratings = JSON.parse(match[1]);
-                        rating = ratings[f.factor_text] || 5;
-                    }
-                } catch (e) {}
-            }
-            return { ...f, rating };
-        });
+        const factorsWithRatings = response.factors.map(f => ({
+            ...f,
+            rating: f.rating || 5
+        }));
 
         factorsWithRatings.sort((a, b) => b.rating - a.rating);
 
         container.innerHTML = `
             <div class="card">
                 <div class="card-header">
-                    <h3>&#128203; جزئیات پاسخ راند ۲ - نخبه ${response.expert_id}</h3>
+                    <h3>&#128203; جزئیات پاسخ راند ۲ - ${getExpertName(response.expert_id)}</h3>
                 </div>
                 <div class="card-body">
                     <div class="table-wrapper">
@@ -138,18 +139,11 @@ async function loadRound2Analysis() {
     try {
         const allFactors = {};
         round2Responses.forEach(r => {
-            let ratings = {};
-            if (r.response_note) {
-                try {
-                    const match = r.response_note.match(/امتیازات: ({.*})/);
-                    if (match) ratings = JSON.parse(match[1]);
-                } catch (e) {}
-            }
             r.factors?.forEach(f => {
                 if (!allFactors[f.factor_text]) {
                     allFactors[f.factor_text] = { text: f.factor_text, category: f.factor_category, ratings: [], count: 0 };
                 }
-                allFactors[f.factor_text].ratings.push(ratings[f.factor_text] || 5);
+                allFactors[f.factor_text].ratings.push(f.rating || 5);
                 allFactors[f.factor_text].count++;
             });
         });
@@ -169,6 +163,9 @@ async function loadRound2Analysis() {
                     <h3>&#128202; تحلیل اولویت‌بندی راند دوم</h3>
                 </div>
                 <div class="card-body">
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+                        میانگین امتیازات ${round2Responses.length} شرکت‌کننده
+                    </p>
                     <div class="table-wrapper">
                         <table class="data-table">
                             <thead>

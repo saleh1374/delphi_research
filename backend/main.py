@@ -139,6 +139,33 @@ def dashboard_stats():
         db.close()
 
 
+@app.get("/api/expert-progress")
+def expert_progress():
+    db = SessionLocal()
+    try:
+        experts = db.query(Expert).all()
+        result = []
+        for e in experts:
+            r1 = db.query(Response).filter(Response.expert_id == e.expert_id, Response.round_no == 1).first()
+            r2 = db.query(Response).filter(Response.expert_id == e.expert_id, Response.round_no == 2).first()
+            ahp = db.query(AHPComparison).filter(AHPComparison.expert_id == e.expert_id).count()
+            result.append({
+                "expert_id": e.expert_id,
+                "name": e.full_name,
+                "org": e.organization,
+                "qualification_method": e.qualification_method or "-",
+                "is_active": e.is_active_delphi,
+                "round1_status": r1.response_status if r1 else "انجام نشده",
+                "round1_date": r1.created_at.strftime("%Y-%m-%d %H:%M") if r1 else None,
+                "round2_status": r2.response_status if r2 else "انجام نشده",
+                "round2_date": r2.created_at.strftime("%Y-%m-%d %H:%M") if r2 else None,
+                "ahp_count": ahp
+            })
+        return result
+    finally:
+        db.close()
+
+
 @app.get("/api/expert/{expert_id}/profile")
 def expert_profile(expert_id: int):
     db = SessionLocal()

@@ -2,6 +2,8 @@ let ahpFactors = [];
 let ahpExperts = [];
 let ahpComparisons = {};
 let selectedAHPExpert = null;
+let ahpTotalPairs = 0;
+let ahpCompletedPairs = 0;
 
 async function loadAHP() {
     try {
@@ -30,6 +32,7 @@ function renderAHPSection() {
                 </select>
             </div>
         </div>
+        <div id="ahp-progress-container"></div>
         <div id="ahp-form-container"></div>
         <div id="ahp-results-container" style="margin-top: 20px;"></div>`;
 }
@@ -38,6 +41,7 @@ async function selectAHPExpert(expertId) {
     if (!expertId) {
         document.getElementById('ahp-form-container').innerHTML = '';
         document.getElementById('ahp-results-container').innerHTML = '';
+        document.getElementById('ahp-progress-container').innerHTML = '';
         return;
     }
     selectedAHPExpert = parseInt(expertId);
@@ -56,10 +60,28 @@ async function selectAHPExpert(expertId) {
 
 function renderAHPForm() {
     const container = document.getElementById('ahp-form-container');
+    const progressContainer = document.getElementById('ahp-progress-container');
     if (ahpFactors.length < 2) {
         container.innerHTML = '<div class="card"><div class="card-body"><p>حداقل دو عامل برای مقایسه زوجی نیاز است.</p></div></div>';
         return;
     }
+
+    ahpTotalPairs = (ahpFactors.length * (ahpFactors.length - 1)) / 2;
+    ahpCompletedPairs = Object.keys(ahpComparisons).length;
+    const progressPercent = Math.round((ahpCompletedPairs / ahpTotalPairs) * 100);
+
+    progressContainer.innerHTML = `
+        <div class="card" style="margin-bottom: 16px;">
+            <div class="card-body" style="padding: 12px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 13px; font-weight: 600;">پیشرفت مقایسه‌ها</span>
+                    <span style="font-size: 13px; color: var(--primary); font-weight: 700;">${ahpCompletedPairs} از ${ahpTotalPairs} (${progressPercent}%)</span>
+                </div>
+                <div style="background: var(--border-light); border-radius: 8px; height: 10px; overflow: hidden;">
+                    <div style="background: linear-gradient(90deg, var(--primary), var(--accent)); height: 100%; width: ${progressPercent}%; border-radius: 8px; transition: width 0.3s;"></div>
+                </div>
+            </div>
+        </div>`;
 
     const scaleLabels = {
         1: 'یکسان',
@@ -93,7 +115,7 @@ function renderAHPForm() {
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <input type="range" min="1" max="9" step="1" value="${existingVal}" 
                                 id="comp_${fa.ahp_factor_id}_${fb.ahp_factor_id}"
-                                oninput="updateCompValue(${fa.ahp_factor_id}, ${fb.ahp_factor_id}, this.value)"
+                                oninput="updateCompValue(${fa.ahp_factor_id}, ${fb.ahp_factor_id}, this.value); scheduleAHPSave()"
                                 style="width: 120px;">
                             <span id="comp_label_${fa.ahp_factor_id}_${fb.ahp_factor_id}" 
                                 style="min-width: 60px; text-align: center; font-weight: 700; color: var(--primary); font-size: 16px;">${existingVal}</span>
@@ -117,16 +139,19 @@ function renderAHPForm() {
         <div class="card">
             <div class="card-header">
                 <h3>&#9878; فرم مقایسه زوجی AHP</h3>
+                <button type="button" class="btn btn-outline" onclick="saveAHPProgress()" style="font-size: 12px;">&#128190; ذخیره موقت</button>
             </div>
             <div class="card-body">
                 <div style="background: var(--info-bg); border: 1px solid var(--info); border-radius: 8px; padding: 16px; margin-bottom: 20px; font-size: 13px; color: var(--info);">
                     <strong>راهنما:</strong> برای هر جفت عامل، میزان اهمیت نسبی یکی نسبت به دیگری را با استفاده از مقیاس ۱ تا ۹ مشخص کنید.
                     عدد ۱ یعنی هر دو یکسان مهم هستند. عدد ۹ یعنی عامل سمت چپ بسیار مهم‌تر است.
+                    <br><strong>ذخیره موقت:</strong> تغییرات خودکار ذخیره می‌شوند. همچنین می‌توانید دکمه ذخیره موقت را بزنید.
                 </div>
                 <form id="ahpForm" onsubmit="saveAHPComparisons(event)">
                     ${pairsHTML}
-                    <div style="margin-top: 20px;">
-                        <button type="submit" class="btn btn-primary btn-lg">ذخیره مقایسه‌ها</button>
+                    <div style="margin-top: 20px; display: flex; gap: 12px; align-items: center;">
+                        <button type="submit" class="btn btn-primary btn-lg">ذخیره نهایی مقایسه‌ها</button>
+                        <button type="button" class="btn btn-outline" onclick="saveAHPProgress()">ذخیره موقت</button>
                     </div>
                 </form>
             </div>
@@ -143,6 +168,43 @@ function updateCompValue(factorAId, factorBId, value) {
         6: 'قوی', 7: 'خیلی قوی', 8: 'خیلی خیلی قوی', 9: 'مطلق'
     };
     document.getElementById(`comp_text_${factorAId}_${factorBId}`).textContent = scaleLabels[value] || '';
+
+    ahpCompletedPairs = Object.keys(ahpComparisons).length;
+    const progressPercent = Math.round((ahpCompletedPairs / ahpTotalPairs) * 100);
+    const progressContainer = document.getElementById('ahp-progress-container');
+    if (progressContainer) {
+        const bar = progressContainer.querySelector('div[style*="width"]');
+        if (bar) bar.style.width = progressPercent + '%';
+        const label = progressContainer.querySelector('span[style*="color: var(--primary)"]');
+        if (label) label.textContent = `${ahpCompletedPairs} از ${ahpTotalPairs} (${progressPercent}%)`;
+    }
+}
+
+let ahpSaveTimeout = null;
+function scheduleAHPSave() {
+    if (ahpSaveTimeout) clearTimeout(ahpSaveTimeout);
+    ahpSaveTimeout = setTimeout(() => saveAHPProgress(true), 2000);
+}
+
+async function saveAHPProgress(silent = false) {
+    if (!selectedAHPExpert) return;
+    const comparisons = [];
+    for (const key in ahpComparisons) {
+        const [aId, bId] = key.split('_').map(Number);
+        comparisons.push({
+            expert_id: selectedAHPExpert,
+            factor_a_id: aId,
+            factor_b_id: bId,
+            value: ahpComparisons[key]
+        });
+    }
+    if (comparisons.length === 0) return;
+    try {
+        await api.post('/analysis/ahp-comparisons/batch', comparisons);
+        if (!silent) showToast('ذخیره شد');
+    } catch (err) {
+        if (!silent) showToast(err.message, 'error');
+    }
 }
 
 async function saveAHPComparisons(e) {
