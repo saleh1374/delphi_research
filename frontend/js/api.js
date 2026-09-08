@@ -44,7 +44,16 @@ const api = {
     del(url) { return this.request(url, { method: 'DELETE' }); },
 
     async downloadFile(url, filename) {
-        const res = await fetch(`${API_BASE}${url}`);
+        const token = getAdminToken();
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = 'Bearer ' + token;
+        }
+        const res = await fetch(`${API_BASE}${url}`, { headers });
+        if (!res.ok) {
+            showToast('خطا در دانلود - احتمالاً نیاز به ورود مجدد دارید', 'error');
+            throw new Error('Download failed');
+        }
         const blob = await res.blob();
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
