@@ -12,6 +12,7 @@ from routers.final_factors import router as final_factors_router
 from routers.auth_router import router as auth_router
 from auth import is_valid_token
 from seed import seed_factor_bank
+from backup_scheduler import start_scheduler
 import os
 from sqlalchemy import text
 
@@ -176,6 +177,8 @@ def startup():
             print(f"Warning during retry seeding: {e2}")
     finally:
         db.close()
+
+    start_scheduler()
 
 
 @app.get("/health")
