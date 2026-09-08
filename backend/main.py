@@ -73,6 +73,10 @@ async def admin_auth_middleware(request: Request, call_next):
     if path == "/api/analysis/factor-frequency" and request.method == "GET":
         return await call_next(request)
 
+    # Export/download endpoints are public (GET only)
+    if path.startswith("/api/export/") and request.method == "GET":
+        return await call_next(request)
+
     # Survey submissions: allow POST /api/experts and POST /api/responses from survey pages
     # (the survey pages are public, so their submissions must be allowed)
     if path == "/api/experts" and request.method == "POST":
