@@ -1,0 +1,1642 @@
+{
+  "generated_at": "2026-09-10 09:14:20",
+  "experts": [
+    {
+      "id": 24,
+      "full_name": "صالح خیری",
+      "organization": "شرکت توانیر",
+      "position": "مدیرعامل",
+      "field_study": "مهندسی برق - قدرت",
+      "degree": "کارشناسی ارشد",
+      "years_energy": "2",
+      "phone": null,
+      "email": null
+    },
+    {
+      "id": 25,
+      "full_name": "ناصر اورنگ",
+      "organization": "شرکت برق منطقه‌ای",
+      "position": "محقق",
+      "field_study": "سایر",
+      "degree": "کارشناسی ارشد",
+      "years_energy": "25",
+      "phone": null,
+      "email": null
+    },
+    {
+      "id": 26,
+      "full_name": "بابک اسدزاده",
+      "organization": "شرکت برق منطقه‌ای",
+      "position": "مدیر فنی",
+      "field_study": "مهندسی برق - قدرت",
+      "degree": "دکتری",
+      "years_energy": "25",
+      "phone": "09023130195",
+      "email": null
+    },
+    {
+      "id": 27,
+      "full_name": "محسن برنجی",
+      "organization": "شرکت برق منطقه‌ای",
+      "position": "معاون مدیرعامل",
+      "field_study": "مهندسی برق - قدرت",
+      "degree": "کارشناسی ارشد",
+      "years_energy": "۲۸",
+      "phone": "۰۹۱۴۳۱۵۱۹۶۹",
+      "email": null
+    },
+    {
+      "id": 28,
+      "full_name": "محمد رسول نقدی شایان",
+      "organization": "شرکت برق منطقه‌ای",
+      "position": "مدیر فنی",
+      "field_study": "مهندسی برق - قدرت",
+      "degree": "کارشناسی",
+      "years_energy": "۲۷ سال",
+      "phone": null,
+      "email": null
+    },
+    {
+      "id": 29,
+      "full_name": "علی باغبان سیروس",
+      "organization": "شرکت برق منطقه‌ای",
+      "position": "مدیر فنی",
+      "field_study": "مهندسی برق - قدرت",
+      "degree": "کارشناسی ارشد",
+      "years_energy": "۲۵",
+      "phone": null,
+      "email": null
+    },
+    {
+      "id": 30,
+      "full_name": "رسول اسماعیل زاده",
+      "organization": "شرکت برق منطقه‌ای",
+      "position": "مدیرعامل",
+      "field_study": "مهندسی برق - قدرت",
+      "degree": "دکتری",
+      "years_energy": "۲۵",
+      "phone": null,
+      "email": null
+    },
+    {
+      "id": 31,
+      "full_name": "ناصر نقش اورنگ",
+      "organization": "شرکت برق منطقه‌ای",
+      "position": "محقق",
+      "field_study": "سایر",
+      "degree": "کارشناسی ارشد",
+      "years_energy": "۲۵",
+      "phone": null,
+      "email": null
+    }
+  ],
+  "responses": [
+    {
+      "id": 18,
+      "expert_id": 24,
+      "round_no": 1,
+      "status": "تکمیل‌شده",
+      "note": null,
+      "factors": [
+        {
+          "row": 1,
+          "text": "زیرساخت انتقال و خطوط تبادل مرزی",
+          "note": "بدون ظرفیت کافی انتقال و اتصال بین‌مرزی، صادرات برق پایدار ممکن نیست.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 2,
+          "text": "دیجیتالی‌سازی و پایش هوشمند شبکه",
+          "note": "برای صادرات پایدار برق، شبکه باید از سامانه‌های داده، پایش، کنترل و مدیریت پیشرفته برخوردار باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 3,
+          "text": "هماهنگی فنی و عملیاتی بین کشورها",
+          "note": "هماهنگی dispatch، بهره‌برداری شبکه و مدیریت تبادل انرژی بین کشورها ضروری است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 4,
+          "text": "هماهنگی در برنامه‌ریزی و سرمایه‌گذاری",
+          "note": "توسعه صادرات برق نیازمند هماهنگی در توسعه ظرفیت، شبکه و سرمایه‌گذاری‌های فرامرزی است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 5,
+          "text": "ترتیبات تجاری و قراردادهای بلندمدت",
+          "note": "قراردادهای پایدار و سازوکارهای تجاری شفاف، ریسک پروژه‌ها را کم می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 6,
+          "text": "اصلاحات تنظیم‌گری و چارچوب حکمرانی برق",
+          "note": "قوانین شفاف، تنظیم‌گری درست و ساختار حکمرانی مناسب، پیش‌نیاز جذب سرمایه و توسعه تجارت برق هستند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 7,
+          "text": "هماهنگی نهادی و دیپلماسی انرژی",
+          "note": "تجارت برق فرامرزی به همکاری نهادهای داخلی و منطقه‌ای نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 8,
+          "text": "هم‌راستایی الزامات فنی و مقرراتی میان کشورها",
+          "note": "استانداردهای فنی، مقررات شبکه و الزامات بهره‌برداری باید تا حدی هماهنگ باشند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 9,
+          "text": "کاهش هزینه تولید برق خورشیدی",
+          "note": "هرچه هزینه برق خورشیدی کمتر باشد، مزیت رقابتی صادراتی آن بیشتر می‌شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 10,
+          "text": "رقابت‌پذیری اقتصادی خورشیدی نسبت به سوخت فسیلی",
+          "note": "اگر برق خورشیدی ارزان‌تر یا هم‌هزینه با گزینه‌های فسیلی باشد، صادرات آن توجیه بیشتری پیدا می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 11,
+          "text": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+          "note": "توسعه صادرات برق نیازمند سرمایه‌گذاری هم‌زمان در نیروگاه، شبکه و زیرساخت‌های پشتیبان است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 12,
+          "text": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+          "note": "وجود سازوکارهای مالی مناسب، ریسک سرمایه‌گذاری را کم و توسعه پروژه را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 13,
+          "text": "کاهش وابستگی به بازارهای بین‌المللی سوخت",
+          "note": "تجدیدپذیرها با کاهش وابستگی به سوخت وارداتی یا فرصت‌هزینه سوخت داخلی، مزیت ایجاد می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 14,
+          "text": "منافع اقتصادی تجارت برق منطقه‌ای",
+          "note": "وقتی تجارت برق باعث کاهش هزینه سیستم و افزایش بهره‌وری شود، انگیزه توسعه صادرات بالاتر می‌رود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 15,
+          "text": "ادغام مؤثر انرژی‌های تجدیدپذیر در شبکه",
+          "note": "سهم بالاتر خورشیدی نیازمند توانایی فنی شبکه برای جذب و مدیریت آن است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 16,
+          "text": "انعطاف‌پذیری سیستم برق",
+          "note": "چون خورشیدی متناوب است، سیستم باید از نظر بهره‌برداری و بازار انعطاف‌پذیر باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 18,
+          "text": "کیفیت منبع خورشیدی و تابش مناسب",
+          "note": "شدت و پایداری تابش خورشیدی یکی از عوامل اصلی رقابت‌پذیری برق خورشیدی است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 19,
+          "text": "قابلیت تحویل‌پذیری برق firm",
+          "note": "بازار صادرات فقط برق ارزان نمی‌خواهد، بلکه برق قابل اتکا و تحویل‌پذیر می‌خواهد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 20,
+          "text": "مزیت رقابتی ملی در صادرات برق",
+          "note": "صادرات موفق به مزیت پایدار، نه فقط منابع طبیعی، وابسته است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "expert_id": 24,
+      "round_no": 2,
+      "status": "تکمیل‌شده",
+      "note": null,
+      "factors": [
+        {
+          "row": 1,
+          "text": "زیرساخت انتقال و خطوط تبادل مرزی",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 7
+        },
+        {
+          "row": 2,
+          "text": "دیجیتالی‌سازی و پایش هوشمند شبکه",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 4
+        },
+        {
+          "row": 3,
+          "text": "هماهنگی فنی و عملیاتی بین کشورها",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 7
+        },
+        {
+          "row": 4,
+          "text": "هماهنگی در برنامه‌ریزی و سرمایه‌گذاری",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 4
+        },
+        {
+          "row": 5,
+          "text": "ترتیبات تجاری و قراردادهای بلندمدت",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 7
+        },
+        {
+          "row": 6,
+          "text": "اصلاحات تنظیم‌گری و چارچوب حکمرانی برق",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 8
+        },
+        {
+          "row": 7,
+          "text": "هماهنگی نهادی و دیپلماسی انرژی",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 4
+        },
+        {
+          "row": 8,
+          "text": "هم‌راستایی الزامات فنی و مقرراتی میان کشورها",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 6
+        },
+        {
+          "row": 9,
+          "text": "کاهش هزینه تولید برق خورشیدی",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 3
+        },
+        {
+          "row": 10,
+          "text": "رقابت‌پذیری اقتصادی خورشیدی نسبت به سوخت فسیلی",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 3
+        },
+        {
+          "row": 11,
+          "text": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 2
+        },
+        {
+          "row": 12,
+          "text": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 7
+        },
+        {
+          "row": 13,
+          "text": "کاهش وابستگی به بازارهای بین‌المللی سوخت",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 4
+        },
+        {
+          "row": 14,
+          "text": "منافع اقتصادی تجارت برق منطقه‌ای",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 7
+        },
+        {
+          "row": 15,
+          "text": "ادغام مؤثر انرژی‌های تجدیدپذیر در شبکه",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 8
+        },
+        {
+          "row": 16,
+          "text": "انعطاف‌پذیری سیستم برق",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 2
+        },
+        {
+          "row": 17,
+          "text": "کیفیت منبع خورشیدی و تابش مناسب",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 1
+        },
+        {
+          "row": 18,
+          "text": "قابلیت تحویل‌پذیری برق firm",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 5
+        },
+        {
+          "row": 19,
+          "text": "مزیت رقابتی ملی در صادرات برق",
+          "note": null,
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": 1
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "expert_id": 26,
+      "round_no": 1,
+      "status": "تکمیل‌شده",
+      "note": null,
+      "factors": [
+        {
+          "row": 1,
+          "text": "زیرساخت انتقال و خطوط تبادل مرزی",
+          "note": "بدون ظرفیت کافی انتقال و اتصال بین‌مرزی، صادرات برق پایدار ممکن نیست.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 2,
+          "text": "دیجیتالی‌سازی و پایش هوشمند شبکه",
+          "note": "برای صادرات پایدار برق، شبکه باید از سامانه‌های داده، پایش، کنترل و مدیریت پیشرفته برخوردار باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 3,
+          "text": "طراحی بازار منطقه‌ای برق",
+          "note": "تجارت برق فقط به خطوط انتقال وابسته نیست و به سازوکار بازار، تسویه و قواعد مبادله نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 4,
+          "text": "هماهنگی در برنامه‌ریزی و سرمایه‌گذاری",
+          "note": "توسعه صادرات برق نیازمند هماهنگی در توسعه ظرفیت، شبکه و سرمایه‌گذاری‌های فرامرزی است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 5,
+          "text": "ظرفیت و کیفیت اتصال بین‌المللی شبکه",
+          "note": "کیفیت و ظرفیت interconnection تعیین می‌کند برق مازاد تا چه حد قابل انتقال به کشورهای همسایه باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 6,
+          "text": "تاب‌آوری و پایداری شبکه",
+          "note": "شبکه باید در برابر نوسانات، اختلالات و شوک‌های عملیاتی مقاوم باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 7,
+          "text": "هماهنگی فنی و عملیاتی بین کشورها",
+          "note": "هماهنگی dispatch، بهره‌برداری شبکه و مدیریت تبادل انرژی بین کشورها ضروری است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 8,
+          "text": "ترتیبات تجاری و قراردادهای بلندمدت",
+          "note": "قراردادهای پایدار و سازوکارهای تجاری شفاف، ریسک پروژه‌ها را کم می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 9,
+          "text": "اصلاحات تنظیم‌گری و چارچوب حکمرانی برق",
+          "note": "قوانین شفاف، تنظیم‌گری درست و ساختار حکمرانی مناسب، پیش‌نیاز جذب سرمایه و توسعه تجارت برق هستند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 10,
+          "text": "هماهنگی نهادی و دیپلماسی انرژی",
+          "note": "تجارت برق فرامرزی به همکاری نهادهای داخلی و منطقه‌ای نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 11,
+          "text": "هم‌راستایی الزامات فنی و مقرراتی میان کشورها",
+          "note": "استانداردهای فنی، مقررات شبکه و الزامات بهره‌برداری باید تا حدی هماهنگ باشند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 12,
+          "text": "کاهش هزینه تولید برق خورشیدی",
+          "note": "هرچه هزینه برق خورشیدی کمتر باشد، مزیت رقابتی صادراتی آن بیشتر می‌شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 13,
+          "text": "رقابت‌پذیری اقتصادی خورشیدی نسبت به سوخت فسیلی",
+          "note": "اگر برق خورشیدی ارزان‌تر یا هم‌هزینه با گزینه‌های فسیلی باشد، صادرات آن توجیه بیشتری پیدا می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 14,
+          "text": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+          "note": "توسعه صادرات برق نیازمند سرمایه‌گذاری هم‌زمان در نیروگاه، شبکه و زیرساخت‌های پشتیبان است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 15,
+          "text": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+          "note": "وجود سازوکارهای مالی مناسب، ریسک سرمایه‌گذاری را کم و توسعه پروژه را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 16,
+          "text": "کاهش وابستگی به بازارهای بین‌المللی سوخت",
+          "note": "تجدیدپذیرها با کاهش وابستگی به سوخت وارداتی یا فرصت‌هزینه سوخت داخلی، مزیت ایجاد می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 17,
+          "text": "منافع اقتصادی تجارت برق منطقه‌ای",
+          "note": "وقتی تجارت برق باعث کاهش هزینه سیستم و افزایش بهره‌وری شود، انگیزه توسعه صادرات بالاتر می‌رود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 18,
+          "text": "ادغام مؤثر انرژی‌های تجدیدپذیر در شبکه",
+          "note": "سهم بالاتر خورشیدی نیازمند توانایی فنی شبکه برای جذب و مدیریت آن است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 19,
+          "text": "امنیت انرژی منطقه‌ای",
+          "note": "اگر صادرات برق به تقویت امنیت انرژی منطقه کمک کند، پذیرش سیاسی و اقتصادی آن بیشتر می‌شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 20,
+          "text": "ارتقای مستمر فناوری و نوآوری",
+          "note": "توان بهبود فناوری، کاهش هزینه و افزایش بهره‌وری برای حفظ مزیت صادراتی مهم است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "expert_id": 28,
+      "round_no": 1,
+      "status": "تکمیل‌شده",
+      "note": null,
+      "factors": [
+        {
+          "row": 1,
+          "text": "ظرفیت و کیفیت اتصال بین‌المللی شبکه",
+          "note": "کیفیت و ظرفیت interconnection تعیین می‌کند برق مازاد تا چه حد قابل انتقال به کشورهای همسایه باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 2,
+          "text": "زیرساخت انتقال و خطوط تبادل مرزی",
+          "note": "بدون ظرفیت کافی انتقال و اتصال بین‌مرزی، صادرات برق پایدار ممکن نیست.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 3,
+          "text": "طراحی بازار منطقه‌ای برق",
+          "note": "تجارت برق فقط به خطوط انتقال وابسته نیست و به سازوکار بازار، تسویه و قواعد مبادله نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 4,
+          "text": "هماهنگی در برنامه‌ریزی و سرمایه‌گذاری",
+          "note": "توسعه صادرات برق نیازمند هماهنگی در توسعه ظرفیت، شبکه و سرمایه‌گذاری‌های فرامرزی است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 5,
+          "text": "ترتیبات تجاری و قراردادهای بلندمدت",
+          "note": "قراردادهای پایدار و سازوکارهای تجاری شفاف، ریسک پروژه‌ها را کم می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 6,
+          "text": "هماهنگی نهادی و دیپلماسی انرژی",
+          "note": "تجارت برق فرامرزی به همکاری نهادهای داخلی و منطقه‌ای نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 7,
+          "text": "کاهش هزینه تولید برق خورشیدی",
+          "note": "هرچه هزینه برق خورشیدی کمتر باشد، مزیت رقابتی صادراتی آن بیشتر می‌شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 8,
+          "text": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+          "note": "توسعه صادرات برق نیازمند سرمایه‌گذاری هم‌زمان در نیروگاه، شبکه و زیرساخت‌های پشتیبان است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 9,
+          "text": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+          "note": "وجود سازوکارهای مالی مناسب، ریسک سرمایه‌گذاری را کم و توسعه پروژه را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 10,
+          "text": "منافع اقتصادی تجارت برق منطقه‌ای",
+          "note": "وقتی تجارت برق باعث کاهش هزینه سیستم و افزایش بهره‌وری شود، انگیزه توسعه صادرات بالاتر می‌رود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 11,
+          "text": "ادغام مؤثر انرژی‌های تجدیدپذیر در شبکه",
+          "note": "سهم بالاتر خورشیدی نیازمند توانایی فنی شبکه برای جذب و مدیریت آن است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 12,
+          "text": "انعطاف‌پذیری سیستم برق",
+          "note": "چون خورشیدی متناوب است، سیستم باید از نظر بهره‌برداری و بازار انعطاف‌پذیر باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 13,
+          "text": "ترکیب خورشیدی با ذخیره‌ساز",
+          "note": "ذخیره‌سازی می‌تواند قابلیت تحویل‌پذیری و ارزش صادراتی برق خورشیدی را بالا ببرد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 14,
+          "text": "کیفیت منبع خورشیدی و تابش مناسب",
+          "note": "شدت و پایداری تابش خورشیدی یکی از عوامل اصلی رقابت‌پذیری برق خورشیدی است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 15,
+          "text": "قابلیت تحویل‌پذیری برق firm",
+          "note": "بازار صادرات فقط برق ارزان نمی‌خواهد، بلکه برق قابل اتکا و تحویل‌پذیر می‌خواهد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 16,
+          "text": "مزیت رقابتی ملی در صادرات برق",
+          "note": "صادرات موفق به مزیت پایدار، نه فقط منابع طبیعی، وابسته است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 17,
+          "text": "صنایع و نهادهای پشتیبان",
+          "note": "وجود شرکت‌های مهندسی، مالی، فناورانه و نهادی پشتیبان توسعه صادرات را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 18,
+          "text": "ارتقای مستمر فناوری و نوآوری",
+          "note": "توان بهبود فناوری، کاهش هزینه و افزایش بهره‌وری برای حفظ مزیت صادراتی مهم است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 19,
+          "text": "هم‌زمانی توسعه تجدیدپذیر و اصلاحات بازار برق",
+          "note": "توسعه خورشیدی بدون انطباق ساختار بازار می‌تواند ناکارآمد شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 20,
+          "text": "وجود تقاضای واقعی در بازار کشورهای همسایه",
+          "note": "صادرات زمانی معنا دارد که بازار مقصد نیاز و کشش خرید داشته باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "expert_id": 29,
+      "round_no": 1,
+      "status": "تکمیل‌شده",
+      "note": null,
+      "factors": [
+        {
+          "row": 2,
+          "text": "زیرساخت انتقال و خطوط تبادل مرزی",
+          "note": "بدون ظرفیت کافی انتقال و اتصال بین‌مرزی، صادرات برق پایدار ممکن نیست.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 3,
+          "text": "دیجیتالی‌سازی و پایش هوشمند شبکه",
+          "note": "برای صادرات پایدار برق، شبکه باید از سامانه‌های داده، پایش، کنترل و مدیریت پیشرفته برخوردار باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 4,
+          "text": "طراحی بازار منطقه‌ای برق",
+          "note": "تجارت برق فقط به خطوط انتقال وابسته نیست و به سازوکار بازار، تسویه و قواعد مبادله نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 5,
+          "text": "هماهنگی در برنامه‌ریزی و سرمایه‌گذاری",
+          "note": "توسعه صادرات برق نیازمند هماهنگی در توسعه ظرفیت، شبکه و سرمایه‌گذاری‌های فرامرزی است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 6,
+          "text": "ظرفیت و کیفیت اتصال بین‌المللی شبکه",
+          "note": "کیفیت و ظرفیت interconnection تعیین می‌کند برق مازاد تا چه حد قابل انتقال به کشورهای همسایه باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 7,
+          "text": "تاب‌آوری و پایداری شبکه",
+          "note": "شبکه باید در برابر نوسانات، اختلالات و شوک‌های عملیاتی مقاوم باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 8,
+          "text": "هماهنگی فنی و عملیاتی بین کشورها",
+          "note": "هماهنگی dispatch، بهره‌برداری شبکه و مدیریت تبادل انرژی بین کشورها ضروری است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 9,
+          "text": "ترتیبات تجاری و قراردادهای بلندمدت",
+          "note": "قراردادهای پایدار و سازوکارهای تجاری شفاف، ریسک پروژه‌ها را کم می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 10,
+          "text": "اصلاحات تنظیم‌گری و چارچوب حکمرانی برق",
+          "note": "قوانین شفاف، تنظیم‌گری درست و ساختار حکمرانی مناسب، پیش‌نیاز جذب سرمایه و توسعه تجارت برق هستند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 11,
+          "text": "هماهنگی نهادی و دیپلماسی انرژی",
+          "note": "تجارت برق فرامرزی به همکاری نهادهای داخلی و منطقه‌ای نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 12,
+          "text": "هم‌راستایی الزامات فنی و مقرراتی میان کشورها",
+          "note": "استانداردهای فنی، مقررات شبکه و الزامات بهره‌برداری باید تا حدی هماهنگ باشند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 13,
+          "text": "کاهش هزینه تولید برق خورشیدی",
+          "note": "هرچه هزینه برق خورشیدی کمتر باشد، مزیت رقابتی صادراتی آن بیشتر می‌شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 14,
+          "text": "رقابت‌پذیری اقتصادی خورشیدی نسبت به سوخت فسیلی",
+          "note": "اگر برق خورشیدی ارزان‌تر یا هم‌هزینه با گزینه‌های فسیلی باشد، صادرات آن توجیه بیشتری پیدا می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 15,
+          "text": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+          "note": "توسعه صادرات برق نیازمند سرمایه‌گذاری هم‌زمان در نیروگاه، شبکه و زیرساخت‌های پشتیبان است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 16,
+          "text": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+          "note": "وجود سازوکارهای مالی مناسب، ریسک سرمایه‌گذاری را کم و توسعه پروژه را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 17,
+          "text": "کاهش وابستگی به بازارهای بین‌المللی سوخت",
+          "note": "تجدیدپذیرها با کاهش وابستگی به سوخت وارداتی یا فرصت‌هزینه سوخت داخلی، مزیت ایجاد می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 18,
+          "text": "منافع اقتصادی تجارت برق منطقه‌ای",
+          "note": "وقتی تجارت برق باعث کاهش هزینه سیستم و افزایش بهره‌وری شود، انگیزه توسعه صادرات بالاتر می‌رود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 19,
+          "text": "ادغام مؤثر انرژی‌های تجدیدپذیر در شبکه",
+          "note": "سهم بالاتر خورشیدی نیازمند توانایی فنی شبکه برای جذب و مدیریت آن است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 20,
+          "text": "انعطاف‌پذیری سیستم برق",
+          "note": "چون خورشیدی متناوب است، سیستم باید از نظر بهره‌برداری و بازار انعطاف‌پذیر باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "expert_id": 30,
+      "round_no": 1,
+      "status": "تکمیل‌شده",
+      "note": null,
+      "factors": [
+        {
+          "row": 1,
+          "text": "زیرساخت انتقال و خطوط تبادل مرزی",
+          "note": "بدون ظرفیت کافی انتقال و اتصال بین‌مرزی، صادرات برق پایدار ممکن نیست.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 2,
+          "text": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+          "note": "توسعه صادرات برق نیازمند سرمایه‌گذاری هم‌زمان در نیروگاه، شبکه و زیرساخت‌های پشتیبان است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 3,
+          "text": "ادغام مؤثر انرژی‌های تجدیدپذیر در شبکه",
+          "note": "سهم بالاتر خورشیدی نیازمند توانایی فنی شبکه برای جذب و مدیریت آن است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 4,
+          "text": "اصلاحات تنظیم‌گری و چارچوب حکمرانی برق",
+          "note": "قوانین شفاف، تنظیم‌گری درست و ساختار حکمرانی مناسب، پیش‌نیاز جذب سرمایه و توسعه تجارت برق هستند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 5,
+          "text": "ظرفیت و کیفیت اتصال بین‌المللی شبکه",
+          "note": "کیفیت و ظرفیت interconnection تعیین می‌کند برق مازاد تا چه حد قابل انتقال به کشورهای همسایه باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 6,
+          "text": "هم‌زمانی توسعه تجدیدپذیر و اصلاحات بازار برق",
+          "note": "توسعه خورشیدی بدون انطباق ساختار بازار می‌تواند ناکارآمد شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 7,
+          "text": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+          "note": "وجود سازوکارهای مالی مناسب، ریسک سرمایه‌گذاری را کم و توسعه پروژه را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 8,
+          "text": "دیجیتالی‌سازی و پایش هوشمند شبکه",
+          "note": "برای صادرات پایدار برق، شبکه باید از سامانه‌های داده، پایش، کنترل و مدیریت پیشرفته برخوردار باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 9,
+          "text": "طراحی بازار منطقه‌ای برق",
+          "note": "تجارت برق فقط به خطوط انتقال وابسته نیست و به سازوکار بازار، تسویه و قواعد مبادله نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 10,
+          "text": "هماهنگی نهادی و دیپلماسی انرژی",
+          "note": "تجارت برق فرامرزی به همکاری نهادهای داخلی و منطقه‌ای نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 11,
+          "text": "انعطاف‌پذیری سیستم برق",
+          "note": "چون خورشیدی متناوب است، سیستم باید از نظر بهره‌برداری و بازار انعطاف‌پذیر باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 12,
+          "text": "وجود تقاضای واقعی در بازار کشورهای همسایه",
+          "note": "صادرات زمانی معنا دارد که بازار مقصد نیاز و کشش خرید داشته باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 13,
+          "text": "اثر سیاست‌های کشورهای همسایه بر بازار برق ایران",
+          "note": "سیاست‌های انرژی، ظرفیت‌سازی و توسعه تجدیدپذیر در کشورهای همسایه بر جذابیت صادرات اثر می‌گذارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 14,
+          "text": "قابلیت تحویل‌پذیری برق firm",
+          "note": "بازار صادرات فقط برق ارزان نمی‌خواهد، بلکه برق قابل اتکا و تحویل‌پذیر می‌خواهد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 15,
+          "text": "رقابت‌پذیری اقتصادی خورشیدی نسبت به سوخت فسیلی",
+          "note": "اگر برق خورشیدی ارزان‌تر یا هم‌هزینه با گزینه‌های فسیلی باشد، صادرات آن توجیه بیشتری پیدا می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 16,
+          "text": "کاهش هزینه تولید برق خورشیدی",
+          "note": "هرچه هزینه برق خورشیدی کمتر باشد، مزیت رقابتی صادراتی آن بیشتر می‌شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 17,
+          "text": "منافع اقتصادی تجارت برق منطقه‌ای",
+          "note": "وقتی تجارت برق باعث کاهش هزینه سیستم و افزایش بهره‌وری شود، انگیزه توسعه صادرات بالاتر می‌رود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 18,
+          "text": "مزیت رقابتی ملی در صادرات برق",
+          "note": "صادرات موفق به مزیت پایدار، نه فقط منابع طبیعی، وابسته است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 19,
+          "text": "ترتیبات تجاری و قراردادهای بلندمدت",
+          "note": "قراردادهای پایدار و سازوکارهای تجاری شفاف، ریسک پروژه‌ها را کم می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 20,
+          "text": "صنایع و نهادهای پشتیبان",
+          "note": "وجود شرکت‌های مهندسی، مالی، فناورانه و نهادی پشتیبان توسعه صادرات را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "expert_id": 31,
+      "round_no": 1,
+      "status": "تکمیل‌شده",
+      "note": null,
+      "factors": [
+        {
+          "row": 1,
+          "text": "زیرساخت انتقال و خطوط تبادل مرزی",
+          "note": "بدون ظرفیت کافی انتقال و اتصال بین‌مرزی، صادرات برق پایدار ممکن نیست.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 2,
+          "text": "دیجیتالی‌سازی و پایش هوشمند شبکه",
+          "note": "برای صادرات پایدار برق، شبکه باید از سامانه‌های داده، پایش، کنترل و مدیریت پیشرفته برخوردار باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 3,
+          "text": "تاب‌آوری و پایداری شبکه",
+          "note": "شبکه باید در برابر نوسانات، اختلالات و شوک‌های عملیاتی مقاوم باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 4,
+          "text": "طراحی بازار منطقه‌ای برق",
+          "note": "تجارت برق فقط به خطوط انتقال وابسته نیست و به سازوکار بازار، تسویه و قواعد مبادله نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 5,
+          "text": "ترتیبات تجاری و قراردادهای بلندمدت",
+          "note": "قراردادهای پایدار و سازوکارهای تجاری شفاف، ریسک پروژه‌ها را کم می‌کنند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 6,
+          "text": "اصلاحات تنظیم‌گری و چارچوب حکمرانی برق",
+          "note": "قوانین شفاف، تنظیم‌گری درست و ساختار حکمرانی مناسب، پیش‌نیاز جذب سرمایه و توسعه تجارت برق هستند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 7,
+          "text": "هماهنگی نهادی و دیپلماسی انرژی",
+          "note": "تجارت برق فرامرزی به همکاری نهادهای داخلی و منطقه‌ای نیاز دارد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 8,
+          "text": "کاهش هزینه تولید برق خورشیدی",
+          "note": "هرچه هزینه برق خورشیدی کمتر باشد، مزیت رقابتی صادراتی آن بیشتر می‌شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 9,
+          "text": "رقابت‌پذیری اقتصادی خورشیدی نسبت به سوخت فسیلی",
+          "note": "اگر برق خورشیدی ارزان‌تر یا هم‌هزینه با گزینه‌های فسیلی باشد، صادرات آن توجیه بیشتری پیدا می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 10,
+          "text": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+          "note": "توسعه صادرات برق نیازمند سرمایه‌گذاری هم‌زمان در نیروگاه، شبکه و زیرساخت‌های پشتیبان است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 11,
+          "text": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+          "note": "وجود سازوکارهای مالی مناسب، ریسک سرمایه‌گذاری را کم و توسعه پروژه را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 12,
+          "text": "منافع اقتصادی تجارت برق منطقه‌ای",
+          "note": "وقتی تجارت برق باعث کاهش هزینه سیستم و افزایش بهره‌وری شود، انگیزه توسعه صادرات بالاتر می‌رود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 13,
+          "text": "انعطاف‌پذیری سیستم برق",
+          "note": "چون خورشیدی متناوب است، سیستم باید از نظر بهره‌برداری و بازار انعطاف‌پذیر باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 14,
+          "text": "ترکیب خورشیدی با ذخیره‌ساز",
+          "note": "ذخیره‌سازی می‌تواند قابلیت تحویل‌پذیری و ارزش صادراتی برق خورشیدی را بالا ببرد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 15,
+          "text": "قابلیت تحویل‌پذیری برق firm",
+          "note": "بازار صادرات فقط برق ارزان نمی‌خواهد، بلکه برق قابل اتکا و تحویل‌پذیر می‌خواهد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 16,
+          "text": "مزیت رقابتی ملی در صادرات برق",
+          "note": "صادرات موفق به مزیت پایدار، نه فقط منابع طبیعی، وابسته است.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 17,
+          "text": "صنایع و نهادهای پشتیبان",
+          "note": "وجود شرکت‌های مهندسی، مالی، فناورانه و نهادی پشتیبان توسعه صادرات را تسهیل می‌کند.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 18,
+          "text": "هم‌زمانی توسعه تجدیدپذیر و اصلاحات بازار برق",
+          "note": "توسعه خورشیدی بدون انطباق ساختار بازار می‌تواند ناکارآمد شود.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 19,
+          "text": "وجود تقاضای واقعی در بازار کشورهای همسایه",
+          "note": "صادرات زمانی معنا دارد که بازار مقصد نیاز و کشش خرید داشته باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        },
+        {
+          "row": 20,
+          "text": "ملاحظات اقلیمی و کربن‌زدایی",
+          "note": "تجارت برق مبتنی بر تجدیدپذیر می‌تواند با اهداف کاهش انتشار و انتقال انرژی همسو باشد.",
+          "source": null,
+          "category": null,
+          "from_reference": false,
+          "rating": null
+        }
+      ]
+    }
+  ],
+  "activities": [],
+  "factor_bank": [
+    {
+      "id": 1,
+      "title": "زیرساخت انتقال و خطوط تبادل مرزی",
+      "category": "زیرساخت و شبکه",
+      "description": "بدون ظرفیت کافی انتقال و اتصال بین‌مرزی، صادرات برق پایدار ممکن نیست.",
+      "why_important": "در مطالعات بانک جهانی درباره تجارت برق منطقه‌ای، زیرساخت interconnection یکی از پایه‌های اصلی ادغام بازار معرفی شده است.",
+      "source": "World Bank, Beyond Borders / Regional Power Integration"
+    },
+    {
+      "id": 2,
+      "title": "ظرفیت و کیفیت اتصال بین‌المللی شبکه",
+      "category": "زیرساخت و شبکه",
+      "description": "کیفیت و ظرفیت interconnection تعیین می‌کند برق مازاد تا چه حد قابل انتقال به کشورهای همسایه باشد.",
+      "why_important": "در ادبیات تجارت برق منطقه‌ای، capacity و connectivity از شروط کلیدی تجارت برق هستند.",
+      "source": "World Bank / ESMAP connectivity frameworks"
+    },
+    {
+      "id": 3,
+      "title": "دیجیتالی‌سازی و پایش هوشمند شبکه",
+      "category": "زیرساخت و شبکه",
+      "description": "برای صادرات پایدار برق، شبکه باید از سامانه‌های داده، پایش، کنترل و مدیریت پیشرفته برخوردار باشد.",
+      "why_important": "در برنامه‌های جدید اتصال منطقه‌ای، ابزارهای دیجیتال برای قابلیت اطمینان شبکه مهم شناخته شده‌اند.",
+      "source": "World Bank regional electricity integration logic"
+    },
+    {
+      "id": 4,
+      "title": "تاب‌آوری و پایداری شبکه",
+      "category": "زیرساخت و شبکه",
+      "description": "شبکه باید در برابر نوسانات، اختلالات و شوک‌های عملیاتی مقاوم باشد.",
+      "why_important": "تجارت برق منطقه‌ای زمانی موفق است که شبکه قابلیت اتکای کافی داشته باشد.",
+      "source": "World Bank / regional power security framing"
+    },
+    {
+      "id": 5,
+      "title": "طراحی بازار منطقه‌ای برق",
+      "category": "بازار و تنظیم‌گری",
+      "description": "تجارت برق فقط به خطوط انتقال وابسته نیست و به سازوکار بازار، تسویه و قواعد مبادله نیاز دارد.",
+      "why_important": "بانک جهانی پنج بلوک اصلی ادغام منطقه‌ای را معرفی می‌کند که market design یکی از آن‌هاست.",
+      "source": "World Bank"
+    },
+    {
+      "id": 6,
+      "title": "هماهنگی فنی و عملیاتی بین کشورها",
+      "category": "بازار و تنظیم‌گری",
+      "description": "هماهنگی dispatch، بهره‌برداری شبکه و مدیریت تبادل انرژی بین کشورها ضروری است.",
+      "why_important": "در چارچوب ادغام منطقه‌ای، technical and operational coordination یک بلوک کلیدی است.",
+      "source": "World Bank"
+    },
+    {
+      "id": 7,
+      "title": "هماهنگی در برنامه‌ریزی و سرمایه‌گذاری",
+      "category": "بازار و تنظیم‌گری",
+      "description": "توسعه صادرات برق نیازمند هماهنگی در توسعه ظرفیت، شبکه و سرمایه‌گذاری‌های فرامرزی است.",
+      "why_important": "planning and investment coordination به‌عنوان یکی از ارکان ادغام منطقه‌ای مطرح شده است.",
+      "source": "World Bank"
+    },
+    {
+      "id": 8,
+      "title": "ترتیبات تجاری و قراردادهای بلندمدت",
+      "category": "بازار و تنظیم‌گری",
+      "description": "قراردادهای پایدار و سازوکارهای تجاری شفاف، ریسک پروژه‌ها را کم می‌کنند.",
+      "why_important": "در تحلیل بازار برق MENA، قراردادهای بلندمدت برای کاهش ریسک و تسهیل تأمین مالی مهم دانسته شده‌اند.",
+      "source": "Oxford/OIES MENA electricity markets"
+    },
+    {
+      "id": 9,
+      "title": "اصلاحات تنظیم‌گری و چارچوب حکمرانی برق",
+      "category": "بازار و تنظیم‌گری",
+      "description": "قوانین شفاف، تنظیم‌گری درست و ساختار حکمرانی مناسب، پیش‌نیاز جذب سرمایه و توسعه تجارت برق هستند.",
+      "why_important": "مطالعه MENA بر اصلاحات بخش برق، حذف ناکارایی‌ها و بهبود ساختار بازار تأکید می‌کند.",
+      "source": "Oxford/OIES"
+    },
+    {
+      "id": 10,
+      "title": "هماهنگی نهادی و دیپلماسی انرژی",
+      "category": "بازار و تنظیم‌گری",
+      "description": "تجارت برق فرامرزی به همکاری نهادهای داخلی و منطقه‌ای نیاز دارد.",
+      "why_important": "در تجربه‌های تجارت منطقه‌ای، institution building و هماهنگی نهادی از پیش‌شرط‌هاست.",
+      "source": "World Bank / WRI"
+    },
+    {
+      "id": 11,
+      "title": "هم‌راستایی الزامات فنی و مقرراتی میان کشورها",
+      "category": "بازار و تنظیم‌گری",
+      "description": "استانداردهای فنی، مقررات شبکه و الزامات بهره‌برداری باید تا حدی هماهنگ باشند.",
+      "why_important": "WRI بر harmonizing regulatory and technical requirements across borders تأکید کرده است.",
+      "source": "WRI"
+    },
+    {
+      "id": 12,
+      "title": "کاهش هزینه تولید برق خورشیدی",
+      "category": "اقتصادی و مالی",
+      "description": "هرچه هزینه برق خورشیدی کمتر باشد، مزیت رقابتی صادراتی آن بیشتر می‌شود.",
+      "why_important": "IRENA نشان می‌دهد خورشیدی utility-scale در سطح جهانی بسیار رقابتی شده است.",
+      "source": "IRENA"
+    },
+    {
+      "id": 13,
+      "title": "رقابت‌پذیری اقتصادی خورشیدی نسبت به سوخت فسیلی",
+      "category": "اقتصادی و مالی",
+      "description": "اگر برق خورشیدی ارزان‌تر یا هم‌هزینه با گزینه‌های فسیلی باشد، صادرات آن توجیه بیشتری پیدا می‌کند.",
+      "why_important": "IRENA گزارش کرده بخش بزرگی از پروژه‌های جدید تجدیدپذیر ارزان‌تر از گزینه‌های فسیلی هستند.",
+      "source": "IRENA"
+    },
+    {
+      "id": 14,
+      "title": "دسترسی به سرمایه‌گذاری در تولید و شبکه",
+      "category": "اقتصادی و مالی",
+      "description": "توسعه صادرات برق نیازمند سرمایه‌گذاری هم‌زمان در نیروگاه، شبکه و زیرساخت‌های پشتیبان است.",
+      "why_important": "مطالعه MENA جذب سرمایه در generation capacity و networks را مهم می‌داند.",
+      "source": "Oxford/OIES"
+    },
+    {
+      "id": 15,
+      "title": "تأمین مالی پروژه‌های خورشیدی و صادراتی",
+      "category": "اقتصادی و مالی",
+      "description": "وجود سازوکارهای مالی مناسب، ریسک سرمایه‌گذاری را کم و توسعه پروژه را تسهیل می‌کند.",
+      "why_important": "قراردادهای بلندمدت و ساختارهای کاهش ریسک برای پروژه‌های برق اهمیت بالایی دارند.",
+      "source": "Oxford/OIES"
+    },
+    {
+      "id": 16,
+      "title": "کاهش وابستگی به بازارهای بین‌المللی سوخت",
+      "category": "اقتصادی و مالی",
+      "description": "تجدیدپذیرها با کاهش وابستگی به سوخت وارداتی یا فرصت‌هزینه سوخت داخلی، مزیت ایجاد می‌کنند.",
+      "why_important": "IRENA تأکید می‌کند تجدیدپذیرها علاوه بر مزیت هزینه، امنیت انرژی را هم بهبود می‌دهند.",
+      "source": "IRENA"
+    },
+    {
+      "id": 17,
+      "title": "منافع اقتصادی تجارت برق منطقه‌ای",
+      "category": "اقتصادی و مالی",
+      "description": "وقتی تجارت برق باعث کاهش هزینه سیستم و افزایش بهره‌وری شود، انگیزه توسعه صادرات بالاتر می‌رود.",
+      "why_important": "بانک جهانی کاهش هزینه‌های کل سیستم را از منافع اصلی تجارت منطقه‌ای می‌داند.",
+      "source": "World Bank"
+    },
+    {
+      "id": 18,
+      "title": "ادغام مؤثر انرژی‌های تجدیدپذیر در شبکه",
+      "category": "فنی و فناوری",
+      "description": "سهم بالاتر خورشیدی نیازمند توانایی فنی شبکه برای جذب و مدیریت آن است.",
+      "why_important": "مطالعه بازار برق MENA افزایش نقش renewables و integration آن‌ها را محور اصلی گذار می‌داند.",
+      "source": "Oxford/OIES"
+    },
+    {
+      "id": 19,
+      "title": "انعطاف‌پذیری سیستم برق",
+      "category": "فنی و فناوری",
+      "description": "چون خورشیدی متناوب است، سیستم باید از نظر بهره‌برداری و بازار انعطاف‌پذیر باشد.",
+      "why_important": "در گذار انرژی MENA تأکید شده زیرساخت و طراحی بازار باید برای منابع متناوب سازگار شوند.",
+      "source": "Oxford/OIES / Wuppertal MENA transformation"
+    },
+    {
+      "id": 20,
+      "title": "ترکیب خورشیدی با ذخیره‌ساز",
+      "category": "فنی و فناوری",
+      "description": "ذخیره‌سازی می‌تواند قابلیت تحویل‌پذیری و ارزش صادراتی برق خورشیدی را بالا ببرد.",
+      "why_important": "IRENA نشان می‌دهد solar-plus-storage در مناطق با منبع خورشیدی قوی به برق firm و رقابتی نزدیک شده است.",
+      "source": "IRENA-related reporting"
+    },
+    {
+      "id": 21,
+      "title": "کیفیت منبع خورشیدی و تابش مناسب",
+      "category": "فنی و فناوری",
+      "description": "شدت و پایداری تابش خورشیدی یکی از عوامل اصلی رقابت‌پذیری برق خورشیدی است.",
+      "why_important": "IRENA مناطق با منبع خورشیدی قوی را از محرک‌های اصلی رقابت‌پذیری معرفی می‌کند.",
+      "source": "IRENA-related reporting"
+    },
+    {
+      "id": 22,
+      "title": "قابلیت تحویل‌پذیری برق firm",
+      "category": "فنی و فناوری",
+      "description": "بازار صادرات فقط برق ارزان نمی‌خواهد، بلکه برق قابل اتکا و تحویل‌پذیر می‌خواهد.",
+      "why_important": "در تحلیل‌های جدید IRENA، برق firm مبتنی بر خورشیدی و ذخیره‌ساز اهمیت زیادی یافته است.",
+      "source": "IRENA-related reporting"
+    },
+    {
+      "id": 23,
+      "title": "مزیت رقابتی ملی در صادرات برق",
+      "category": "راهبردی و رقابتی",
+      "description": "صادرات موفق به مزیت پایدار، نه فقط منابع طبیعی، وابسته است.",
+      "why_important": "در چارچوب پورتر، رقابت‌پذیری به توان نوآوری و ارتقای مستمر وابسته است.",
+      "source": "Porter framework cited in proposal references"
+    },
+    {
+      "id": 24,
+      "title": "صنایع و نهادهای پشتیبان",
+      "category": "راهبردی و رقابتی",
+      "description": "وجود شرکت‌های مهندسی، مالی، فناورانه و نهادی پشتیبان توسعه صادرات را تسهیل می‌کند.",
+      "why_important": "در چارچوب مزیت رقابتی، صنایع مرتبط و پشتیبان اهمیت بالایی دارند.",
+      "source": "Porter framework cited in proposal references"
+    },
+    {
+      "id": 25,
+      "title": "ارتقای مستمر فناوری و نوآوری",
+      "category": "راهبردی و رقابتی",
+      "description": "توان بهبود فناوری، کاهش هزینه و افزایش بهره‌وری برای حفظ مزیت صادراتی مهم است.",
+      "why_important": "رویکرد مزیت رقابتی ملی بر innovation and upgrading تأکید دارد.",
+      "source": "Porter-related logic in proposal references"
+    },
+    {
+      "id": 26,
+      "title": "هم‌زمانی توسعه تجدیدپذیر و اصلاحات بازار برق",
+      "category": "راهبردی و رقابتی",
+      "description": "توسعه خورشیدی بدون انطباق ساختار بازار می‌تواند ناکارآمد شود.",
+      "why_important": "مطالعه MENA این دو مسیر را موازی و نیازمند هم‌سویی می‌داند.",
+      "source": "Oxford/OIES"
+    },
+    {
+      "id": 27,
+      "title": "وجود تقاضای واقعی در بازار کشورهای همسایه",
+      "category": "منطقه‌ای و ژئوپلیتیکی",
+      "description": "صادرات زمانی معنا دارد که بازار مقصد نیاز و کشش خرید داشته باشد.",
+      "why_important": "منطقه‌گرایی برق بر مبنای complementarities و نیازهای متفاوت کشورها شکل می‌گیرد.",
+      "source": "World Bank regional market framing"
+    },
+    {
+      "id": 28,
+      "title": "امنیت انرژی منطقه‌ای",
+      "category": "منطقه‌ای و ژئوپلیتیکی",
+      "description": "اگر صادرات برق به تقویت امنیت انرژی منطقه کمک کند، پذیرش سیاسی و اقتصادی آن بیشتر می‌شود.",
+      "why_important": "هم بانک جهانی و هم WRI interconnection را ابزار تقویت امنیت انرژی می‌دانند.",
+      "source": "World Bank / WRI"
+    },
+    {
+      "id": 29,
+      "title": "ملاحظات اقلیمی و کربن‌زدایی",
+      "category": "منطقه‌ای و ژئوپلیتیکی",
+      "description": "تجارت برق مبتنی بر تجدیدپذیر می‌تواند با اهداف کاهش انتشار و انتقال انرژی همسو باشد.",
+      "why_important": "بانک جهانی climate change mitigation را از محرک‌های اصلی تجارت برق منطقه‌ای معرفی می‌کند.",
+      "source": "World Bank"
+    },
+    {
+      "id": 30,
+      "title": "اثر سیاست‌های کشورهای همسایه بر بازار برق ایران",
+      "category": "منطقه‌ای و ژئوپلیتیکی",
+      "description": "سیاست‌های انرژی، ظرفیت‌سازی و توسعه تجدیدپذیر در کشورهای همسایه بر جذابیت صادرات اثر می‌گذارد.",
+      "why_important": "مطالعات cross-border effects نشان می‌دهد بازارهای متصل از سیاست‌ها و توسعه طرف مقابل اثر می‌پذیرند.",
+      "source": "ادبیات cross-border electricity market interaction"
+    },
+    {
+      "id": 31,
+      "title": "همبستگی تولید تجدیدپذیر در کشورهای همسایه",
+      "category": "منطقه‌ای و ژئوپلیتیکی",
+      "description": "اگر کشورهای همسایه هم‌زمان تولید خورشیدی بالایی داشته باشند، ارزش صادراتی برق خورشیدی ممکن است افت کند.",
+      "why_important": "مطالعات جدید درباره spillover effects نشان می‌دهد توسعه تجدیدپذیر در همسایگان می‌تواند بر ارزش بازار برق اثر بگذارد.",
+      "source": "Recent cross-border renewable market evidence"
+    }
+  ]
+}
