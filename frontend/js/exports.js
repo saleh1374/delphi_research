@@ -92,7 +92,11 @@ async function importBackup(file) {
     try {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await fetch(`${API_BASE}/export/import`, { method: 'POST', body: formData });
+        const response = await fetch(`${API_BASE}/export/import`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + getAdminToken() },
+            body: formData
+        });
         if (!response.ok) { const err = await response.json(); throw new Error(err.detail || 'خطا'); }
         const result = await response.json();
         showToast(`بازیابی موفق: ${result.imported.experts} نخبه، ${result.imported.responses} پاسخ، ${result.imported.factors} عامل`);
