@@ -13,6 +13,14 @@ from models import Expert, Response, ResponseFactor, Activity, FactorBank
 
 logger = logging.getLogger("backup_scheduler")
 
+import sys
+_handler = logging.StreamHandler(sys.stderr)
+_handler.setLevel(logging.INFO)
+_formatter = logging.Formatter('[%(asctime)s] [backup_scheduler] %(levelname)s: %(message)s')
+_handler.setFormatter(_formatter)
+logger.addHandler(_handler)
+logger.setLevel(logging.INFO)
+
 BACKUP_FOLDER = "backups"
 DATE_FMT = "%Y%m%d_%H"
 ADVISORY_LOCK_ID = 792001
