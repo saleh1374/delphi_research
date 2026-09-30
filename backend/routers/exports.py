@@ -338,7 +338,8 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
                 degree=e_data.get("degree", ""),
                 years_energy=e_data.get("years_energy", 0),
                 phone=e_data.get("phone"),
-                email=e_data.get("email")
+                email=e_data.get("email"),
+                role=e_data.get("role", "expert")
             )
             db.add(expert)
             db.flush()

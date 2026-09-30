@@ -5,7 +5,7 @@ let factorBankData = [];
 
 async function loadDelphiSection() {
     try {
-        delphiExperts = await api.get('/experts');
+        delphiExperts = await api.get('/experts?role=expert');
         factorBankData = await api.get('/factor-bank');
     } catch (e) {
         showToast(e.message, 'error');

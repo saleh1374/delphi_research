@@ -38,7 +38,7 @@ def list_experts(
     search: Optional[str] = None,
     role: Optional[str] = None,
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 1000,
     db: Session = Depends(get_db)
 ):
     query = db.query(Expert)
