@@ -76,7 +76,7 @@ function loadExports() {
                         <div class="info-icon" style="background:#ecfdf5;color:#10b981;">&#128190;</div>
                         <div class="info-text"><div class="info-label">فایل JSON</div><div class="info-value">پشتیبان کامل داده‌ها</div></div>
                     </div>
-                    <div class="expert-info-item" style="cursor:pointer;border:2px solid #f59e0b;border-radius:12px;" onclick="document.getElementById('import-file-input').click()">
+                    <div class="expert-info-item" id="import-card" style="cursor:pointer;border:2px solid #f59e0b;border-radius:12px;" onclick="document.getElementById('import-file-input').click()">
                         <div class="info-icon" style="background:#fffbeb;color:#f59e0b;">&#128194;</div>
                         <div class="info-text"><div class="info-label">بازیابی داده‌ها</div><div class="info-value">بارگذاری فایل پشتیبان JSON</div></div>
                     </div>
@@ -112,15 +112,65 @@ async function downloadCSV(endpoint, filename) {
 }
 
 async function importBackup(file) {
+    const input = document.getElementById('import-file-input');
+    if (input) input.value = '';          // همیشه اول پاک شود تا انتخاب دوباره همان فایل هم اثر کند
     if (!file) return;
-    if (!confirm('آیا از بازیابی داده‌ها مطمئن هستید؟ نخبگان تکراری ایجاد نمی‌شوند و فقط داده‌های جدید اضافه می‌شوند.')) return;
+
+    // ۱) اعتبارسنجی ساختار فایل، قبل از هر پیام تأیید
+    let data;
+    try {
+        data = JSON.parse(await file.text());
+    } catch (e) {
+        showToast('فایل انتخاب‌شده یک فایل JSON معتبر نیست', 'error');
+        return;
+    }
+    const backupKeys = ['experts', 'responses', 'activities', 'factor_bank'];
+    if (!data || typeof data !== 'object' || Array.isArray(data) ||
+        !backupKeys.some(k => k in data)) {
+        showToast('این فایل، فایل پشتیبان سامانه نیست؛ فایل backup.json را انتخاب کنید (نه خروجی نتایج AHP)', 'error');
+        return;
+    }
+
+    if (!confirm('آیا از بازیابی داده‌ها مطمئن هستید؟ داده‌های موجود تکرار نمی‌شوند و فقط موارد جدید اضافه می‌شوند.')) return;
+
+    // ۲) حالت «در حال بازیابی» روی کارت
+    const card = document.getElementById('import-card');
+    const cardHTML = card ? card.innerHTML : '';
+    if (card) card.innerHTML = `<div class="info-icon" style="background:#fffbeb;color:#f59e0b;">&#8987;</div>
+        <div class="info-text"><div class="info-label">در حال بازیابی…</div><div class="info-value">لطفاً صبر کنید</div></div>`;
+
     try {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', new File([JSON.stringify(data)], file.name || 'backup.json',
+            { type: 'application/json' }));
         const response = await fetch(`${API_BASE}/export/import`, { method: 'POST', body: formData });
-        if (!response.ok) { const err = await response.json(); throw new Error(err.detail || 'خطا'); }
+        if (!response.ok) {
+            let detail = 'خطا در بازیابی';
+            try { detail = (await response.json()).detail || detail; } catch (e) { }
+            throw new Error(detail);
+        }
         const result = await response.json();
-        showToast(`بازیابی موفق: ${result.imported.experts} نخبه، ${result.imported.responses} پاسخ، ${result.imported.factors} عامل`);
-        document.getElementById('import-file-input').value = '';
-    } catch (err) { showToast(err.message || 'خطا', 'error'); }
+        const imp = result.imported || {};
+        const already = result.already || {};
+        const totalNew = Object.values(imp).reduce((a, b) => a + (Number(b) || 0), 0);
+        const totalOld = Object.values(already).reduce((a, b) => a + (Number(b) || 0), 0);
+
+        if (totalNew > 0) {
+            showToast(`بازیابی انجام شد: ${imp.experts || 0} نخبه، ${imp.responses || 0} پاسخ، ` +
+                `${imp.factors || 0} عامل، ${imp.activities || 0} فعالیت، ${imp.ahp || 0} مقایسه AHP جدید`);
+        } else if (totalOld > 0) {
+            showToast(`همه ${totalOld} مورد این فایل قبلاً در سایت موجود است؛ چیزی تکرار نشد. ` +
+                `داده‌های فعلی سایت دست‌نخورده ماند.`, 'info');
+        } else {
+            showToast('هیچ داده‌ای برای بازیابی در این فایل پیدا نشد', 'error');
+        }
+
+        // ۳) به‌روزرسانی سایت تا داده‌ها بلافاصله دیده شوند
+        if (typeof showSection === 'function' && typeof currentSection !== 'undefined') {
+            showSection(currentSection);
+        }
+    } catch (err) {
+        showToast(err.message || 'خطا در بازیابی', 'error');
+        if (card) card.innerHTML = cardHTML;   // بازگرداندن کارت به حالت اولیه
+    }
 }

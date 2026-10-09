@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session, joinedload
 from database import get_db
@@ -329,17 +329,33 @@ def export_round2_priorities(db: Session = Depends(get_db)):
 @router.post("/import")
 async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_db)):
     content = await file.read()
-    text = content.decode('utf-8-sig')
-    data = json.loads(text)
+    try:
+        text = content.decode("utf-8-sig")
+        data = json.loads(text)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise HTTPException(status_code=400,
+                            detail="فایل انتخاب‌شده یک فایل JSON معتبر نیست")
+    core_keys = ("experts", "responses", "activities", "factor_bank")
+    if not isinstance(data, dict) or not any(k in data for k in core_keys):
+        raise HTTPException(
+            status_code=400,
+            detail="این فایل، فایل پشتیبان سامانه نیست (کلیدهای experts/responses/activities "
+                   "یافت نشد). فایل backup.json را انتخاب کنید، نه خروجی نتایج AHP را.")
 
     imported = {"experts": 0, "responses": 0, "factors": 0, "activities": 0,
                 "factor_bank": 0, "ahp": 0}
+    already = {"responses": 0, "activities": 0, "ahp": 0}   # قبلاً در سایت موجود بود
+    skipped = {"responses": 0, "activities": 0, "ahp": 0}    # خبره‌ای با این شناسه پیدا نشد
 
     expert_id_map = {}
     for e_data in data.get("experts", []):
+        if not isinstance(e_data, dict) or not e_data.get("full_name"):
+            continue
+        old_id = e_data.get("id")
         existing = db.query(Expert).filter(Expert.full_name == e_data["full_name"]).first()
         if existing:
-            expert_id_map[e_data["id"]] = existing.expert_id
+            if old_id is not None:
+                expert_id_map[old_id] = existing.expert_id
         else:
             expert = Expert(
                 full_name=e_data["full_name"],
@@ -354,10 +370,13 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
             )
             db.add(expert)
             db.flush()
-            expert_id_map[e_data["id"]] = expert.expert_id
+            if old_id is not None:
+                expert_id_map[old_id] = expert.expert_id
             imported["experts"] += 1
 
     for fb_data in data.get("factor_bank", []):
+        if not isinstance(fb_data, dict) or not fb_data.get("title"):
+            continue
         existing = db.query(FactorBank).filter(FactorBank.title == fb_data["title"]).first()
         if not existing:
             fb = FactorBank(
@@ -370,17 +389,27 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
             db.add(fb)
             imported["factor_bank"] += 1
 
+    # شناسه‌های معتبر خبرگان (برای جلوگیری از ساخت ردیف‌های بدون خبره)
+    valid_expert_ids = {row[0] for row in db.query(Expert.expert_id).all()}
+
     for r_data in data.get("responses", []):
+        if not isinstance(r_data, dict):
+            continue
         old_expert_id = r_data.get("expert_id")
         new_expert_id = expert_id_map.get(old_expert_id, old_expert_id)
         round_no = r_data.get("round_no", 1)
 
+        if new_expert_id not in valid_expert_ids:
+            skipped["responses"] += 1
+            continue
+
         # جلوگیری از ایجاد پاسخ تکراری برای همان خبره/راند
-        already = db.query(Response).filter(
+        dup_resp = db.query(Response).filter(
             Response.expert_id == new_expert_id,
             Response.round_no == round_no,
         ).first()
-        if already:
+        if dup_resp:
+            already["responses"] += 1
             continue
 
         response = Response(
@@ -408,11 +437,16 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
             imported["factors"] += 1
 
     for a_data in data.get("activities", []):
+        if not isinstance(a_data, dict):
+            continue
         old_expert_id = a_data.get("expert_id")
         new_expert_id = expert_id_map.get(old_expert_id, old_expert_id)
 
         note = a_data.get("note")
         fdate = a_data.get("follow_up_date")
+        if new_expert_id not in valid_expert_ids:
+            skipped["activities"] += 1
+            continue
         dup = db.query(Activity).filter(
             Activity.expert_id == new_expert_id,
             Activity.activity_type == a_data.get("type", ""),
@@ -421,6 +455,7 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
             Activity.follow_up_date == fdate,
         ).first()
         if dup:
+            already["activities"] += 1
             continue
 
         activity = Activity(
@@ -434,7 +469,11 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
         imported["activities"] += 1
 
     # ── مقایسه‌های زوجی AHP (بلوک ahp) ───────────────────────────────────
-    ahp_items = (data.get("ahp") or {}).get("comparisons") or []
+    ahp_src = data.get("ahp")
+    ahp_items = (ahp_src.get("comparisons") or []) if isinstance(ahp_src, dict) else []
+    if not isinstance(ahp_items, list):
+        ahp_items = []
+    ahp_items = [c for c in ahp_items if isinstance(c, dict)]
     if ahp_items:
         existing_keys = {
             (j.expert_id, j.level, j.parent, j.item_a, j.item_b)
@@ -445,11 +484,15 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
             new_id = expert_id_map.get(old_id, old_id)
             if not new_id or not c.get("item_a") or not c.get("item_b"):
                 continue
+            if new_id not in valid_expert_ids:
+                skipped["ahp"] += 1
+                continue
             if c["item_a"] == c["item_b"]:
                 continue
             key = (new_id, int(c.get("level", 3)), c.get("parent", "goal"),
                    c["item_a"], c["item_b"])
             if key in existing_keys:
+                already["ahp"] += 1
                 continue
             when = None
             if c.get("date"):
@@ -470,4 +513,5 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
             imported["ahp"] += 1
 
     db.commit()
-    return {"message": "بازیابی با موفقیت انجام شد", "imported": imported}
+    return {"message": "بازیابی با موفقیت انجام شد",
+            "imported": imported, "already": already, "skipped": skipped}
