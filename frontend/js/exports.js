@@ -83,7 +83,7 @@ function loadExports() {
                     <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="importBackup(this.files[0])">
                 </div>
                 <div style="margin-top: 20px; padding: 14px 16px; background: var(--info-bg); border: 1px solid var(--info); border-radius: 10px; font-size: 12px; color: var(--info); line-height: 1.8;">
-                    <strong>&#9432; راهنما:</strong> فایل‌های CSV با BOM ذخیره می‌شوند (سازگار با Excel فارسی). برای بازیابی، فایل backup.json که قبلاً دانلود کرده‌اید را آپلود کنید. نخبگان تکراری ایجاد نمی‌شوند.
+                    <strong>&#9432; راهنما:</strong> فایل‌های CSV با BOM ذخیره می‌شوند (سازگار با Excel فارسی). برای بازیابی، فایل backup.json که قبلاً دانلود کرده‌اید را آپلود کنید: داده‌های تکراری اضافه نمی‌شوند، پاسخ هر خبره/راند فقط یک‌بار می‌ماند و اگر همه‌چیز قبلاً موجود باشد پیام «موجود» می‌بینید. بلافاصله پس از بازیابی، بخش‌های سایت به‌روزرسانی می‌شوند.
                 </div>
             </div>
         </div>`;
