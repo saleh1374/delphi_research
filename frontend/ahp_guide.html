@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>راهنمای یک‌صفحه‌ای خبره — تحلیل سلسله‌مراتبی AHP</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Vazirmatn', sans-serif; background: #f1f5f9; color: #1e293b; margin: 0; padding: 20px; }
+        .sheet { max-width: 860px; margin: 0 auto; background: #fff; border-radius: 14px; padding: 28px 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { font-size: 20px; margin: 0 0 4px; }
+        h2 { font-size: 15px; margin: 22px 0 8px; color: #1d4ed8; }
+        p, li { font-size: 13px; line-height: 2.1; }
+        .goal { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px 14px; font-size: 14px; font-weight: 700; line-height: 2; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+        th, td { border: 1px solid #e2e8f0; padding: 7px 10px; text-align: right; }
+        th { background: #f8fafc; }
+        .num { font-weight: 800; color: #2563eb; width: 52px; text-align: center; }
+        .meta { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 0; }
+        .chip { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px; padding: 4px 12px; font-size: 12px; }
+        .footer-note { margin-top: 18px; font-size: 12px; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 10px; line-height: 2; }
+        .actions { max-width: 860px; margin: 14px auto 0; display: flex; gap: 10px; justify-content: flex-end; }
+        .btn { border: none; border-radius: 10px; padding: 9px 18px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-outline { background: #fff; color: #2563eb; border: 1px solid #2563eb; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .sheet { box-shadow: none; border-radius: 0; padding: 0; max-width: 100%; }
+            .actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="actions">
+    <button class="btn btn-outline" onclick="location.href='/ahp-survey'">ورود به پرسشنامه</button>
+    <button class="btn btn-primary" onclick="window.print()">چاپ / ذخیره PDF</button>
+</div>
+
+<div class="sheet">
+    <h1>راهنمای یک‌صفحه‌ای خبره — تحلیل سلسله‌مراتبی (AHP)</h1>
+    <p style="color:#64748b;margin:2px 0 10px;">مرحله دوم پژوهش دلفی &middot; اولویت‌بندی عوامل مؤثر بر توسعه صادرات برق</p>
+
+    <div class="goal">هدف پژوهش: <span id="goal-text">اولویت‌بندی عوامل مؤثر بر توسعه صادرات برق ایران با تأکید بر نیروگاه‌های تجدیدپذیر (خورشیدی)</span></div>
+
+    <div class="meta" id="meta-chips">
+        <span class="chip">۶ بُعد (ابعاد اصلی)</span>
+        <span class="chip">۳۰ عامل</span>
+        <span class="chip">۷۹ مقایسه زوجی</span>
+        <span class="chip">طیف ساتی ۱ تا ۹</span>
+    </div>
+
+    <h2>۱) سلسله‌مراتب سه‌سطحی</h2>
+    <p>
+        سطح ۱ (هدف): اولویت‌بندی کل عوامل؛ سطح ۲ (ابعاد): شش بُعد اصلی پژوهش؛ سطح ۳ (عوامل): سی عاملی که در راند دوم دلفی امتیاز گرفته‌اند.
+        شما ابتدا شش بُعد را نسبت به هدف (۱۵ مقایسه) و سپس عوامل داخل هر بُعد را نسبت به هم مقایسه می‌کنید.
+    </p>
+
+    <h2>۲) طیف قضاوت ساتی (۱ تا ۹)</h2>
+    <table>
+        <thead><tr><th class="num">امتیاز</th><th>تفسیر</th><th class="num">امتیاز</th><th>تفسیر</th></tr></thead>
+        <tbody>
+            <tr><td class="num">۱</td><td>اهمیت برابر</td><td class="num">۶</td><td>دو میانه (بین مهم‌تر و خیلی مهم‌تر)</td></tr>
+            <tr><td class="num">۲</td><td>دو میانه (بین برابر و کمی مهم‌تر)</td><td class="num">۷</td><td>خیلی مهم‌تر</td></tr>
+            <tr><td class="num">۳</td><td>کمی مهم‌تر</td><td class="num">۸</td><td>دو میانه (بین خیلی مهم‌تر و کاملاً مهم‌تر)</td></tr>
+            <tr><td class="num">۴</td><td>دو میانه (بین کمی مهم‌تر و مهم‌تر)</td><td class="num">۹</td><td>کاملاً مهم‌تر</td></tr>
+            <tr><td class="num">۵</td><td>مهم‌تر</td><td class="num">وارونه</td><td>اگر A نسبت به B امتیاز ۵ بگیرد، B/A برابر ۱/۵ می‌شود</td></tr>
+        </tbody>
+    </table>
+
+    <h2>۳) نحوه پاسخ‌گویی</h2>
+    <ol>
+        <li>در هر سؤال، <strong>کدام مهم‌تر است</strong> را با انتخاب یکی از دو دکمه مشخص کنید.</li>
+        <li>با اسلایدر <strong>چند برابر مهم‌تر</strong> را مشخص کنید (از ۱ تا ۹).</li>
+        <li>عدد ۱ یعنی هر دو گزینه هم‌ارز و هم‌سطح‌اند.</li>
+        <li>پاسخ‌ها <strong>به‌صورت خودکار ذخیره</strong> می‌شوند؛ می‌توانید صفحه را ببندید و بعداً ادامه دهید.</li>
+        <li>پس از پایان، دکمه «نتیجه من» را بزنید تا نرخ سازگاری (CR) خود را ببینید.</li>
+    </ol>
+
+    <h2>۴) نرخ سازگاری (CR)</h2>
+    <p>
+        سامانه پس از ثبت پاسخ‌ها، ناسازگاری مقایسه‌ها را محاسبه می‌کند:
+        CI = (λmax − n)/(n − 1) و CR = CI/RI.
+        اگر <strong>CR کمتر از ۰٫۱</strong> باشد، مقایسه‌های شما سازگار است؛
+        در غیر این صورت سامانه ماتریس‌های ناسازگار را مشخص می‌کند و می‌توانید همان مقایسه‌ها را ویرایش کنید.
+    </p>
+
+    <div class="footer-note">
+        نکته: قضاوت‌ها نباید عجولانه باشد؛ بر اساس تجربه علمی و عملی خود مقایسه کنید.
+        اعداد زوج (۲، ۴، ۶، ۸) برای حالت‌های میانی به کار میروند.
+        خروجی نهایی پژوهش شامل جدول وزن هر بُعد، وزن نهایی ۳۰ عامل و جدول سازگاری خبرگان خواهد بود.
+    </div>
+</div>
+
+<script>
+(async function () {
+    try {
+        const res = await fetch('/api/ahp/hierarchy');
+        const h = await res.json();
+        document.getElementById('goal-text').textContent = h.goal;
+        const c = h.counts;
+        document.getElementById('meta-chips').innerHTML = [
+            `${c.dimensions} بُعد (ابعاد اصلی)`,
+            `${c.factors} عامل`,
+            `${c.total_comparisons} مقایسه زوجی`,
+            'طیف ساتی ۱ تا ۹'
+        ].map(t => `<span class="chip">${t.replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d])}</span>`).join('');
+    } catch (e) {}
+})();
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سامانه مدیریت پژوهش دلفی</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/ahp.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -69,7 +70,7 @@
                     </a>
                     <a class="nav-item" onclick="showSection('ahp')">
                         <span class="nav-icon">&#128200;</span>
-                        مقایسه زوجی
+                        ماژول AHP
                     </a>
                 </div>
                 <div class="nav-section">
@@ -111,6 +112,9 @@
                     <a href="/survey2" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px; background: #8b5cf6;">
                         &#128279; راند ۲
                     </a>
+                    <a href="/ahp-survey" target="_blank" class="btn-public-link" style="font-size: 12px; padding: 6px 12px; background: #f59e0b;">
+                        &#128279; AHP
+                    </a>
                 </div>
                 <button id="topbar-logout-btn" class="btn btn-outline btn-sm" style="font-size:12px;" title="خروج">&#128682; خروج</button>
                 <button class="theme-toggle" onclick="toggleTheme()">&#9788;</button>
@@ -143,6 +147,7 @@
     <script src="/static/js/activities.js"></script>
     <script src="/static/js/factorbank.js"></script>
     <script src="/static/js/exports.js"></script>
+    <script src="/static/js/ahp_common.js"></script>
     <script src="/static/js/ahp.js"></script>
     <script src="/static/js/analysis.js"></script>
     <script src="/static/js/round2.js"></script>

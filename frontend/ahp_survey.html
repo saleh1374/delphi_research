@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>پرسشنامه تحلیل سلسله‌مراتبی AHP</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/ahp.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); min-height: 100vh; font-family: 'Vazirmatn', sans-serif; }
+        .ahp-page { max-width: 100%; margin: 0 auto; padding: 12px; }
+        .ahp-hero { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 16px; padding: 24px; text-align: center; color: white; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.15); }
+        .ahp-hero h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; line-height: 1.5; }
+        .ahp-hero p { font-size: 14px; opacity: 0.88; line-height: 1.9; }
+        .ahp-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+        .ahp-card h2 { font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+        .ahp-form-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-family: 'Vazirmatn', sans-serif; font-size: 14px; direction: rtl; }
+        .ahp-form-input:focus { outline: none; border-color: #2563eb; }
+        .ahp-search-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .ahp-search-item:hover { border-color: #2563eb; background: #eff6ff; }
+        .ahp-btn { background: linear-gradient(135deg, #2563eb, #0ea5e9); color: white; border: none; padding: 12px 28px; border-radius: 12px; font-family: 'Vazirmatn', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .ahp-btn:hover { transform: translateY(-2px); }
+        .ahp-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .ahp-btn-outline { background: white; color: #2563eb; border: 1px solid #2563eb; padding: 10px 20px; border-radius: 10px; font-family: 'Vazirmatn', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .ahp-info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #1e40af; line-height: 2; }
+        .ahp-warn { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #b91c1c; line-height: 2; }
+        .ahp-ok { background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 2; }
+        .ahp-toast { position: fixed; bottom: 20px; right: 50%; transform: translateX(50%); background: #0f172a; color: #fff; padding: 10px 22px; border-radius: 30px; font-size: 13px; z-index: 99; opacity: 0; transition: opacity 0.3s; }
+        .ahp-toast.show { opacity: 1; }
+        .ahp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .ahp-table th, .ahp-table td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: right; }
+        .ahp-table th { background: #f8fafc; font-weight: 700; }
+    </style>
+</head>
+<body>
+<div class="ahp-page">
+    <div class="ahp-hero">
+        <h1>پرسشنامه تحلیل سلسله‌مراتبی (AHP)</h1>
+        <p id="ahp-hero-goal">اولویت‌بندی عوامل مؤثر بر توسعه صادرات برق ایران با تأکید بر نیروگاه‌های تجدیدپذیر (خورشیدی)</p>
+        <p style="font-size:12px;opacity:0.75;">مرحله دوم پژوهش دلفی &middot; پاسخ شما به‌صورت خودکار ذخیره می‌شود و قابل ادامه است</p>
+        <p style="margin-top:10px;">
+            <a href="/ahp-guide" target="_blank" style="color:#fde68a;text-decoration:underline;font-size:13px;">&#128214; راهنمای یک‌صفحه‌ای (طیف ۱ تا ۹)</a>
+        </p>
+    </div>
+
+    <!-- گام ۱: انتخاب نخبه -->
+    <div id="ahp-select-section">
+        <div class="ahp-card">
+            <h2>شناسایی شما</h2>
+            <p style="font-size:13px;color:#64748b;margin-bottom:12px;">نام خود را جستجو و انتخاب کنید تا پرسشنامه شما بارگذاری شود (پاسخ‌های قبلی شما بازیابی می‌شود).</p>
+            <input type="text" class="ahp-form-input" id="ahp-search-input" placeholder="نام خود را جستجو کنید (حداقل ۲ حرف)..." oninput="searchExpert(this.value)">
+            <div id="ahp-search-results" style="margin-top:12px;"></div>
+            <div class="ahp-info" style="margin-top:14px;">
+                اگر لینک دعوت برای شما ارسال شده، مستقیماً وارد پرسشنامه می‌شوید؛ کافی است این صفحه را با همان لینک باز کنید.
+            </div>
+        </div>
+    </div>
+
+    <!-- گام ۲: پرسشنامه -->
+    <div id="ahp-survey-section" style="display:none;">
+        <div class="ahp-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                <div>
+                    <strong id="ahp-expert-name" style="font-size:15px;"></strong>
+                    <span style="font-size:12px;color:#64748b;" id="ahp-expert-org"></span>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="ahp-btn-outline" type="button" onclick="changeExpert()">تغییر نخبه</button>
+                    <button class="ahp-btn-outline" type="button" onclick="showMyResult()">نتیجه من</button>
+                </div>
+            </div>
+            <div class="ahp-info">
+                برای هر جفت، <strong>کدام مهم‌تر است</strong> را انتخاب کنید و سپس با اسلایدر مشخص کنید <strong>چند برابر</strong> مهم‌تر است.
+                عدد ۱ یعنی اهمیت برابر و عدد ۹ یعنی کاملاً مهم‌تر. مقایسه‌ها متقارن‌اند و پاسخ‌ها خودکار ذخیره می‌شوند.
+            </div>
+            <div id="ahp-progress-holder"></div>
+            <div id="ahp-questions"></div>
+            <div style="text-align:center;margin-top:16px;">
+                <button class="ahp-btn" type="button" onclick="saveNow(false)">ذخیره نهایی پاسخ‌ها</button>
+                <button class="ahp-btn-outline" type="button" style="margin-right:8px;" onclick="showMyResult()">مشاهده نتیجه و سازگاری</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نتیجه فردی -->
+    <div id="ahp-result-section" style="display:none;"></div>
+</div>
+
+<div class="ahp-toast" id="ahp-toast"></div>
+
+<script src="/static/js/ahp_common.js"></script>
+<script>
+const API = '/api';
+let expertId = null;
+let questions = [];
+let values = {};
+let dirty = [];
+let saveTimer = null;
+
+function toast(msg) {
+    const t = document.getElementById('ahp-toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._h);
+    t._h = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function show(id) {
+    ['ahp-select-section', 'ahp-survey-section', 'ahp-result-section'].forEach(s => {
+        document.getElementById(s).style.display = (s === id) ? '' : 'none';
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function searchExpert(name) {
+    const box = document.getElementById('ahp-search-results');
+    if (!name || name.trim().length < 2) { box.innerHTML = ''; return; }
+    try {
+        const res = await fetch(`${API}/auth/expert-lookup`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name.trim() })
+        });
+        const list = await res.json();
+        if (!Array.isArray(list) || !list.length) {
+            box.innerHTML = '<p style="font-size:13px;color:#94a3b8;">نامی پیدا نشد؛ نام کامل خود را وارد کنید.</p>';
+            return;
+        }
+        box.innerHTML = list.map(e => `
+            <div class="ahp-search-item" onclick="pickExpert(${e.expert_id}, '${(e.name || '').replace(/'/g, "\\'")}', '${(e.org || '').replace(/'/g, "\\'")}')">
+                <div>
+                    <div style="font-size:14px;font-weight:700;color:#1e293b;">${e.name}</div>
+                    <div style="font-size:12px;color:#64748b;">${e.org || ''}</div>
+                </div>
+                <span style="font-size:12px;color:#2563eb;font-weight:700;">انتخاب &#8249;</span>
+            </div>`).join('');
+    } catch (e) {
+        box.innerHTML = '<p style="font-size:13px;color:#ef4444;">خطا در جستجو</p>';
+    }
+}
+
+async function pickExpert(id, name, org) {
+    expertId = id;
+    nameOfCurrent = name || '';
+    orgOfCurrent = org || '';
+    document.getElementById('ahp-expert-name').textContent = `نخبه: ${nameOfCurrent}`;
+    document.getElementById('ahp-expert-org').textContent = orgOfCurrent;
+    try { localStorage.setItem('ahp_expert_id', String(id)); } catch (e) {}
+    await loadQuestionnaire();
+}
+
+async function loadQuestionnaire() {
+    try {
+        const res = await fetch(`${API}/ahp/questionnaire?expert_id=${expertId}`);
+        if (!res.ok) throw new Error('خطا در بارگذاری پرسشنامه');
+        const data = await res.json();
+        questions = data.questions;
+        values = {};
+        questions.forEach(q => { if (q.value !== null && q.value !== undefined) values[AHPCommon.keyOf(q)] = q.value; });
+        dirty = [];
+
+        if (data.expert) {
+            nameOfCurrent = data.expert.name;
+            orgOfCurrent = data.expert.organization || '';
+            document.getElementById('ahp-expert-name').textContent = `نخبه: ${data.expert.name}`;
+            document.getElementById('ahp-expert-org').textContent = orgOfCurrent;
+        }
+
+        renderProgress(data.answered, data.total);
+        AHPCommon.renderForm(document.getElementById('ahp-questions'), questions, {
+            values,
+            onChange: (item) => {
+                const i = dirty.findIndex(d => d.level === item.level && d.parent === item.parent &&
+                    d.item_a === item.item_a && d.item_b === item.item_b);
+                if (i >= 0) dirty[i] = item; else dirty.push(item);
+                AHPCommon.updateProgress(countAnswered(), questions.length);
+                if (saveTimer) clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => saveNow(true), 1200);
+            }
+        });
+        show('ahp-survey-section');
+        if (data.completed) toast('پاسخ‌های شما قبلاً ثبت شده است ✓');
+    } catch (e) {
+        toast(e.message);
+    }
+}
+
+let nameOfCurrent = '';
+let orgOfCurrent = '';
+
+function renderProgress(answered, total) {
+    AHPCommon.renderProgress(document.getElementById('ahp-progress-holder'), answered, total,
+        `<div class="ahp-progress-sub">ذخیره خودکار فعال است؛ می‌توانید بعداً همین صفحه را دوباره باز کنید و ادامه دهید.</div>`);
+}
+
+function countAnswered() {
+    return Object.keys(values).length;
+}
+
+async function saveNow(silent) {
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+    if (!expertId || dirty.length === 0) {
+        if (!silent) toast('تغییری برای ذخیره نیست');
+        return;
+    }
+    const items = dirty.slice();
+    dirty = [];
+    try {
+        const res = await fetch(`${API}/ahp/comparisons`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ expert_id: expertId, items })
+        });
+        if (!res.ok) throw new Error('خطا در ذخیره');
+        const data = await res.json();
+        AHPCommon.updateProgress(data.answered, data.total);
+        if (!silent) toast(`ذخیره شد (${AHPCommon.faNum(data.answered)} از ${AHPCommon.faNum(data.total)})`);
+        if (data.completed) toast('همه مقایسه‌ها تکمیل شد ✓');
+    } catch (e) {
+        dirty = items.concat(dirty);
+        toast('ذخیره انجام نشد؛ اتصال خود را بررسی کنید');
+    }
+}
+
+function changeExpert() {
+    try { localStorage.removeItem('ahp_expert_id'); } catch (e) {}
+    expertId = null;
+    show('ahp-select-section');
+}
+
+async function showMyResult() {
+    if (!expertId) { show('ahp-select-section'); return; }
+    await saveNow(true);
+    try {
+        const res = await fetch(`${API}/ahp/my-result?expert_id=${expertId}`);
+        if (!res.ok) throw new Error('خطا در محاسبه نتیجه');
+        const data = await res.json();
+        const c = data.consistency;
+        const el = document.getElementById('ahp-result-section');
+        const bad = (c && c.matrices ? c.matrices.filter(m => !m.is_consistent) : []);
+        const answered = c ? c.answered : 0;
+        const total = c ? c.total : 0;
+
+        el.innerHTML = `
+            <div class="ahp-card">
+                <h2>نتیجه فردی شما در تحلیل سلسله‌مراتبی</h2>
+                ${c ? (c.is_consistent
+                    ? `<div class="ahp-ok">&#10003; مقایسه‌های شما <strong>سازگار</strong> است (CR حداکثر = ${AHPCommon.faNum(c.cr_max)} که کمتر از ۰٫۱ است).</div>`
+                    : `<div class="ahp-warn">&#9888; نرخ سازگاری شما <strong>CR = ${AHPCommon.faNum(c.cr_max)}</strong> است (۰٫۱ یا بیشتر). لطفاً مقایسه‌های زیر را بازبینی کنید:
+                        <div style="margin-top:8px;">${bad.map(m => `<button class="ahp-btn-outline" style="margin:3px;font-size:12px;" onclick="backToMatrix(${m.level}, '${String(m.parent).replace(/'/g, "\\'")}')">ویرایش «${m.matrix}» (CR=${AHPCommon.faNum(m.cr)})</button>`).join('')}</div>
+                       </div>`)
+                    : '<div class="ahp-info">هنوز پاسخی ثبت نکرده‌اید.</div>'}
+
+                <div class="ahp-result-summary">
+                    <div class="ahp-result-card"><span class="value">${AHPCommon.faNum(answered)} از ${AHPCommon.faNum(total)}</span><span class="label">مقایسه‌های ثبت‌شده</span></div>
+                    <div class="ahp-result-card"><span class="value">${c ? AHPCommon.faNum(c.cr_max) : '-'}</span><span class="label">بیشینه نرخ سازگاری (CR)</span></div>
+                    <div class="ahp-result-card"><span class="value">${c ? AHPCommon.faNum(c.inconsistent_matrices) : '-'}</span><span class="label">ماتریس نیازمند بازبینی</span></div>
+                </div>
+
+                <h2 style="margin-top:16px;">جزئیات سازگاری هر ماتریس</h2>
+                <table class="ahp-table">
+                    <thead><tr><th>ماتریس</th><th>مقایسه‌ها</th><th>λmax</th><th>CI</th><th>RI</th><th>CR</th><th>وضعیت</th></tr></thead>
+                    <tbody>
+                        ${(c && c.matrices ? c.matrices : []).map(m => `
+                            <tr>
+                                <td>${m.matrix}</td>
+                                <td>${AHPCommon.faNum(m.answered)}/${AHPCommon.faNum(m.total)}</td>
+                                <td>${AHPCommon.faNum(m.lambda_max)}</td>
+                                <td>${AHPCommon.faNum(m.ci)}</td>
+                                <td>${AHPCommon.faNum(m.ri)}</td>
+                                <td><strong>${AHPCommon.faNum(m.cr)}</strong></td>
+                                <td>${m.is_consistent ? '<span style="color:#16a34a;font-weight:700;">سازگار</span>' : '<span style="color:#dc2626;font-weight:700;">ناسازگار</span>'}</td>
+                            </tr>`).join('')}
+                    </tbody>
+                </table>
+
+                <h2 style="margin-top:18px;">وزن‌های محاسبه‌شده شما</h2>
+                <table class="ahp-table">
+                    <thead><tr><th>بُعد</th><th>وزن</th><th>درصد</th></tr></thead>
+                    <tbody>
+                        ${(data.dimensions || []).slice().sort((a, b) => b.weight - a.weight).map(d => `
+                            <tr><td>${d.title}</td><td>${AHPCommon.faWeight(d.weight)}</td><td>${AHPCommon.faPercent(d.percent)}</td></tr>`).join('')}
+                    </tbody>
+                </table>
+                <p style="font-size:12px;color:#64748b;margin-top:8px;">وزن نهایی عوامل پس از تجمیع نظر همه خبرگان در گزارش پژوهش درج می‌شود.</p>
+
+                <div style="text-align:center;margin-top:18px;">
+                    <button class="ahp-btn-outline" type="button" onclick="show('ahp-survey-section')">بازگشت به پرسشنامه</button>
+                </div>
+            </div>`;
+        show('ahp-result-section');
+    } catch (e) {
+        toast(e.message);
+    }
+}
+
+function backToMatrix(level, parent) {
+    show('ahp-survey-section');
+    setTimeout(() => AHPCommon.jumpToMatrix(level, parent), 200);
+}
+
+/* ── راه‌اندازی ── */
+(async function init() {
+    try {
+        const res = await fetch(`${API}/ahp/hierarchy`);
+        const h = await res.json();
+        document.getElementById('ahp-hero-goal').textContent = h.goal;
+    } catch (e) {}
+
+    // لینک دعوت: /ahp-survey?expert=ID  یا آخرین نخبه انتخابشده
+    const params = new URLSearchParams(location.search);
+    const fromLink = params.get('expert');
+    let saved = null;
+    try { saved = localStorage.getItem('ahp_expert_id'); } catch (e) {}
+    const target = fromLink || saved;
+    if (target) {
+        const id = parseInt(target);
+        if (!isNaN(id)) {
+            expertId = id;
+            try {
+                const res = await fetch(`${API}/ahp/questionnaire?expert_id=${id}`);
+                if (res.ok) { await loadQuestionnaire(); return; }
+            } catch (e) {}
+        }
+    }
+    show('ahp-select-section');
+})();
+</script>
+</body>
+</html>

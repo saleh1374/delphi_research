@@ -27,6 +27,7 @@ class Expert(Base):
     responses = relationship("Response", back_populates="expert", cascade="all, delete-orphan")
     activities = relationship("Activity", back_populates="expert", cascade="all, delete-orphan")
     ahp_comparisons = relationship("AHPComparison", back_populates="expert", cascade="all, delete-orphan")
+    ahp_judgments = relationship("AHPJudgment", back_populates="expert", cascade="all, delete-orphan")
 
 
 class Response(Base):
@@ -115,6 +116,27 @@ class AHPComparison(Base):
     expert = relationship("Expert", back_populates="ahp_comparisons")
     factor_a = relationship("AHPFactor", foreign_keys=[factor_a_id])
     factor_b = relationship("AHPFactor", foreign_keys=[factor_b_id])
+
+
+class AHPJudgment(Base):
+    """
+    مقایسه زوجی ماژول AHP (سلسله‌مراتب سه‌سطحی).
+    فقط جفت‌های بالای قطری ذخیره می‌شوند؛ وارونه (B/A) و قطری (1) خودکار محاسبه می‌شوند.
+    جدول جداگانه تا داده‌های دلفی و مدل قدیمی AHP دست‌نخورده بماند.
+    """
+    __tablename__ = "ahp_judgments"
+
+    judgment_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    expert_id = Column(Integer, ForeignKey("experts.expert_id"), nullable=False, index=True)
+    level = Column(Integer, nullable=False, default=3)          # 2 = ابعاد، 3 = عوامل
+    parent = Column(String(300), nullable=False, default="goal")  # 'goal' یا عنوان بُعد
+    item_a = Column(String(300), nullable=False)                # بر اساس ترتیب سلسله‌مراتب
+    item_b = Column(String(300), nullable=False)
+    value = Column(Float, nullable=False)                       # a/b بین 1/9 تا 9
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+
+    expert = relationship("Expert", back_populates="ahp_judgments")
 
 
 class UniqueFactor(Base):

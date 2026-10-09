@@ -37,6 +37,31 @@ function loadExports() {
         <div class="card" style="margin-bottom: 20px;">
             <div class="card-header">
                 <div>
+                    <h3>&#9878; ماژول AHP - تحلیل سلسله‌مراتبی</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">خروجی‌های مرحله دوم پژوهش (اولویت‌بندی نهایی عوامل و سازگاری خبرگان)</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+                    <div class="expert-info-item" style="cursor:pointer;border:2px solid #8b5cf6;border-radius:12px;" onclick="api.downloadFile('/ahp/export.json','ahp_results.json')">
+                        <div class="info-icon" style="background:#eef2ff;color:#8b5cf6;">&#128196;</div>
+                        <div class="info-text"><div class="info-label">فایل JSON</div><div class="info-value">سلسله‌مراتب + مقایسه‌ها + نتایج AHP</div></div>
+                    </div>
+                    <div class="expert-info-item" style="cursor:pointer;border:2px solid #8b5cf6;border-radius:12px;" onclick="api.downloadFile('/ahp/export.csv','ahp_results.csv')">
+                        <div class="info-icon" style="background:#eef2ff;color:#8b5cf6;">&#128202;</div>
+                        <div class="info-text"><div class="info-label">فایل Excel/CSV</div><div class="info-value">وزن ابعاد، وزن نهایی ۳۰ عامل و CR</div></div>
+                    </div>
+                    <div class="expert-info-item" style="cursor:pointer;border:2px solid #f59e0b;border-radius:12px;" onclick="window.open('/ahp-guide','_blank')">
+                        <div class="info-icon" style="background:#fffbeb;color:#f59e0b;">&#128214;</div>
+                        <div class="info-text"><div class="info-label">راهنما</div><div class="info-value">راهنمای یک‌صفحه‌ای خبره (طیف ۱ تا ۹)</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+                <div>
                     <h3>&#128190; پشتیبان‌گیری و بازیابی</h3>
                     <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">ذخیره و بازیابی کل داده‌های پژوهش</p>
                 </div>

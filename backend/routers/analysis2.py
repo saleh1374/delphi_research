@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
-from models import ResponseFactor, Response, Expert, UniqueFactor, AHPComparison
+from models import ResponseFactor, Response, Expert, UniqueFactor, AHPComparison, AHPJudgment
 from typing import Optional
 import math
 
@@ -75,8 +75,11 @@ def get_research_stats(db: Session = Depends(get_db)):
         if t:
             unique_texts.add(t)
 
-    total_ahp = db.query(AHPComparison).count()
-    experts_with_ahp_list = db.query(AHPComparison.expert_id).distinct().all()
+    total_ahp = db.query(AHPComparison).count() + db.query(AHPJudgment).count()
+    experts_with_ahp_list = set(
+        [r[0] for r in db.query(AHPComparison.expert_id).distinct().all()] +
+        [r[0] for r in db.query(AHPJudgment.expert_id).distinct().all()]
+    )
     experts_with_ahp = len(experts_with_ahp_list)
 
     avg_factors = round(total_factors / total_responses, 1) if total_responses > 0 else 0

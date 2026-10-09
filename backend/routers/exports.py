@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session, joinedload
 from database import get_db
-from models import Expert, Response, ResponseFactor, Activity, FactorBank
+from models import Expert, Response, ResponseFactor, Activity, FactorBank, AHPJudgment
 import csv
 import io
 import json
 import math
+from datetime import datetime
 
 router = APIRouter(prefix="/export", tags=["export"])
 
@@ -229,6 +230,15 @@ def export_backup(db: Session = Depends(get_db)):
         ]
     }
 
+    # بلوک AHP (سلسله‌مراتب، مقایسه‌ها و نتایج) — بدون دست زدن به داده‌های دلفی
+    try:
+        import ahp_core
+        hierarchy = ahp_core.build_hierarchy(db)
+        results = ahp_core.compute_results(db, hierarchy)
+        data["ahp"] = ahp_core.ahp_json_block(db, hierarchy, results)
+    except Exception:
+        pass
+
     output = json.dumps(data, ensure_ascii=False, indent=2)
     return StreamingResponse(
         iter([UTF8_BOM + output]),
@@ -322,7 +332,8 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
     text = content.decode('utf-8-sig')
     data = json.loads(text)
 
-    imported = {"experts": 0, "responses": 0, "factors": 0, "activities": 0, "factor_bank": 0}
+    imported = {"experts": 0, "responses": 0, "factors": 0, "activities": 0,
+                "factor_bank": 0, "ahp": 0}
 
     expert_id_map = {}
     for e_data in data.get("experts", []):
@@ -362,10 +373,19 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
     for r_data in data.get("responses", []):
         old_expert_id = r_data.get("expert_id")
         new_expert_id = expert_id_map.get(old_expert_id, old_expert_id)
+        round_no = r_data.get("round_no", 1)
+
+        # جلوگیری از ایجاد پاسخ تکراری برای همان خبره/راند
+        already = db.query(Response).filter(
+            Response.expert_id == new_expert_id,
+            Response.round_no == round_no,
+        ).first()
+        if already:
+            continue
 
         response = Response(
             expert_id=new_expert_id,
-            round_no=r_data.get("round_no", 1),
+            round_no=round_no,
             response_status=r_data.get("status", "ناقص"),
             response_note=r_data.get("note")
         )
@@ -391,6 +411,18 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
         old_expert_id = a_data.get("expert_id")
         new_expert_id = expert_id_map.get(old_expert_id, old_expert_id)
 
+        note = a_data.get("note")
+        fdate = a_data.get("follow_up_date")
+        dup = db.query(Activity).filter(
+            Activity.expert_id == new_expert_id,
+            Activity.activity_type == a_data.get("type", ""),
+            Activity.activity_status == a_data.get("status", ""),
+            Activity.activity_note == note,
+            Activity.follow_up_date == fdate,
+        ).first()
+        if dup:
+            continue
+
         activity = Activity(
             expert_id=new_expert_id,
             activity_type=a_data.get("type", ""),
@@ -400,6 +432,42 @@ async def import_backup(file: UploadFile = File(...), db: Session = Depends(get_
         )
         db.add(activity)
         imported["activities"] += 1
+
+    # ── مقایسه‌های زوجی AHP (بلوک ahp) ───────────────────────────────────
+    ahp_items = (data.get("ahp") or {}).get("comparisons") or []
+    if ahp_items:
+        existing_keys = {
+            (j.expert_id, j.level, j.parent, j.item_a, j.item_b)
+            for j in db.query(AHPJudgment).all()
+        }
+        for c in ahp_items:
+            old_id = c.get("expert_id")
+            new_id = expert_id_map.get(old_id, old_id)
+            if not new_id or not c.get("item_a") or not c.get("item_b"):
+                continue
+            if c["item_a"] == c["item_b"]:
+                continue
+            key = (new_id, int(c.get("level", 3)), c.get("parent", "goal"),
+                   c["item_a"], c["item_b"])
+            if key in existing_keys:
+                continue
+            when = None
+            if c.get("date"):
+                try:
+                    when = datetime.strptime(str(c["date"])[:19], "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    when = None
+            row = AHPJudgment(
+                expert_id=key[0], level=key[1], parent=key[2],
+                item_a=key[3], item_b=key[4],
+                value=float(c.get("value") or 1.0),
+            )
+            if when is not None:
+                row.created_at = when
+                row.updated_at = when
+            db.add(row)
+            existing_keys.add(key)
+            imported["ahp"] += 1
 
     db.commit()
     return {"message": "بازیابی با موفقیت انجام شد", "imported": imported}

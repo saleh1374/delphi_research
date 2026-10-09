@@ -67,7 +67,17 @@ def collect_backup_data():
         activities = db.query(Activity).all()
         factors = db.query(FactorBank).all()
 
-        return {
+        # ماژول AHP (مرحله دوم پژوهش) — جدا از داده‌های دلفی
+        try:
+            import ahp_core
+            hierarchy = ahp_core.build_hierarchy(db)
+            results = ahp_core.compute_results(db, hierarchy)
+            ahp_block = ahp_core.ahp_json_block(db, hierarchy, results)
+        except Exception as ahpe:
+            logger.warning(f"AHP block skipped in backup: {ahpe}")
+            ahp_block = None
+
+        data = {
             "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
             "experts": [
                 {"id": e.expert_id, "full_name": e.full_name, "organization": e.organization,
@@ -98,6 +108,9 @@ def collect_backup_data():
                 for f in factors
             ]
         }
+        if ahp_block is not None:
+            data["ahp"] = ahp_block
+        return data
     finally:
         db.close()
 

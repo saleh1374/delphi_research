@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from database import engine, SessionLocal, Base
-from models import Expert, Response, ResponseFactor, Activity, FactorBank, AHPFactor, AHPComparison
+from models import Expert, Response, ResponseFactor, Activity, FactorBank, AHPFactor, AHPComparison, AHPJudgment
 from routers import experts, responses, activities, factor_bank, exports
 from routers.analysis import router as analysis_router
 from routers.analysis2 import router2 as analysis2_router
+from routers.ahp import router as ahp_router
 from routers.settings import router as settings_router, seed_settings
 from routers.final_factors import router as final_factors_router
 from routers.auth_router import router as auth_router
@@ -37,6 +38,7 @@ app.include_router(factor_bank.router, prefix="/api")
 app.include_router(exports.router, prefix="/api")
 app.include_router(analysis_router, prefix="/api")
 app.include_router(analysis2_router, prefix="/api")
+app.include_router(ahp_router, prefix="/api")
 app.include_router(settings_router, prefix="/api")
 app.include_router(final_factors_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
@@ -55,7 +57,7 @@ async def admin_auth_middleware(request: Request, call_next):
     path = request.url.path
 
     # Static + pages always allowed
-    if path.startswith("/static") or path in ("/", "/survey", "/survey2", "/health"):
+    if path.startswith("/static") or path in ("/", "/survey", "/survey2", "/ahp-survey", "/ahp-guide", "/health"):
         return await call_next(request)
 
     # Public API paths (auth, public settings, factor-bank GET for surveys, etc.)
@@ -72,6 +74,16 @@ async def admin_auth_middleware(request: Request, call_next):
     if path == "/api/analysis/unique-factors" and request.method == "GET":
         return await call_next(request)
     if path == "/api/analysis/factor-frequency" and request.method == "GET":
+        return await call_next(request)
+
+    # AHP module — public expert questionnaire (mirrors the Delphi survey pages)
+    if path == "/api/ahp/hierarchy" and request.method == "GET":
+        return await call_next(request)
+    if path == "/api/ahp/questionnaire" and request.method == "GET":
+        return await call_next(request)
+    if path == "/api/ahp/comparisons" and request.method == "POST":
+        return await call_next(request)
+    if path == "/api/ahp/my-result" and request.method == "GET":
         return await call_next(request)
 
     # Export/download/import endpoints are public (no auth needed)
@@ -201,6 +213,16 @@ def serve_survey2():
     return FileResponse(os.path.join(frontend_dir, "survey2.html"))
 
 
+@app.get("/ahp-survey")
+def serve_ahp_survey():
+    return FileResponse(os.path.join(frontend_dir, "ahp_survey.html"))
+
+
+@app.get("/ahp-guide")
+def serve_ahp_guide():
+    return FileResponse(os.path.join(frontend_dir, "ahp_guide.html"))
+
+
 @app.get("/api/dashboard")
 def dashboard_stats():
     db = SessionLocal()
@@ -241,6 +263,7 @@ def expert_progress():
             r1 = db.query(Response).filter(Response.expert_id == e.expert_id, Response.round_no == 1).first()
             r2 = db.query(Response).filter(Response.expert_id == e.expert_id, Response.round_no == 2).first()
             ahp = db.query(AHPComparison).filter(AHPComparison.expert_id == e.expert_id).count()
+            ahp += db.query(AHPJudgment).filter(AHPJudgment.expert_id == e.expert_id).count()
             result.append({
                 "expert_id": e.expert_id,
                 "name": e.full_name,

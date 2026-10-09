@@ -59,6 +59,8 @@ async function loadDashboard() {
         const researchStats = await api.get('/analysis/research-stats');
         const frequency = await api.get('/analysis/factor-frequency');
         const priorities = await api.get('/analysis/ahp-priorities');
+        let ahpResults = null;
+        try { ahpResults = await api.get('/ahp/results'); } catch (e) { ahpResults = null; }
         const expertProgress = await api.get('/expert-progress');
 
         document.getElementById('section-dashboard').innerHTML = `
@@ -207,7 +209,7 @@ async function loadDashboard() {
         document.getElementById('nav-badge-experts').textContent = stats.total_experts;
 
         setTimeout(() => {
-            renderDashboardCharts(researchStats, frequency, priorities);
+            renderDashboardCharts(researchStats, frequency, priorities, ahpResults);
         }, 100);
 
     } catch (e) {
@@ -215,7 +217,7 @@ async function loadDashboard() {
     }
 }
 
-function renderDashboardCharts(stats, frequency, priorities) {
+function renderDashboardCharts(stats, frequency, priorities, ahpResults) {
     const catData = stats.factor_categories || {};
     const catLabels = Object.keys(catData);
     const catValues = Object.values(catData);
@@ -234,7 +236,23 @@ function renderDashboardCharts(stats, frequency, priorities) {
         });
     }
 
-    if (priorities.factors && priorities.factors.length > 0) {
+    // نمودار اولویت: اولویت‌های ماژول AHP (وزن نهایی) و در نبود آن، اولویت‌های قدیمی
+    const ahpTop = (ahpResults && ahpResults.experts_count > 0 && ahpResults.charts)
+        ? ahpResults.charts.final_weights.slice(0, 10) : null;
+    if (ahpTop && ahpTop.length > 0) {
+        new Chart(document.getElementById('chart-priorities'), {
+            type: 'bar',
+            data: {
+                labels: ahpTop.map(f => f.title.substring(0, 25) + '...'),
+                datasets: [{
+                    label: 'وزن نهایی AHP (%)',
+                    data: ahpTop.map(f => (f.weight * 100).toFixed(1)),
+                    backgroundColor: '#2563eb'
+                }]
+            },
+            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+        });
+    } else if (priorities.factors && priorities.factors.length > 0) {
         const topFactors = priorities.factors.slice(0, 10);
         new Chart(document.getElementById('chart-priorities'), {
             type: 'bar',
